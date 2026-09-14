@@ -1,0 +1,427 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1200" width="1600" height="1200" style="background-color: #000000; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;">
+  <defs>
+    <!-- Marker: White Arrowhead -->
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#ffffff" stroke="#ffffff" />
+    </marker>
+    <!-- Marker: Feign REST Arrowhead (Open) -->
+    <marker id="feign-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 9 5 L 0 8.5" fill="none" stroke="#ffffff" stroke-width="1.8" />
+    </marker>
+  </defs>
+
+  <!-- Background Canvas -->
+  <rect width="1600" height="1200" fill="#000000" />
+
+  <!-- HEADER -->
+  <text x="800" y="40" fill="#ffffff" font-size="24" font-weight="bold" letter-spacing="2" text-anchor="middle">
+    AEROBOOK PLATFORM - SYSTEM ARCHITECTURE DIAGRAM
+  </text>
+  <text x="800" y="62" fill="#aaaaaa" font-size="12" font-family="monospace" letter-spacing="1" text-anchor="middle">
+    Reactive Microservices Architecture • Database-per-Service • Asynchronous Event Messaging • Black &amp; White Theme
+  </text>
+
+  <!-- ============================================================= -->
+  <!-- TIER 1: CLIENT & PRESENTATION LAYER -->
+  <!-- ============================================================= -->
+  <g id="tier-clients">
+    <rect x="50" y="85" width="1500" height="100" rx="10" fill="#050505" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="6 4" />
+    <text x="70" y="105" fill="#aaaaaa" font-family="monospace" font-size="11" font-weight="bold">LAYER 1: CLIENT &amp; PRESENTATION LAYER</text>
+
+    <!-- Web SPA -->
+    <rect x="100" y="115" width="280" height="55" rx="6" fill="#000000" stroke="#ffffff" stroke-width="2" />
+    <text x="240" y="140" fill="#ffffff" font-size="13" font-weight="bold" text-anchor="middle">Web Single Page App (SPA)</text>
+    <text x="240" y="157" fill="#aaaaaa" font-size="10" font-family="monospace" text-anchor="middle">React / Angular / Vue Client</text>
+
+    <!-- Mobile App -->
+    <rect x="440" y="115" width="280" height="55" rx="6" fill="#000000" stroke="#ffffff" stroke-width="2" />
+    <text x="580" y="140" fill="#ffffff" font-size="13" font-weight="bold" text-anchor="middle">Mobile Traveler App</text>
+    <text x="580" y="157" fill="#aaaaaa" font-size="10" font-family="monospace" text-anchor="middle">iOS / Android Passenger Client</text>
+
+    <!-- Swagger UI Hub -->
+    <rect x="780" y="115" width="340" height="55" rx="6" fill="#000000" stroke="#ffffff" stroke-width="2" />
+    <text x="950" y="140" fill="#ffffff" font-size="13" font-weight="bold" text-anchor="middle">Swagger UI Multi-Service Hub</text>
+    <text x="950" y="157" fill="#aaaaaa" font-size="10" font-family="monospace" text-anchor="middle">Unified API Gateway Definition Selector</text>
+
+    <!-- Admin / Gate Portal -->
+    <rect x="1180" y="115" width="320" height="55" rx="6" fill="#000000" stroke="#ffffff" stroke-width="2" />
+    <text x="1340" y="140" fill="#ffffff" font-size="13" font-weight="bold" text-anchor="middle">Operations &amp; Gate Console</text>
+    <text x="1340" y="157" fill="#aaaaaa" font-size="10" font-family="monospace" text-anchor="middle">Fleet Admin &amp; Gate Staff Scanner</text>
+  </g>
+
+  <!-- Downward arrows from Clients to Gateway -->
+  <line x1="240" y1="170" x2="480" y2="225" stroke="#ffffff" stroke-width="1.8" marker-end="url(#arrow)" />
+  <line x1="580" y1="170" x2="620" y2="225" stroke="#ffffff" stroke-width="1.8" marker-end="url(#arrow)" />
+  <line x1="950" y1="170" x2="780" y2="225" stroke="#ffffff" stroke-width="1.8" marker-end="url(#arrow)" />
+  <line x1="1340" y1="170" x2="920" y2="225" stroke="#ffffff" stroke-width="1.8" marker-end="url(#arrow)" />
+  <text x="700" y="200" fill="#ffffff" font-size="10" font-family="monospace" text-anchor="middle">HTTPS / REST API Requests (JSON)</text>
+
+  <!-- ============================================================= -->
+  <!-- TIER 2: EDGE GATEWAY & SERVICE DISCOVERY LAYER -->
+  <!-- ============================================================= -->
+  <g id="tier-gateway">
+    <!-- API Gateway Box -->
+    <rect x="50" y="225" width="1120" height="155" rx="10" fill="#050505" stroke="#ffffff" stroke-width="2.5" />
+    <rect x="70" y="210" width="380" height="28" rx="4" fill="#000000" stroke="#ffffff" stroke-width="1.5" />
+    <text x="260" y="228" fill="#ffffff" font-family="monospace" font-size="12" font-weight="bold" text-anchor="middle">
+      API GATEWAY HUB (Spring Cloud Gateway : 8083)
+    </text>
+
+    <!-- Sub-components inside Gateway -->
+    <!-- Netty Reactive Engine -->
+    <rect x="80" y="250" width="220" height="110" rx="6" fill="#000000" stroke="#ffffff" stroke-width="1.8" />
+    <text x="190" y="275" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">Reactive Core Engine</text>
+    <text x="190" y="295" fill="#aaaaaa" font-size="10" font-family="monospace" text-anchor="middle">Non-blocking Netty Server</text>
+    <text x="190" y="315" fill="#aaaaaa" font-size="10" font-family="monospace" text-anchor="middle">Reactor Core &amp; WebFlux</text>
+    <text x="190" y="335" fill="#aaaaaa" font-size="10" font-family="monospace" text-anchor="middle">Port 8083 Single Entry Point</text>
+
+    <!-- Security Filter -->
+    <rect x="330" y="250" width="240" height="110" rx="6" fill="#000000" stroke="#ffffff" stroke-width="1.8" />
+    <text x="450" y="275" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">AuthenticationFilter</text>
+    <text x="450" y="295" fill="#aaaaaa" font-size="10" font-family="monospace" text-anchor="middle">JWT Bearer Token Extraction</text>
+    <text x="450" y="315" fill="#aaaaaa" font-size="10" font-family="monospace" text-anchor="middle">Header Identity Propagation</text>
+    <text x="450" y="335" fill="#aaaaaa" font-size="10" font-family="monospace" text-anchor="middle">401 Unauthorized Interceptor</text>
+
+    <!-- Route Validator -->
+    <rect x="600" y="250" width="240" height="110" rx="6" fill="#000000" stroke="#ffffff" stroke-width="1.8" />
+    <text x="720" y="275" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">RouteValidator &amp; RBAC</text>
+    <text x="720" y="295" fill="#aaaaaa" font-size="10" font-family="monospace" text-anchor="middle">Public Route Bypass Filter</text>
+    <text x="720" y="315" fill="#aaaaaa" font-size="10" font-family="monospace" text-anchor="middle">Secured Endpoint Guard</text>
+    <text x="720" y="335" fill="#aaaaaa" font-size="10" font-family="monospace" text-anchor="middle">CORS Configuration Policy</text>
+
+    <!-- Swagger UI Multi-Service Generator -->
+    <rect x="870" y="250" width="270" height="110" rx="6" fill="#000000" stroke="#ffffff" stroke-width="1.8" />
+    <text x="1005" y="275" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">GatewayDocsController</text>
+    <text x="1005" y="295" fill="#aaaaaa" font-size="10" font-family="monospace" text-anchor="middle">OpenAPI 3 Dropdown Engine</text>
+    <text x="1005" y="315" fill="#aaaaaa" font-size="10" font-family="monospace" text-anchor="middle">Clean JSON Serialization</text>
+    <text x="1005" y="335" fill="#aaaaaa" font-size="10" font-family="monospace" text-anchor="middle">Zero Vertical Scrolling UI</text>
+
+    <!-- Eureka Registry Box (Side) -->
+    <rect x="1220" y="225" width="330" height="155" rx="10" fill="#050505" stroke="#ffffff" stroke-width="2.5" />
+    <rect x="1240" y="210" width="290" height="28" rx="4" fill="#000000" stroke="#ffffff" stroke-width="1.5" />
+    <text x="1385" y="228" fill="#ffffff" font-family="monospace" font-size="12" font-weight="bold" text-anchor="middle">
+      SERVICE DISCOVERY (Eureka : 8761)
+    </text>
+
+    <text x="1385" y="268" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">Netflix Eureka Registry</text>
+    <text x="1385" y="288" fill="#aaaaaa" font-size="10" font-family="monospace" text-anchor="middle">Automatic Service Registration</text>
+    <text x="1385" y="308" fill="#aaaaaa" font-size="10" font-family="monospace" text-anchor="middle">Heartbeat Health Probes (30s)</text>
+    <text x="1385" y="328" fill="#aaaaaa" font-size="10" font-family="monospace" text-anchor="middle">Client-Side Load Balancing</text>
+    <text x="1385" y="348" fill="#aaaaaa" font-size="10" font-family="monospace" text-anchor="middle">Dynamic Host Resolution</text>
+
+    <!-- Line between Gateway and Eureka -->
+    <line x1="1170" y1="300" x2="1220" y2="300" stroke="#ffffff" stroke-width="1.8" stroke-dasharray="4 3" marker-end="url(#arrow)" />
+  </g>
+
+  <!-- Downward arrows from Gateway to Microservices -->
+  <line x1="180" y1="380" x2="160" y2="435" stroke="#ffffff" stroke-width="1.8" marker-end="url(#arrow)" />
+  <line x1="380" y1="380" x2="400" y2="435" stroke="#ffffff" stroke-width="1.8" marker-end="url(#arrow)" />
+  <line x1="580" y1="380" x2="640" y2="435" stroke="#ffffff" stroke-width="1.8" marker-end="url(#arrow)" />
+  <line x1="780" y1="380" x2="880" y2="435" stroke="#ffffff" stroke-width="1.8" marker-end="url(#arrow)" />
+  <line x1="980" y1="380" x2="1120" y2="435" stroke="#ffffff" stroke-width="1.8" marker-end="url(#arrow)" />
+  <line x1="1120" y1="380" x2="1360" y2="435" stroke="#ffffff" stroke-width="1.8" marker-end="url(#arrow)" />
+  <text x="700" y="412" fill="#ffffff" font-size="10" font-family="monospace" text-anchor="middle">Load-Balanced Microservice Routing (/api/**)</text>
+
+  <!-- ============================================================= -->
+  <!-- TIER 3: CORE MICROSERVICES BUSINESS LOGIC TIER -->
+  <!-- ============================================================= -->
+  <g id="tier-microservices">
+    <rect x="50" y="435" width="1500" height="340" rx="12" fill="#000000" stroke="#ffffff" stroke-width="2" stroke-dasharray="8 6" />
+    <rect x="70" y="420" width="460" height="28" rx="4" fill="#000000" stroke="#ffffff" stroke-width="1.5" />
+    <text x="300" y="438" fill="#ffffff" font-family="monospace" font-size="12" font-weight="bold" text-anchor="middle">
+      LAYER 3: CORE MICROSERVICES TIER (Spring Boot 3 / Java 17)
+    </text>
+
+    <!-- Microservice 1: auth-service -->
+    <g id="svc-auth">
+      <rect x="70" y="460" width="220" height="280" rx="8" fill="#050505" stroke="#ffffff" stroke-width="2" />
+      <rect x="70" y="460" width="220" height="36" rx="8" fill="#111111" stroke="#ffffff" stroke-width="1" />
+      <text x="180" y="482" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">1. auth-service</text>
+      <text x="180" y="510" fill="#aaaaaa" font-family="monospace" font-size="10" text-anchor="middle">Port: 8082 | Security Hub</text>
+      
+      <line x1="85" y1="522" x2="275" y2="522" stroke="#ffffff" stroke-width="0.8" />
+      <text x="85" y="540" fill="#ffffff" font-size="10" font-weight="bold">* User Registration (/register)</text>
+      <text x="85" y="556" fill="#ffffff" font-size="10" font-weight="bold">* JWT Login &amp; Claims (/login)</text>
+      <text x="85" y="572" fill="#ffffff" font-size="10" font-weight="bold">* Refresh Token Exchange</text>
+      <text x="85" y="588" fill="#ffffff" font-size="10" font-weight="bold">* BCrypt Password Hashing</text>
+      <text x="85" y="604" fill="#ffffff" font-size="10" font-weight="bold">* ROLE_PASSENGER / ADMIN</text>
+      
+      <rect x="85" y="625" width="190" height="50" rx="4" fill="#000000" stroke="#ffffff" stroke-width="1" stroke-dasharray="3 2" />
+      <text x="180" y="643" fill="#aaaaaa" font-size="9" font-family="monospace" text-anchor="middle">Entities &amp; Security</text>
+      <text x="180" y="660" fill="#ffffff" font-size="10" text-anchor="middle">Credential, RefreshToken</text>
+
+      <rect x="85" y="685" width="190" height="40" rx="4" fill="#000000" stroke="#ffffff" stroke-width="1" />
+      <text x="180" y="702" fill="#aaaaaa" font-size="9" font-family="monospace" text-anchor="middle">Feign Client Call</text>
+      <text x="180" y="718" fill="#ffffff" font-size="10" text-anchor="middle">&rarr; user-service (POST)</text>
+    </g>
+
+    <!-- Microservice 2: user-service -->
+    <g id="svc-user">
+      <rect x="310" y="460" width="220" height="280" rx="8" fill="#050505" stroke="#ffffff" stroke-width="2" />
+      <rect x="310" y="460" width="220" height="36" rx="8" fill="#111111" stroke="#ffffff" stroke-width="1" />
+      <text x="420" y="482" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">2. user-service</text>
+      <text x="420" y="510" fill="#aaaaaa" font-family="monospace" font-size="10" text-anchor="middle">Port: 8084 | Profile Store</text>
+
+      <line x1="325" y1="522" x2="515" y2="522" stroke="#ffffff" stroke-width="0.8" />
+      <text x="325" y="540" fill="#ffffff" font-size="10" font-weight="bold">* Profile CRUD (/v1/users)</text>
+      <text x="325" y="556" fill="#ffffff" font-size="10" font-weight="bold">* Passport Record Vault</text>
+      <text x="325" y="572" fill="#ffffff" font-size="10" font-weight="bold">* Contact &amp; Address Store</text>
+      <text x="325" y="588" fill="#ffffff" font-size="10" font-weight="bold">* Emergency Contact Info</text>
+      <text x="325" y="604" fill="#ffffff" font-size="10" font-weight="bold">* Role &amp; Preference Attributes</text>
+
+      <rect x="325" y="625" width="190" height="50" rx="4" fill="#000000" stroke="#ffffff" stroke-width="1" stroke-dasharray="3 2" />
+      <text x="420" y="643" fill="#aaaaaa" font-size="9" font-family="monospace" text-anchor="middle">Domain Model</text>
+      <text x="420" y="660" fill="#ffffff" font-size="10" text-anchor="middle">User Entity, UserDTO</text>
+
+      <rect x="325" y="685" width="190" height="40" rx="4" fill="#000000" stroke="#ffffff" stroke-width="1" />
+      <text x="420" y="702" fill="#aaaaaa" font-size="9" font-family="monospace" text-anchor="middle">Communication</text>
+      <text x="420" y="718" fill="#ffffff" font-size="10" text-anchor="middle">Invoked by auth-service</text>
+    </g>
+
+    <!-- Microservice 3: flight-service -->
+    <g id="svc-flight">
+      <rect x="550" y="460" width="220" height="280" rx="8" fill="#050505" stroke="#ffffff" stroke-width="2" />
+      <rect x="550" y="460" width="220" height="36" rx="8" fill="#111111" stroke="#ffffff" stroke-width="1" />
+      <text x="660" y="482" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">3. flight-service</text>
+      <text x="660" y="510" fill="#aaaaaa" font-family="monospace" font-size="10" text-anchor="middle">Port: 8087 | Fleet &amp; Route</text>
+
+      <line x1="565" y1="522" x2="755" y2="522" stroke="#ffffff" stroke-width="0.8" />
+      <text x="565" y="540" fill="#ffffff" font-size="10" font-weight="bold">* Flight Search (/search)</text>
+      <text x="565" y="556" fill="#ffffff" font-size="10" font-weight="bold">* Aircraft Fleet Management</text>
+      <text x="565" y="572" fill="#ffffff" font-size="10" font-weight="bold">* Route Scheduling &amp; Gates</text>
+      <text x="565" y="588" fill="#ffffff" font-size="10" font-weight="bold">* Cabin Layout (Boeing/Airbus)</text>
+      <text x="565" y="604" fill="#ffffff" font-size="10" font-weight="bold">* Real-Time Seat Locking</text>
+
+      <rect x="565" y="625" width="190" height="50" rx="4" fill="#000000" stroke="#ffffff" stroke-width="1" stroke-dasharray="3 2" />
+      <text x="660" y="643" fill="#aaaaaa" font-size="9" font-family="monospace" text-anchor="middle">Domain Entities</text>
+      <text x="660" y="660" fill="#ffffff" font-size="10" text-anchor="middle">Aircraft, Flight, Seat</text>
+
+      <rect x="565" y="685" width="190" height="40" rx="4" fill="#000000" stroke="#ffffff" stroke-width="1" />
+      <text x="660" y="702" fill="#aaaaaa" font-size="9" font-family="monospace" text-anchor="middle">Concurrency Control</text>
+      <text x="660" y="718" fill="#ffffff" font-size="10" text-anchor="middle">Pessimistic Seat Locking</text>
+    </g>
+
+    <!-- Microservice 4: fare-service -->
+    <g id="svc-fare">
+      <rect x="790" y="460" width="220" height="280" rx="8" fill="#050505" stroke="#ffffff" stroke-width="2" />
+      <rect x="790" y="460" width="220" height="36" rx="8" fill="#111111" stroke="#ffffff" stroke-width="1" />
+      <text x="900" y="482" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">4. fare-service</text>
+      <text x="900" y="510" fill="#aaaaaa" font-family="monospace" font-size="10" text-anchor="middle">Port: 8089 | Yield &amp; Pricing</text>
+
+      <line x1="805" y1="522" x2="995" y2="522" stroke="#ffffff" stroke-width="0.8" />
+      <text x="805" y="540" fill="#ffffff" font-size="10" font-weight="bold">* Dynamic Fare Calculator</text>
+      <text x="805" y="556" fill="#ffffff" font-size="10" font-weight="bold">* Cabin Class Multipliers</text>
+      <text x="805" y="572" fill="#ffffff" font-size="10" font-weight="bold">* Demand Surge Coefficients</text>
+      <text x="805" y="588" fill="#ffffff" font-size="10" font-weight="bold">* Baggage &amp; Ancillary Rules</text>
+      <text x="805" y="604" fill="#ffffff" font-size="10" font-weight="bold">* Admin Pricing Matrix CRUD</text>
+
+      <rect x="805" y="625" width="190" height="50" rx="4" fill="#000000" stroke="#ffffff" stroke-width="1" stroke-dasharray="3 2" />
+      <text x="900" y="643" fill="#aaaaaa" font-size="9" font-family="monospace" text-anchor="middle">Pricing Formula</text>
+      <text x="900" y="660" fill="#ffffff" font-size="10" text-anchor="middle">Base &times; Class &times; Demand</text>
+
+      <rect x="805" y="685" width="190" height="40" rx="4" fill="#000000" stroke="#ffffff" stroke-width="1" />
+      <text x="900" y="702" fill="#aaaaaa" font-size="9" font-family="monospace" text-anchor="middle">Service Consumer</text>
+      <text x="900" y="718" fill="#ffffff" font-size="10" text-anchor="middle">Called by booking-service</text>
+    </g>
+
+    <!-- Microservice 5: booking-service -->
+    <g id="svc-booking">
+      <rect x="1030" y="460" width="240" height="280" rx="8" fill="#050505" stroke="#ffffff" stroke-width="2.5" />
+      <rect x="1030" y="460" width="240" height="36" rx="8" fill="#111111" stroke="#ffffff" stroke-width="1" />
+      <text x="1150" y="482" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">5. booking-service</text>
+      <text x="1150" y="510" fill="#aaaaaa" font-family="monospace" font-size="10" text-anchor="middle">Port: 8088 | Core Reservation</text>
+
+      <line x1="1045" y1="522" x2="1255" y2="522" stroke="#ffffff" stroke-width="0.8" />
+      <text x="1045" y="540" fill="#ffffff" font-size="10" font-weight="bold">* Master Ticket Reservation</text>
+      <text x="1045" y="556" fill="#ffffff" font-size="10" font-weight="bold">* 6-Char PNR Engine (AB7K9Q)</text>
+      <text x="1045" y="572" fill="#ffffff" font-size="10" font-weight="bold">* OpenFeign Client Coordinator</text>
+      <text x="1045" y="588" fill="#ffffff" font-size="10" font-weight="bold">* Cancellation &amp; Seat Release</text>
+      <text x="1045" y="604" fill="#ffffff" font-size="10" font-weight="bold">* RabbitMQ Event Publisher</text>
+
+      <rect x="1045" y="625" width="210" height="50" rx="4" fill="#000000" stroke="#ffffff" stroke-width="1" stroke-dasharray="3 2" />
+      <text x="1150" y="643" fill="#aaaaaa" font-size="9" font-family="monospace" text-anchor="middle">Domain Model</text>
+      <text x="1150" y="660" fill="#ffffff" font-size="10" text-anchor="middle">Booking, Passenger, Status</text>
+
+      <rect x="1045" y="685" width="210" height="40" rx="4" fill="#000000" stroke="#ffffff" stroke-width="1" />
+      <text x="1150" y="702" fill="#aaaaaa" font-size="9" font-family="monospace" text-anchor="middle">Orchestration Protocol</text>
+      <text x="1150" y="718" fill="#ffffff" font-size="10" text-anchor="middle">Feign &rarr; Flight &amp; Fare</text>
+    </g>
+
+    <!-- Microservice 6: check-in-service -->
+    <g id="svc-checkin">
+      <rect x="1290" y="460" width="240" height="280" rx="8" fill="#050505" stroke="#ffffff" stroke-width="2" />
+      <rect x="1290" y="460" width="240" height="36" rx="8" fill="#111111" stroke="#ffffff" stroke-width="1" />
+      <text x="1410" y="482" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">6. check-in-service</text>
+      <text x="1410" y="510" fill="#aaaaaa" font-family="monospace" font-size="10" text-anchor="middle">Port: 8090 | Gate Operations</text>
+
+      <line x1="1305" y1="522" x2="1515" y2="522" stroke="#ffffff" stroke-width="0.8" />
+      <text x="1305" y="540" fill="#ffffff" font-size="10" font-weight="bold">* 24h Web Check-In Engine</text>
+      <text x="1305" y="556" fill="#ffffff" font-size="10" font-weight="bold">* Interactive Seat Selection</text>
+      <text x="1305" y="572" fill="#ffffff" font-size="10" font-weight="bold">* Digital QR Boarding Pass</text>
+      <text x="1305" y="588" fill="#ffffff" font-size="10" font-weight="bold">* Gate Staff Boarding Scan</text>
+      <text x="1305" y="604" fill="#ffffff" font-size="10" font-weight="bold">* Status: CHECKED_IN &rarr; BOARDED</text>
+
+      <rect x="1305" y="625" width="210" height="50" rx="4" fill="#000000" stroke="#ffffff" stroke-width="1" stroke-dasharray="3 2" />
+      <text x="1410" y="643" fill="#aaaaaa" font-size="9" font-family="monospace" text-anchor="middle">Security Domain</text>
+      <text x="1410" y="660" fill="#ffffff" font-size="10" text-anchor="middle">QR Payload Hash Verification</text>
+
+      <rect x="1305" y="685" width="210" height="40" rx="4" fill="#000000" stroke="#ffffff" stroke-width="1" />
+      <text x="1410" y="702" fill="#aaaaaa" font-size="9" font-family="monospace" text-anchor="middle">Feign Verification</text>
+      <text x="1410" y="718" fill="#ffffff" font-size="10" text-anchor="middle">Feign &rarr; booking-service</text>
+    </g>
+  </g>
+
+  <!-- ============================================================= -->
+  <!-- INTER-SERVICE SYNCHRONOUS FEIGN COMMUNICATION ARROWS -->
+  <!-- ============================================================= -->
+  <!-- auth-service to user-service -->
+  <path d="M 290 705 L 310 705" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-dasharray="4 3" marker-end="url(#feign-arrow)" />
+
+  <!-- booking-service to flight-service (Lock Seat) -->
+  <path d="M 1030 690 C 950 670, 850 670, 770 690" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-dasharray="5 3" marker-end="url(#feign-arrow)" />
+  <text x="900" y="665" fill="#ffffff" font-size="9" font-family="monospace" text-anchor="middle">Feign: Lock Seat</text>
+
+  <!-- booking-service to fare-service (Verify Fare) -->
+  <path d="M 1030 715 L 1010 715" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-dasharray="4 3" marker-end="url(#feign-arrow)" />
+
+  <!-- check-in-service to booking-service (Verify PNR) -->
+  <path d="M 1290 705 L 1270 705" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-dasharray="4 3" marker-end="url(#feign-arrow)" />
+
+  <!-- ============================================================= -->
+  <!-- TIER 4: ASYNCHRONOUS EVENT MESSAGING TIER (RABBITMQ) -->
+  <!-- ============================================================= -->
+  <g id="tier-messaging">
+    <rect x="50" y="800" width="1500" height="110" rx="10" fill="#050505" stroke="#ffffff" stroke-width="2" />
+    <rect x="70" y="785" width="480" height="28" rx="4" fill="#000000" stroke="#ffffff" stroke-width="1.5" />
+    <text x="310" y="803" fill="#ffffff" font-family="monospace" font-size="12" font-weight="bold" text-anchor="middle">
+      LAYER 4: ASYNCHRONOUS EVENT BUS (RabbitMQ AMQP : 5672)
+    </text>
+
+    <!-- RabbitMQ Core Exchange -->
+    <rect x="100" y="825" width="340" height="65" rx="6" fill="#000000" stroke="#ffffff" stroke-width="1.8" />
+    <text x="270" y="850" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">Topic Exchange: booking.exchange</text>
+    <text x="270" y="870" fill="#aaaaaa" font-size="10" font-family="monospace" text-anchor="middle">Routing Key: booking.created.* / booking.cancelled.*</text>
+
+    <!-- Queues -->
+    <rect x="490" y="825" width="300" height="65" rx="6" fill="#000000" stroke="#ffffff" stroke-width="1.8" />
+    <text x="640" y="850" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">Queue: booking.events</text>
+    <text x="640" y="870" fill="#aaaaaa" font-size="10" font-family="monospace" text-anchor="middle">Durable Event Ingestion &amp; Dead-Letter Queue</text>
+
+    <!-- Notification Service Worker -->
+    <rect x="840" y="825" width="330" height="65" rx="6" fill="#000000" stroke="#ffffff" stroke-width="1.8" />
+    <text x="1005" y="850" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">Notification Consumer Worker</text>
+    <text x="1005" y="870" fill="#aaaaaa" font-size="10" font-family="monospace" text-anchor="middle">Async Email Confirmation &amp; SMS Dispatch</text>
+
+    <!-- Analytics Worker -->
+    <rect x="1220" y="825" width="300" height="65" rx="6" fill="#000000" stroke="#ffffff" stroke-width="1.8" />
+    <text x="1370" y="850" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">Flight Audit &amp; Event Sink</text>
+    <text x="1370" y="870" fill="#aaaaaa" font-size="10" font-family="monospace" text-anchor="middle">Real-Time Metric Aggregation &amp; Telemetry</text>
+
+    <!-- Connectors inside Messaging -->
+    <line x1="440" y1="857" x2="490" y2="857" stroke="#ffffff" stroke-width="1.8" marker-end="url(#arrow)" />
+    <line x1="790" y1="857" x2="840" y2="857" stroke="#ffffff" stroke-width="1.8" marker-end="url(#arrow)" />
+    <line x1="1170" y1="857" x2="1220" y2="857" stroke="#ffffff" stroke-width="1.8" marker-end="url(#arrow)" />
+  </g>
+
+  <!-- Downward arrow from booking-service to RabbitMQ -->
+  <line x1="1150" y1="740" x2="270" y2="825" stroke="#ffffff" stroke-width="2" stroke-dasharray="5 3" marker-end="url(#arrow)" />
+  <text x="680" y="780" fill="#ffffff" font-size="10" font-family="monospace" text-anchor="middle">
+    RabbitTemplate.convertAndSend("booking.exchange", "booking.created", payload)
+  </text>
+
+  <!-- ============================================================= -->
+  <!-- TIER 5: DATA PERSISTENCE TIER (DATABASE-PER-SERVICE) -->
+  <!-- ============================================================= -->
+  <g id="tier-database">
+    <rect x="50" y="940" width="1500" height="215" rx="10" fill="#050505" stroke="#ffffff" stroke-width="2" stroke-dasharray="8 6" />
+    <rect x="70" y="925" width="480" height="28" rx="4" fill="#000000" stroke="#ffffff" stroke-width="1.5" />
+    <text x="310" y="943" fill="#ffffff" font-family="monospace" font-size="12" font-weight="bold" text-anchor="middle">
+      LAYER 5: DATA PERSISTENCE (Database-per-Service MySQL 8.0)
+    </text>
+
+    <!-- DB 1: aerobook_auth_db -->
+    <g id="db-auth">
+      <!-- Database Cylinder -->
+      <path d="M 80 985 C 80 970, 280 970, 280 985 L 280 1105 C 280 1120, 80 1120, 80 1105 Z" fill="#000000" stroke="#ffffff" stroke-width="2" />
+      <ellipse cx="180" cy="985" rx="100" ry="15" fill="#111111" stroke="#ffffff" stroke-width="2" />
+      <text x="180" y="1025" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">aerobook_auth_db</text>
+      <text x="180" y="1045" fill="#aaaaaa" font-family="monospace" font-size="10" text-anchor="middle">Isolated Auth Schema</text>
+      <text x="180" y="1065" fill="#ffffff" font-size="10" text-anchor="middle">Tables: credentials, roles,</text>
+      <text x="180" y="1080" fill="#ffffff" font-size="10" text-anchor="middle">refresh_tokens</text>
+    </g>
+
+    <!-- DB 2: aerobook_user_db -->
+    <g id="db-user">
+      <path d="M 320 985 C 320 970, 520 970, 520 985 L 520 1105 C 520 1120, 320 1120, 320 1105 Z" fill="#000000" stroke="#ffffff" stroke-width="2" />
+      <ellipse cx="420" cy="985" rx="100" ry="15" fill="#111111" stroke="#ffffff" stroke-width="2" />
+      <text x="420" y="1025" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">aerobook_user_db</text>
+      <text x="420" y="1045" fill="#aaaaaa" font-family="monospace" font-size="10" text-anchor="middle">Isolated User Schema</text>
+      <text x="420" y="1065" fill="#ffffff" font-size="10" text-anchor="middle">Tables: users, profiles,</text>
+      <text x="420" y="1080" fill="#ffffff" font-size="10" text-anchor="middle">emergency_contacts</text>
+    </g>
+
+    <!-- DB 3: aerobook_flight_db -->
+    <g id="db-flight">
+      <path d="M 560 985 C 560 970, 760 970, 760 985 L 760 1105 C 760 1120, 560 1120, 560 1105 Z" fill="#000000" stroke="#ffffff" stroke-width="2" />
+      <ellipse cx="660" cy="985" rx="100" ry="15" fill="#111111" stroke="#ffffff" stroke-width="2" />
+      <text x="660" y="1025" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">aerobook_flight_db</text>
+      <text x="660" y="1045" fill="#aaaaaa" font-family="monospace" font-size="10" text-anchor="middle">Isolated Flight Schema</text>
+      <text x="660" y="1065" fill="#ffffff" font-size="10" text-anchor="middle">Tables: aircrafts, flights,</text>
+      <text x="660" y="1080" fill="#ffffff" font-size="10" text-anchor="middle">seats, seat_locks</text>
+    </g>
+
+    <!-- DB 4: aerobook_fare_db -->
+    <g id="db-fare">
+      <path d="M 800 985 C 800 970, 1000 970, 1000 985 L 1000 1105 C 1000 1120, 800 1120, 800 1105 Z" fill="#000000" stroke="#ffffff" stroke-width="2" />
+      <ellipse cx="900" cy="985" rx="100" ry="15" fill="#111111" stroke="#ffffff" stroke-width="2" />
+      <text x="900" y="1025" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">aerobook_fare_db</text>
+      <text x="900" y="1045" fill="#aaaaaa" font-family="monospace" font-size="10" text-anchor="middle">Isolated Fare Schema</text>
+      <text x="900" y="1065" fill="#ffffff" font-size="10" text-anchor="middle">Tables: fare_rules, base_fares,</text>
+      <text x="900" y="1080" fill="#ffffff" font-size="10" text-anchor="middle">multipliers, surcharges</text>
+    </g>
+
+    <!-- DB 5: aerobook_booking_db -->
+    <g id="db-booking">
+      <path d="M 1045 985 C 1045 970, 1255 970, 1255 985 L 1255 1105 C 1255 1120, 1045 1120, 1045 1105 Z" fill="#000000" stroke="#ffffff" stroke-width="2" />
+      <ellipse cx="1150" cy="985" rx="105" ry="15" fill="#111111" stroke="#ffffff" stroke-width="2" />
+      <text x="1150" y="1025" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">aerobook_booking_db</text>
+      <text x="1150" y="1045" fill="#aaaaaa" font-family="monospace" font-size="10" text-anchor="middle">Isolated Booking Schema</text>
+      <text x="1150" y="1065" fill="#ffffff" font-size="10" text-anchor="middle">Tables: bookings, passengers,</text>
+      <text x="1150" y="1080" fill="#ffffff" font-size="10" text-anchor="middle">payments, audit_logs</text>
+    </g>
+
+    <!-- DB 6: aerobook_checkin_db -->
+    <g id="db-checkin">
+      <path d="M 1305 985 C 1305 970, 1515 970, 1515 985 L 1515 1105 C 1515 1120, 1305 1120, 1305 1105 Z" fill="#000000" stroke="#ffffff" stroke-width="2" />
+      <ellipse cx="1410" cy="985" rx="105" ry="15" fill="#111111" stroke="#ffffff" stroke-width="2" />
+      <text x="1410" y="1025" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">aerobook_checkin_db</text>
+      <text x="1410" y="1045" fill="#aaaaaa" font-family="monospace" font-size="10" text-anchor="middle">Isolated Check-In Schema</text>
+      <text x="1410" y="1065" fill="#ffffff" font-size="10" text-anchor="middle">Tables: check_ins,</text>
+      <text x="1410" y="1080" fill="#ffffff" font-size="10" text-anchor="middle">boarding_passes, qr_tokens</text>
+    </g>
+  </g>
+
+  <!-- Vertical Database Connections (Strict 1-to-1 Mapping) -->
+  <line x1="180" y1="740" x2="180" y2="970" stroke="#ffffff" stroke-width="1.8" marker-end="url(#arrow)" />
+  <line x1="420" y1="740" x2="420" y2="970" stroke="#ffffff" stroke-width="1.8" marker-end="url(#arrow)" />
+  <line x1="660" y1="740" x2="660" y2="970" stroke="#ffffff" stroke-width="1.8" marker-end="url(#arrow)" />
+  <line x1="900" y1="740" x2="900" y2="970" stroke="#ffffff" stroke-width="1.8" marker-end="url(#arrow)" />
+  <line x1="1150" y1="740" x2="1150" y2="970" stroke="#ffffff" stroke-width="1.8" marker-end="url(#arrow)" />
+  <line x1="1410" y1="740" x2="1410" y2="970" stroke="#ffffff" stroke-width="1.8" marker-end="url(#arrow)" />
+
+  <!-- FOOTER LEGEND -->
+  <g id="arch-legend">
+    <rect x="50" y="1165" width="1500" height="28" rx="4" fill="#000000" stroke="#ffffff" stroke-width="1" />
+    <text x="70" y="1183" fill="#ffffff" font-size="10" font-weight="bold" font-family="monospace">LEGEND:</text>
+    <line x1="130" y1="1180" x2="170" y2="1180" stroke="#ffffff" stroke-width="2" marker-end="url(#arrow)" />
+    <text x="180" y="1183" fill="#aaaaaa" font-size="10">HTTP / REST Route</text>
+    <line x1="320" y1="1180" x2="360" y2="1180" stroke="#ffffff" stroke-width="1.8" stroke-dasharray="4 3" marker-end="url(#feign-arrow)" />
+    <text x="370" y="1183" fill="#aaaaaa" font-size="10">Synchronous Spring Cloud OpenFeign</text>
+    <line x1="620" y1="1180" x2="660" y2="1180" stroke="#ffffff" stroke-width="2" stroke-dasharray="5 3" marker-end="url(#arrow)" />
+    <text x="670" y="1183" fill="#aaaaaa" font-size="10">Asynchronous AMQP RabbitMQ Event</text>
+    <path d="M 940 1172 C 940 1167, 960 1167, 960 1172 L 960 1187 C 960 1192, 940 1192, 940 1187 Z" fill="#000000" stroke="#ffffff" stroke-width="1" />
+    <text x="970" y="1183" fill="#aaaaaa" font-size="10">Database-per-Service Isolated Schema</text>
+    <text x="1330" y="1183" fill="#ffffff" font-size="10" font-family="monospace">AeroBook Architectural Blueprint</text>
+  </g>
+</svg>
+

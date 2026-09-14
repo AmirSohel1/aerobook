@@ -1,0 +1,2817 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>AeroBook - System Architecture Diagram (Black & White Theme)</title>
+    <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+    <style>
+      body {
+        background-color: #000000;
+        color: #ffffff;
+        font-family:
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        overflow-x: hidden;
+      }
+      .arch-node {
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+      }
+      .arch-node:hover rect,
+      .arch-node:hover path {
+        fill: #1a1a1a !important;
+        stroke-width: 3px !important;
+        filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.9));
+      }
+      .highlight-active {
+        filter: drop-shadow(0 0 12px #ffffff) !important;
+        stroke-width: 3.5px !important;
+      }
+      .dimmed {
+        opacity: 0.15 !important;
+        transition: opacity 0.3s ease;
+      }
+      .blueprint-grid {
+        background-size: 30px 30px;
+        background-image: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.08) 1px,
+          transparent 1px
+        );
+      }
+    </style>
+  </head>
+  <body
+    class="bg-black text-white min-h-screen p-4 blueprint-grid flex flex-col items-center"
+  >
+    <!-- Header & Controls -->
+    <header
+      class="w-full max-w-[1600px] flex flex-col md:flex-row items-center justify-between border-b-2 border-white pb-4 mb-4 gap-4"
+    >
+      <div>
+        <div class="flex items-center gap-3">
+          <span
+            class="text-xs tracking-widest uppercase border border-white px-2 py-0.5 rounded font-mono"
+            >Microservices Architecture</span
+          >
+          <span
+            class="text-xs tracking-widest uppercase bg-white text-black px-2 py-0.5 rounded font-bold font-mono"
+            >Black Canvas • White Marker</span
+          >
+        </div>
+        <h1
+          class="text-2xl md:text-3xl font-bold tracking-tight mt-1 flex items-center gap-2"
+        >
+          <span>✈️ AeroBook System Architecture Blueprint</span>
+        </h1>
+        <p class="text-xs text-neutral-400 font-mono mt-0.5">
+          Spring Cloud Gateway (8083) • 6 Microservices (8082 - 8090) •
+          Database-per-Service • RabbitMQ (5672)
+        </p>
+      </div>
+
+      <!-- Filter Buttons & Controls -->
+      <div class="flex flex-wrap items-center gap-2">
+        <div
+          class="flex items-center border border-white rounded-lg p-1 bg-black gap-1 text-xs"
+        >
+          <span class="px-2 font-mono text-neutral-400">Layer:</span>
+          <button
+            id="btn-all"
+            onclick="filterTier('all')"
+            class="px-3 py-1 rounded bg-white text-black font-semibold transition hover:opacity-90"
+          >
+            All Layers
+          </button>
+          <button
+            id="btn-gateway"
+            onclick="filterTier('gateway')"
+            class="px-3 py-1 rounded border border-white/40 hover:border-white transition"
+          >
+            API Gateway
+          </button>
+          <button
+            id="btn-services"
+            onclick="filterTier('services')"
+            class="px-3 py-1 rounded border border-white/40 hover:border-white transition"
+          >
+            Microservices
+          </button>
+          <button
+            id="btn-feign"
+            onclick="filterTier('feign')"
+            class="px-3 py-1 rounded border border-white/40 hover:border-white transition"
+          >
+            Feign Calls
+          </button>
+          <button
+            id="btn-messaging"
+            onclick="filterTier('messaging')"
+            class="px-3 py-1 rounded border border-white/40 hover:border-white transition"
+          >
+            RabbitMQ
+          </button>
+          <button
+            id="btn-db"
+            onclick="filterTier('db')"
+            class="px-3 py-1 rounded border border-white/40 hover:border-white transition"
+          >
+            Databases
+          </button>
+        </div>
+
+        <div class="flex items-center gap-1.5 text-xs font-mono">
+          <button
+            onclick="zoom(1.1)"
+            class="px-2.5 py-1.5 border border-white rounded hover:bg-neutral-900"
+            title="Zoom In"
+          >
+            🔍 +
+          </button>
+          <button
+            onclick="zoom(0.9)"
+            class="px-2.5 py-1.5 border border-white rounded hover:bg-neutral-900"
+            title="Zoom Out"
+          >
+            🔍 -
+          </button>
+          <button
+            onclick="resetZoom()"
+            class="px-2.5 py-1.5 border border-white rounded hover:bg-neutral-900"
+          >
+            Reset
+          </button>
+          <button
+            onclick="downloadSVG()"
+            class="px-3 py-1.5 border-2 border-white rounded bg-neutral-900 hover:bg-white hover:text-black font-semibold transition"
+          >
+            ⬇ SVG
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Canvas Container -->
+    <div
+      class="w-full max-w-[1600px] relative border-2 border-white rounded-xl bg-black overflow-hidden shadow-2xl flex flex-col"
+    >
+      <div
+        id="svg-wrapper"
+        class="w-full overflow-auto cursor-grab active:cursor-grabbing"
+        style="min-height: 820px; max-height: 85vh"
+      >
+        <svg
+          id="arch-svg"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 1600 1200"
+          class="w-full h-auto select-none"
+        >
+          <defs>
+            <marker
+              id="arrow"
+              viewBox="0 0 10 10"
+              refX="9"
+              refY="5"
+              markerWidth="6"
+              markerHeight="6"
+              orient="auto-start-reverse"
+            >
+              <path
+                d="M 0 1.5 L 9 5 L 0 8.5 z"
+                fill="#ffffff"
+                stroke="#ffffff"
+              />
+            </marker>
+            <marker
+              id="feign-arrow"
+              viewBox="0 0 10 10"
+              refX="9"
+              refY="5"
+              markerWidth="6"
+              markerHeight="6"
+              orient="auto-start-reverse"
+            >
+              <path
+                d="M 0 1.5 L 9 5 L 0 8.5"
+                fill="none"
+                stroke="#ffffff"
+                stroke-width="1.8"
+              />
+            </marker>
+          </defs>
+
+          <!-- LAYER 1: CLIENTS -->
+          <g id="layer-clients">
+            <rect
+              x="50"
+              y="85"
+              width="1500"
+              height="100"
+              rx="10"
+              fill="#050505"
+              stroke="#ffffff"
+              stroke-width="1.5"
+              stroke-dasharray="6 4"
+            />
+            <text
+              x="70"
+              y="105"
+              fill="#aaaaaa"
+              font-family="monospace"
+              font-size="11"
+              font-weight="bold"
+            >
+              LAYER 1: CLIENT &amp; PRESENTATION LAYER
+            </text>
+
+            <g class="arch-node" onclick="inspectComponent('web')">
+              <rect
+                x="100"
+                y="115"
+                width="280"
+                height="55"
+                rx="6"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="2"
+              />
+              <text
+                x="240"
+                y="140"
+                fill="#ffffff"
+                font-size="13"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                Web Single Page App (SPA)
+              </text>
+              <text
+                x="240"
+                y="157"
+                fill="#aaaaaa"
+                font-size="10"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                React / Angular / Vue Client
+              </text>
+            </g>
+
+            <g class="arch-node" onclick="inspectComponent('mobile')">
+              <rect
+                x="440"
+                y="115"
+                width="280"
+                height="55"
+                rx="6"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="2"
+              />
+              <text
+                x="580"
+                y="140"
+                fill="#ffffff"
+                font-size="13"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                Mobile Traveler App
+              </text>
+              <text
+                x="580"
+                y="157"
+                fill="#aaaaaa"
+                font-size="10"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                iOS / Android Passenger Client
+              </text>
+            </g>
+
+            <g class="arch-node" onclick="inspectComponent('swagger')">
+              <rect
+                x="780"
+                y="115"
+                width="340"
+                height="55"
+                rx="6"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="2"
+              />
+              <text
+                x="950"
+                y="140"
+                fill="#ffffff"
+                font-size="13"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                Swagger UI Multi-Service Hub
+              </text>
+              <text
+                x="950"
+                y="157"
+                fill="#aaaaaa"
+                font-size="10"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                Unified API Gateway Definition Selector
+              </text>
+            </g>
+
+            <g class="arch-node" onclick="inspectComponent('admin')">
+              <rect
+                x="1180"
+                y="115"
+                width="320"
+                height="55"
+                rx="6"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="2"
+              />
+              <text
+                x="1340"
+                y="140"
+                fill="#ffffff"
+                font-size="13"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                Operations &amp; Gate Console
+              </text>
+              <text
+                x="1340"
+                y="157"
+                fill="#aaaaaa"
+                font-size="10"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                Fleet Admin &amp; Gate Staff Scanner
+              </text>
+            </g>
+          </g>
+
+          <!-- Downward client lines -->
+          <g id="lines-client">
+            <line
+              x1="240"
+              y1="170"
+              x2="480"
+              y2="225"
+              stroke="#ffffff"
+              stroke-width="1.8"
+              marker-end="url(#arrow)"
+            />
+            <line
+              x1="580"
+              y1="170"
+              x2="620"
+              y2="225"
+              stroke="#ffffff"
+              stroke-width="1.8"
+              marker-end="url(#arrow)"
+            />
+            <line
+              x1="950"
+              y1="170"
+              x2="780"
+              y2="225"
+              stroke="#ffffff"
+              stroke-width="1.8"
+              marker-end="url(#arrow)"
+            />
+            <line
+              x1="1340"
+              y1="170"
+              x2="920"
+              y2="225"
+              stroke="#ffffff"
+              stroke-width="1.8"
+              marker-end="url(#arrow)"
+            />
+            <text
+              x="700"
+              y="200"
+              fill="#ffffff"
+              font-size="10"
+              font-family="monospace"
+              text-anchor="middle"
+            >
+              HTTPS / REST API Requests (JSON)
+            </text>
+          </g>
+
+          <!-- LAYER 2: EDGE GATEWAY & EUREKA -->
+          <g id="layer-gateway">
+            <rect
+              x="50"
+              y="225"
+              width="1120"
+              height="155"
+              rx="10"
+              fill="#050505"
+              stroke="#ffffff"
+              stroke-width="2.5"
+            />
+            <rect
+              x="70"
+              y="210"
+              width="380"
+              height="28"
+              rx="4"
+              fill="#000000"
+              stroke="#ffffff"
+              stroke-width="1.5"
+            />
+            <text
+              x="260"
+              y="228"
+              fill="#ffffff"
+              font-family="monospace"
+              font-size="12"
+              font-weight="bold"
+              text-anchor="middle"
+            >
+              API GATEWAY HUB (Spring Cloud Gateway : 8083)
+            </text>
+
+            <g class="arch-node" onclick="inspectComponent('gateway')">
+              <rect
+                x="80"
+                y="250"
+                width="220"
+                height="110"
+                rx="6"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="1.8"
+              />
+              <text
+                x="190"
+                y="275"
+                fill="#ffffff"
+                font-size="12"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                Reactive Core Engine
+              </text>
+              <text
+                x="190"
+                y="295"
+                fill="#aaaaaa"
+                font-size="10"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                Non-blocking Netty Server
+              </text>
+              <text
+                x="190"
+                y="315"
+                fill="#aaaaaa"
+                font-size="10"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                Reactor Core &amp; WebFlux
+              </text>
+              <text
+                x="190"
+                y="335"
+                fill="#aaaaaa"
+                font-size="10"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                Port 8083 Single Entry Point
+              </text>
+            </g>
+
+            <g class="arch-node" onclick="inspectComponent('authfilter')">
+              <rect
+                x="330"
+                y="250"
+                width="240"
+                height="110"
+                rx="6"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="1.8"
+              />
+              <text
+                x="450"
+                y="275"
+                fill="#ffffff"
+                font-size="12"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                AuthenticationFilter
+              </text>
+              <text
+                x="450"
+                y="295"
+                fill="#aaaaaa"
+                font-size="10"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                JWT Bearer Token Extraction
+              </text>
+              <text
+                x="450"
+                y="315"
+                fill="#aaaaaa"
+                font-size="10"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                Header Identity Propagation
+              </text>
+              <text
+                x="450"
+                y="335"
+                fill="#aaaaaa"
+                font-size="10"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                401 Unauthorized Interceptor
+              </text>
+            </g>
+
+            <g class="arch-node" onclick="inspectComponent('routevalidator')">
+              <rect
+                x="600"
+                y="250"
+                width="240"
+                height="110"
+                rx="6"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="1.8"
+              />
+              <text
+                x="720"
+                y="275"
+                fill="#ffffff"
+                font-size="12"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                RouteValidator &amp; RBAC
+              </text>
+              <text
+                x="720"
+                y="295"
+                fill="#aaaaaa"
+                font-size="10"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                Public Route Bypass Filter
+              </text>
+              <text
+                x="720"
+                y="315"
+                fill="#aaaaaa"
+                font-size="10"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                Secured Endpoint Guard
+              </text>
+              <text
+                x="720"
+                y="335"
+                fill="#aaaaaa"
+                font-size="10"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                CORS Configuration Policy
+              </text>
+            </g>
+
+            <g class="arch-node" onclick="inspectComponent('docscontroller')">
+              <rect
+                x="870"
+                y="250"
+                width="270"
+                height="110"
+                rx="6"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="1.8"
+              />
+              <text
+                x="1005"
+                y="275"
+                fill="#ffffff"
+                font-size="12"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                GatewayDocsController
+              </text>
+              <text
+                x="1005"
+                y="295"
+                fill="#aaaaaa"
+                font-size="10"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                OpenAPI 3 Dropdown Engine
+              </text>
+              <text
+                x="1005"
+                y="315"
+                fill="#aaaaaa"
+                font-size="10"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                Clean JSON Serialization
+              </text>
+              <text
+                x="1005"
+                y="335"
+                fill="#aaaaaa"
+                font-size="10"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                Zero Vertical Scrolling UI
+              </text>
+            </g>
+
+            <g class="arch-node" onclick="inspectComponent('eureka')">
+              <rect
+                x="1220"
+                y="225"
+                width="330"
+                height="155"
+                rx="10"
+                fill="#050505"
+                stroke="#ffffff"
+                stroke-width="2.5"
+              />
+              <rect
+                x="1240"
+                y="210"
+                width="290"
+                height="28"
+                rx="4"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="1.5"
+              />
+              <text
+                x="1385"
+                y="228"
+                fill="#ffffff"
+                font-family="monospace"
+                font-size="12"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                SERVICE DISCOVERY (Eureka : 8761)
+              </text>
+              <text
+                x="1385"
+                y="268"
+                fill="#ffffff"
+                font-size="12"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                Netflix Eureka Registry
+              </text>
+              <text
+                x="1385"
+                y="288"
+                fill="#aaaaaa"
+                font-size="10"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                Automatic Service Registration
+              </text>
+              <text
+                x="1385"
+                y="308"
+                fill="#aaaaaa"
+                font-size="10"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                Heartbeat Health Probes (30s)
+              </text>
+              <text
+                x="1385"
+                y="328"
+                fill="#aaaaaa"
+                font-size="10"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                Client-Side Load Balancing
+              </text>
+              <text
+                x="1385"
+                y="348"
+                fill="#aaaaaa"
+                font-size="10"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                Dynamic Host Resolution
+              </text>
+            </g>
+          </g>
+
+          <!-- Downward routing lines -->
+          <g id="lines-gateway-routing">
+            <line
+              x1="180"
+              y1="380"
+              x2="160"
+              y2="435"
+              stroke="#ffffff"
+              stroke-width="1.8"
+              marker-end="url(#arrow)"
+            />
+            <line
+              x1="380"
+              y1="380"
+              x2="400"
+              y2="435"
+              stroke="#ffffff"
+              stroke-width="1.8"
+              marker-end="url(#arrow)"
+            />
+            <line
+              x1="580"
+              y1="380"
+              x2="640"
+              y2="435"
+              stroke="#ffffff"
+              stroke-width="1.8"
+              marker-end="url(#arrow)"
+            />
+            <line
+              x1="780"
+              y1="380"
+              x2="880"
+              y2="435"
+              stroke="#ffffff"
+              stroke-width="1.8"
+              marker-end="url(#arrow)"
+            />
+            <line
+              x1="980"
+              y1="380"
+              x2="1120"
+              y2="435"
+              stroke="#ffffff"
+              stroke-width="1.8"
+              marker-end="url(#arrow)"
+            />
+            <line
+              x1="1120"
+              y1="380"
+              x2="1360"
+              y2="435"
+              stroke="#ffffff"
+              stroke-width="1.8"
+              marker-end="url(#arrow)"
+            />
+            <text
+              x="700"
+              y="412"
+              fill="#ffffff"
+              font-size="10"
+              font-family="monospace"
+              text-anchor="middle"
+            >
+              Load-Balanced Microservice Routing (/api/**)
+            </text>
+          </g>
+
+          <!-- LAYER 3: CORE MICROSERVICES TIER -->
+          <g id="layer-services">
+            <rect
+              x="50"
+              y="435"
+              width="1500"
+              height="340"
+              rx="12"
+              fill="#000000"
+              stroke="#ffffff"
+              stroke-width="2"
+              stroke-dasharray="8 6"
+            />
+            <rect
+              x="70"
+              y="420"
+              width="460"
+              height="28"
+              rx="4"
+              fill="#000000"
+              stroke="#ffffff"
+              stroke-width="1.5"
+            />
+            <text
+              x="300"
+              y="438"
+              fill="#ffffff"
+              font-family="monospace"
+              font-size="12"
+              font-weight="bold"
+              text-anchor="middle"
+            >
+              LAYER 3: CORE MICROSERVICES TIER (Spring Boot 3 / Java 17)
+            </text>
+
+            <!-- auth-service -->
+            <g
+              id="node-svc-auth"
+              class="arch-node"
+              onclick="inspectComponent('auth')"
+            >
+              <rect
+                x="70"
+                y="460"
+                width="220"
+                height="280"
+                rx="8"
+                fill="#050505"
+                stroke="#ffffff"
+                stroke-width="2"
+              />
+              <rect
+                x="70"
+                y="460"
+                width="220"
+                height="36"
+                rx="8"
+                fill="#111111"
+                stroke="#ffffff"
+                stroke-width="1"
+              />
+              <text
+                x="180"
+                y="482"
+                fill="#ffffff"
+                font-size="12"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                1. auth-service
+              </text>
+              <text
+                x="180"
+                y="510"
+                fill="#aaaaaa"
+                font-family="monospace"
+                font-size="10"
+                text-anchor="middle"
+              >
+                Port: 8082 | Security Hub
+              </text>
+              <line
+                x1="85"
+                y1="522"
+                x2="275"
+                y2="522"
+                stroke="#ffffff"
+                stroke-width="0.8"
+              />
+              <text
+                x="85"
+                y="540"
+                fill="#ffffff"
+                font-size="10"
+                font-weight="bold"
+              >
+                * User Registration (/register)
+              </text>
+              <text
+                x="85"
+                y="556"
+                fill="#ffffff"
+                font-size="10"
+                font-weight="bold"
+              >
+                * JWT Login &amp; Claims (/login)
+              </text>
+              <text
+                x="85"
+                y="572"
+                fill="#ffffff"
+                font-size="10"
+                font-weight="bold"
+              >
+                * Refresh Token Exchange
+              </text>
+              <text
+                x="85"
+                y="588"
+                fill="#ffffff"
+                font-size="10"
+                font-weight="bold"
+              >
+                * BCrypt Password Hashing
+              </text>
+              <text
+                x="85"
+                y="604"
+                fill="#ffffff"
+                font-size="10"
+                font-weight="bold"
+              >
+                * ROLE_PASSENGER / ADMIN
+              </text>
+              <rect
+                x="85"
+                y="625"
+                width="190"
+                height="50"
+                rx="4"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="1"
+                stroke-dasharray="3 2"
+              />
+              <text
+                x="180"
+                y="643"
+                fill="#aaaaaa"
+                font-size="9"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                Entities &amp; Security
+              </text>
+              <text
+                x="180"
+                y="660"
+                fill="#ffffff"
+                font-size="10"
+                text-anchor="middle"
+              >
+                Credential, RefreshToken
+              </text>
+              <rect
+                x="85"
+                y="685"
+                width="190"
+                height="40"
+                rx="4"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="1"
+              />
+              <text
+                x="180"
+                y="702"
+                fill="#aaaaaa"
+                font-size="9"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                Feign Client Call
+              </text>
+              <text
+                x="180"
+                y="718"
+                fill="#ffffff"
+                font-size="10"
+                text-anchor="middle"
+              >
+                &rarr; user-service (POST)
+              </text>
+            </g>
+
+            <!-- user-service -->
+            <g
+              id="node-svc-user"
+              class="arch-node"
+              onclick="inspectComponent('user')"
+            >
+              <rect
+                x="310"
+                y="460"
+                width="220"
+                height="280"
+                rx="8"
+                fill="#050505"
+                stroke="#ffffff"
+                stroke-width="2"
+              />
+              <rect
+                x="310"
+                y="460"
+                width="220"
+                height="36"
+                rx="8"
+                fill="#111111"
+                stroke="#ffffff"
+                stroke-width="1"
+              />
+              <text
+                x="420"
+                y="482"
+                fill="#ffffff"
+                font-size="12"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                2. user-service
+              </text>
+              <text
+                x="420"
+                y="510"
+                fill="#aaaaaa"
+                font-family="monospace"
+                font-size="10"
+                text-anchor="middle"
+              >
+                Port: 8084 | Profile Store
+              </text>
+              <line
+                x1="325"
+                y1="522"
+                x2="515"
+                y2="522"
+                stroke="#ffffff"
+                stroke-width="0.8"
+              />
+              <text
+                x="325"
+                y="540"
+                fill="#ffffff"
+                font-size="10"
+                font-weight="bold"
+              >
+                * Profile CRUD (/v1/users)
+              </text>
+              <text
+                x="325"
+                y="556"
+                fill="#ffffff"
+                font-size="10"
+                font-weight="bold"
+              >
+                * Passport Record Vault
+              </text>
+              <text
+                x="325"
+                y="572"
+                fill="#ffffff"
+                font-size="10"
+                font-weight="bold"
+              >
+                * Contact &amp; Address Store
+              </text>
+              <text
+                x="325"
+                y="588"
+                fill="#ffffff"
+                font-size="10"
+                font-weight="bold"
+              >
+                * Emergency Contact Info
+              </text>
+              <text
+                x="325"
+                y="604"
+                fill="#ffffff"
+                font-size="10"
+                font-weight="bold"
+              >
+                * Role &amp; Preference Attributes
+              </text>
+              <rect
+                x="325"
+                y="625"
+                width="190"
+                height="50"
+                rx="4"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="1"
+                stroke-dasharray="3 2"
+              />
+              <text
+                x="420"
+                y="643"
+                fill="#aaaaaa"
+                font-size="9"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                Domain Model
+              </text>
+              <text
+                x="420"
+                y="660"
+                fill="#ffffff"
+                font-size="10"
+                text-anchor="middle"
+              >
+                User Entity, UserDTO
+              </text>
+              <rect
+                x="325"
+                y="685"
+                width="190"
+                height="40"
+                rx="4"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="1"
+              />
+              <text
+                x="420"
+                y="702"
+                fill="#aaaaaa"
+                font-size="9"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                Communication
+              </text>
+              <text
+                x="420"
+                y="718"
+                fill="#ffffff"
+                font-size="10"
+                text-anchor="middle"
+              >
+                Invoked by auth-service
+              </text>
+            </g>
+
+            <!-- flight-service -->
+            <g
+              id="node-svc-flight"
+              class="arch-node"
+              onclick="inspectComponent('flight')"
+            >
+              <rect
+                x="550"
+                y="460"
+                width="220"
+                height="280"
+                rx="8"
+                fill="#050505"
+                stroke="#ffffff"
+                stroke-width="2"
+              />
+              <rect
+                x="550"
+                y="460"
+                width="220"
+                height="36"
+                rx="8"
+                fill="#111111"
+                stroke="#ffffff"
+                stroke-width="1"
+              />
+              <text
+                x="660"
+                y="482"
+                fill="#ffffff"
+                font-size="12"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                3. flight-service
+              </text>
+              <text
+                x="660"
+                y="510"
+                fill="#aaaaaa"
+                font-family="monospace"
+                font-size="10"
+                text-anchor="middle"
+              >
+                Port: 8087 | Fleet &amp; Route
+              </text>
+              <line
+                x1="565"
+                y1="522"
+                x2="755"
+                y2="522"
+                stroke="#ffffff"
+                stroke-width="0.8"
+              />
+              <text
+                x="565"
+                y="540"
+                fill="#ffffff"
+                font-size="10"
+                font-weight="bold"
+              >
+                * Flight Search (/search)
+              </text>
+              <text
+                x="565"
+                y="556"
+                fill="#ffffff"
+                font-size="10"
+                font-weight="bold"
+              >
+                * Aircraft Fleet Management
+              </text>
+              <text
+                x="565"
+                y="572"
+                fill="#ffffff"
+                font-size="10"
+                font-weight="bold"
+              >
+                * Route Scheduling &amp; Gates
+              </text>
+              <text
+                x="565"
+                y="588"
+                fill="#ffffff"
+                font-size="10"
+                font-weight="bold"
+              >
+                * Cabin Layout (Boeing/Airbus)
+              </text>
+              <text
+                x="565"
+                y="604"
+                fill="#ffffff"
+                font-size="10"
+                font-weight="bold"
+              >
+                * Real-Time Seat Locking
+              </text>
+              <rect
+                x="565"
+                y="625"
+                width="190"
+                height="50"
+                rx="4"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="1"
+                stroke-dasharray="3 2"
+              />
+              <text
+                x="660"
+                y="643"
+                fill="#aaaaaa"
+                font-size="9"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                Domain Entities
+              </text>
+              <text
+                x="660"
+                y="660"
+                fill="#ffffff"
+                font-size="10"
+                text-anchor="middle"
+              >
+                Aircraft, Flight, Seat
+              </text>
+              <rect
+                x="565"
+                y="685"
+                width="190"
+                height="40"
+                rx="4"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="1"
+              />
+              <text
+                x="660"
+                y="702"
+                fill="#aaaaaa"
+                font-size="9"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                Concurrency Control
+              </text>
+              <text
+                x="660"
+                y="718"
+                fill="#ffffff"
+                font-size="10"
+                text-anchor="middle"
+              >
+                Pessimistic Seat Locking
+              </text>
+            </g>
+
+            <!-- fare-service -->
+            <g
+              id="node-svc-fare"
+              class="arch-node"
+              onclick="inspectComponent('fare')"
+            >
+              <rect
+                x="790"
+                y="460"
+                width="220"
+                height="280"
+                rx="8"
+                fill="#050505"
+                stroke="#ffffff"
+                stroke-width="2"
+              />
+              <rect
+                x="790"
+                y="460"
+                width="220"
+                height="36"
+                rx="8"
+                fill="#111111"
+                stroke="#ffffff"
+                stroke-width="1"
+              />
+              <text
+                x="900"
+                y="482"
+                fill="#ffffff"
+                font-size="12"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                4. fare-service
+              </text>
+              <text
+                x="900"
+                y="510"
+                fill="#aaaaaa"
+                font-family="monospace"
+                font-size="10"
+                text-anchor="middle"
+              >
+                Port: 8089 | Yield &amp; Pricing
+              </text>
+              <line
+                x1="805"
+                y1="522"
+                x2="995"
+                y2="522"
+                stroke="#ffffff"
+                stroke-width="0.8"
+              />
+              <text
+                x="805"
+                y="540"
+                fill="#ffffff"
+                font-size="10"
+                font-weight="bold"
+              >
+                * Dynamic Fare Calculator
+              </text>
+              <text
+                x="805"
+                y="556"
+                fill="#ffffff"
+                font-size="10"
+                font-weight="bold"
+              >
+                * Cabin Class Multipliers
+              </text>
+              <text
+                x="805"
+                y="572"
+                fill="#ffffff"
+                font-size="10"
+                font-weight="bold"
+              >
+                * Demand Surge Coefficients
+              </text>
+              <text
+                x="805"
+                y="588"
+                fill="#ffffff"
+                font-size="10"
+                font-weight="bold"
+              >
+                * Baggage &amp; Ancillary Rules
+              </text>
+              <text
+                x="805"
+                y="604"
+                fill="#ffffff"
+                font-size="10"
+                font-weight="bold"
+              >
+                * Admin Pricing Matrix CRUD
+              </text>
+              <rect
+                x="805"
+                y="625"
+                width="190"
+                height="50"
+                rx="4"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="1"
+                stroke-dasharray="3 2"
+              />
+              <text
+                x="900"
+                y="643"
+                fill="#aaaaaa"
+                font-size="9"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                Pricing Formula
+              </text>
+              <text
+                x="900"
+                y="660"
+                fill="#ffffff"
+                font-size="10"
+                text-anchor="middle"
+              >
+                Base &times; Class &times; Demand
+              </text>
+              <rect
+                x="805"
+                y="685"
+                width="190"
+                height="40"
+                rx="4"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="1"
+              />
+              <text
+                x="900"
+                y="702"
+                fill="#aaaaaa"
+                font-size="9"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                Service Consumer
+              </text>
+              <text
+                x="900"
+                y="718"
+                fill="#ffffff"
+                font-size="10"
+                text-anchor="middle"
+              >
+                Called by booking-service
+              </text>
+            </g>
+
+            <!-- booking-service -->
+            <g
+              id="node-svc-booking"
+              class="arch-node"
+              onclick="inspectComponent('booking')"
+            >
+              <rect
+                x="1030"
+                y="460"
+                width="240"
+                height="280"
+                rx="8"
+                fill="#050505"
+                stroke="#ffffff"
+                stroke-width="2.5"
+              />
+              <rect
+                x="1030"
+                y="460"
+                width="240"
+                height="36"
+                rx="8"
+                fill="#111111"
+                stroke="#ffffff"
+                stroke-width="1"
+              />
+              <text
+                x="1150"
+                y="482"
+                fill="#ffffff"
+                font-size="12"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                5. booking-service
+              </text>
+              <text
+                x="1150"
+                y="510"
+                fill="#aaaaaa"
+                font-family="monospace"
+                font-size="10"
+                text-anchor="middle"
+              >
+                Port: 8088 | Core Reservation
+              </text>
+              <line
+                x1="1045"
+                y1="522"
+                x2="1255"
+                y2="522"
+                stroke="#ffffff"
+                stroke-width="0.8"
+              />
+              <text
+                x="1045"
+                y="540"
+                fill="#ffffff"
+                font-size="10"
+                font-weight="bold"
+              >
+                * Master Ticket Reservation
+              </text>
+              <text
+                x="1045"
+                y="556"
+                fill="#ffffff"
+                font-size="10"
+                font-weight="bold"
+              >
+                * 6-Char PNR Engine (AB7K9Q)
+              </text>
+              <text
+                x="1045"
+                y="572"
+                fill="#ffffff"
+                font-size="10"
+                font-weight="bold"
+              >
+                * OpenFeign Client Coordinator
+              </text>
+              <text
+                x="1045"
+                y="588"
+                fill="#ffffff"
+                font-size="10"
+                font-weight="bold"
+              >
+                * Cancellation &amp; Seat Release
+              </text>
+              <text
+                x="1045"
+                y="604"
+                fill="#ffffff"
+                font-size="10"
+                font-weight="bold"
+              >
+                * RabbitMQ Event Publisher
+              </text>
+              <rect
+                x="1045"
+                y="625"
+                width="210"
+                height="50"
+                rx="4"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="1"
+                stroke-dasharray="3 2"
+              />
+              <text
+                x="1150"
+                y="643"
+                fill="#aaaaaa"
+                font-size="9"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                Domain Model
+              </text>
+              <text
+                x="1150"
+                y="660"
+                fill="#ffffff"
+                font-size="10"
+                text-anchor="middle"
+              >
+                Booking, Passenger, Status
+              </text>
+              <rect
+                x="1045"
+                y="685"
+                width="210"
+                height="40"
+                rx="4"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="1"
+              />
+              <text
+                x="1150"
+                y="702"
+                fill="#aaaaaa"
+                font-size="9"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                Orchestration Protocol
+              </text>
+              <text
+                x="1150"
+                y="718"
+                fill="#ffffff"
+                font-size="10"
+                text-anchor="middle"
+              >
+                Feign &rarr; Flight &amp; Fare
+              </text>
+            </g>
+
+            <!-- check-in-service -->
+            <g
+              id="node-svc-checkin"
+              class="arch-node"
+              onclick="inspectComponent('checkin')"
+            >
+              <rect
+                x="1290"
+                y="460"
+                width="240"
+                height="280"
+                rx="8"
+                fill="#050505"
+                stroke="#ffffff"
+                stroke-width="2"
+              />
+              <rect
+                x="1290"
+                y="460"
+                width="240"
+                height="36"
+                rx="8"
+                fill="#111111"
+                stroke="#ffffff"
+                stroke-width="1"
+              />
+              <text
+                x="1410"
+                y="482"
+                fill="#ffffff"
+                font-size="12"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                6. check-in-service
+              </text>
+              <text
+                x="1410"
+                y="510"
+                fill="#aaaaaa"
+                font-family="monospace"
+                font-size="10"
+                text-anchor="middle"
+              >
+                Port: 8090 | Gate Operations
+              </text>
+              <line
+                x1="1305"
+                y1="522"
+                x2="1515"
+                y2="522"
+                stroke="#ffffff"
+                stroke-width="0.8"
+              />
+              <text
+                x="1305"
+                y="540"
+                fill="#ffffff"
+                font-size="10"
+                font-weight="bold"
+              >
+                * 24h Web Check-In Engine
+              </text>
+              <text
+                x="1305"
+                y="556"
+                fill="#ffffff"
+                font-size="10"
+                font-weight="bold"
+              >
+                * Interactive Seat Selection
+              </text>
+              <text
+                x="1305"
+                y="572"
+                fill="#ffffff"
+                font-size="10"
+                font-weight="bold"
+              >
+                * Digital QR Boarding Pass
+              </text>
+              <text
+                x="1305"
+                y="588"
+                fill="#ffffff"
+                font-size="10"
+                font-weight="bold"
+              >
+                * Gate Staff Boarding Scan
+              </text>
+              <text
+                x="1305"
+                y="604"
+                fill="#ffffff"
+                font-size="10"
+                font-weight="bold"
+              >
+                * Status: CHECKED_IN &rarr; BOARDED
+              </text>
+              <rect
+                x="1305"
+                y="625"
+                width="210"
+                height="50"
+                rx="4"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="1"
+                stroke-dasharray="3 2"
+              />
+              <text
+                x="1410"
+                y="643"
+                fill="#aaaaaa"
+                font-size="9"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                Security Domain
+              </text>
+              <text
+                x="1410"
+                y="660"
+                fill="#ffffff"
+                font-size="10"
+                text-anchor="middle"
+              >
+                QR Payload Hash Verification
+              </text>
+              <rect
+                x="1305"
+                y="685"
+                width="210"
+                height="40"
+                rx="4"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="1"
+              />
+              <text
+                x="1410"
+                y="702"
+                fill="#aaaaaa"
+                font-size="9"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                Feign Verification
+              </text>
+              <text
+                x="1410"
+                y="718"
+                fill="#ffffff"
+                font-size="10"
+                text-anchor="middle"
+              >
+                Feign &rarr; booking-service
+              </text>
+            </g>
+          </g>
+
+          <!-- FEIGN LINES -->
+          <g id="layer-feign-lines">
+            <path
+              d="M 290 705 L 310 705"
+              fill="none"
+              stroke="#ffffff"
+              stroke-width="1.8"
+              stroke-dasharray="4 3"
+              marker-end="url(#feign-arrow)"
+            />
+            <path
+              d="M 1030 690 C 950 670, 850 670, 770 690"
+              fill="none"
+              stroke="#ffffff"
+              stroke-width="1.8"
+              stroke-dasharray="5 3"
+              marker-end="url(#feign-arrow)"
+            />
+            <text
+              x="900"
+              y="665"
+              fill="#ffffff"
+              font-size="9"
+              font-family="monospace"
+              text-anchor="middle"
+            >
+              Feign: Lock Seat
+            </text>
+            <path
+              d="M 1030 715 L 1010 715"
+              fill="none"
+              stroke="#ffffff"
+              stroke-width="1.8"
+              stroke-dasharray="4 3"
+              marker-end="url(#feign-arrow)"
+            />
+            <path
+              d="M 1290 705 L 1270 705"
+              fill="none"
+              stroke="#ffffff"
+              stroke-width="1.8"
+              stroke-dasharray="4 3"
+              marker-end="url(#feign-arrow)"
+            />
+          </g>
+
+          <!-- LAYER 4: RABBITMQ MESSAGING TIER -->
+          <g id="layer-messaging">
+            <rect
+              x="50"
+              y="800"
+              width="1500"
+              height="110"
+              rx="10"
+              fill="#050505"
+              stroke="#ffffff"
+              stroke-width="2"
+            />
+            <rect
+              x="70"
+              y="785"
+              width="480"
+              height="28"
+              rx="4"
+              fill="#000000"
+              stroke="#ffffff"
+              stroke-width="1.5"
+            />
+            <text
+              x="310"
+              y="803"
+              fill="#ffffff"
+              font-family="monospace"
+              font-size="12"
+              font-weight="bold"
+              text-anchor="middle"
+            >
+              LAYER 4: ASYNCHRONOUS EVENT BUS (RabbitMQ AMQP : 5672)
+            </text>
+
+            <g class="arch-node" onclick="inspectComponent('exchange')">
+              <rect
+                x="100"
+                y="825"
+                width="340"
+                height="65"
+                rx="6"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="1.8"
+              />
+              <text
+                x="270"
+                y="850"
+                fill="#ffffff"
+                font-size="12"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                Topic Exchange: booking.exchange
+              </text>
+              <text
+                x="270"
+                y="870"
+                fill="#aaaaaa"
+                font-size="10"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                Routing Key: booking.created.* / booking.cancelled.*
+              </text>
+            </g>
+
+            <g class="arch-node" onclick="inspectComponent('queue')">
+              <rect
+                x="490"
+                y="825"
+                width="300"
+                height="65"
+                rx="6"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="1.8"
+              />
+              <text
+                x="640"
+                y="850"
+                fill="#ffffff"
+                font-size="12"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                Queue: booking.events
+              </text>
+              <text
+                x="640"
+                y="870"
+                fill="#aaaaaa"
+                font-size="10"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                Durable Event Ingestion &amp; Dead-Letter Queue
+              </text>
+            </g>
+
+            <g class="arch-node" onclick="inspectComponent('notification')">
+              <rect
+                x="840"
+                y="825"
+                width="330"
+                height="65"
+                rx="6"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="1.8"
+              />
+              <text
+                x="1005"
+                y="850"
+                fill="#ffffff"
+                font-size="12"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                Notification Consumer Worker
+              </text>
+              <text
+                x="1005"
+                y="870"
+                fill="#aaaaaa"
+                font-size="10"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                Async Email Confirmation &amp; SMS Dispatch
+              </text>
+            </g>
+
+            <g class="arch-node" onclick="inspectComponent('analytics')">
+              <rect
+                x="1220"
+                y="825"
+                width="300"
+                height="65"
+                rx="6"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="1.8"
+              />
+              <text
+                x="1370"
+                y="850"
+                fill="#ffffff"
+                font-size="12"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                Flight Audit &amp; Event Sink
+              </text>
+              <text
+                x="1370"
+                y="870"
+                fill="#aaaaaa"
+                font-size="10"
+                font-family="monospace"
+                text-anchor="middle"
+              >
+                Real-Time Metric Aggregation &amp; Telemetry
+              </text>
+            </g>
+
+            <line
+              x1="440"
+              y1="857"
+              x2="490"
+              y2="857"
+              stroke="#ffffff"
+              stroke-width="1.8"
+              marker-end="url(#arrow)"
+            />
+            <line
+              x1="790"
+              y1="857"
+              x2="840"
+              y2="857"
+              stroke="#ffffff"
+              stroke-width="1.8"
+              marker-end="url(#arrow)"
+            />
+            <line
+              x1="1170"
+              y1="857"
+              x2="1220"
+              y2="857"
+              stroke="#ffffff"
+              stroke-width="1.8"
+              marker-end="url(#arrow)"
+            />
+          </g>
+
+          <!-- Booking to RabbitMQ arrow -->
+          <g id="line-booking-rabbitmq">
+            <line
+              x1="1150"
+              y1="740"
+              x2="270"
+              y2="825"
+              stroke="#ffffff"
+              stroke-width="2"
+              stroke-dasharray="5 3"
+              marker-end="url(#arrow)"
+            />
+            <text
+              x="680"
+              y="780"
+              fill="#ffffff"
+              font-size="10"
+              font-family="monospace"
+              text-anchor="middle"
+            >
+              RabbitTemplate.convertAndSend("booking.exchange",
+              "booking.created", payload)
+            </text>
+          </g>
+
+          <!-- LAYER 5: DATA PERSISTENCE TIER -->
+          <g id="layer-databases">
+            <rect
+              x="50"
+              y="940"
+              width="1500"
+              height="215"
+              rx="10"
+              fill="#050505"
+              stroke="#ffffff"
+              stroke-width="2"
+              stroke-dasharray="8 6"
+            />
+            <rect
+              x="70"
+              y="925"
+              width="480"
+              height="28"
+              rx="4"
+              fill="#000000"
+              stroke="#ffffff"
+              stroke-width="1.5"
+            />
+            <text
+              x="310"
+              y="943"
+              fill="#ffffff"
+              font-family="monospace"
+              font-size="12"
+              font-weight="bold"
+              text-anchor="middle"
+            >
+              LAYER 5: DATA PERSISTENCE (Database-per-Service MySQL 8.0)
+            </text>
+
+            <g class="arch-node" onclick="inspectComponent('db-auth')">
+              <path
+                d="M 80 985 C 80 970, 280 970, 280 985 L 280 1105 C 280 1120, 80 1120, 80 1105 Z"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="2"
+              />
+              <ellipse
+                cx="180"
+                cy="985"
+                rx="100"
+                ry="15"
+                fill="#111111"
+                stroke="#ffffff"
+                stroke-width="2"
+              />
+              <text
+                x="180"
+                y="1025"
+                fill="#ffffff"
+                font-size="12"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                aerobook_auth_db
+              </text>
+              <text
+                x="180"
+                y="1045"
+                fill="#aaaaaa"
+                font-family="monospace"
+                font-size="10"
+                text-anchor="middle"
+              >
+                Isolated Auth Schema
+              </text>
+              <text
+                x="180"
+                y="1065"
+                fill="#ffffff"
+                font-size="10"
+                text-anchor="middle"
+              >
+                Tables: credentials, roles,
+              </text>
+              <text
+                x="180"
+                y="1080"
+                fill="#ffffff"
+                font-size="10"
+                text-anchor="middle"
+              >
+                refresh_tokens
+              </text>
+            </g>
+
+            <g class="arch-node" onclick="inspectComponent('db-user')">
+              <path
+                d="M 320 985 C 320 970, 520 970, 520 985 L 520 1105 C 520 1120, 320 1120, 320 1105 Z"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="2"
+              />
+              <ellipse
+                cx="420"
+                cy="985"
+                rx="100"
+                ry="15"
+                fill="#111111"
+                stroke="#ffffff"
+                stroke-width="2"
+              />
+              <text
+                x="420"
+                y="1025"
+                fill="#ffffff"
+                font-size="12"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                aerobook_user_db
+              </text>
+              <text
+                x="420"
+                y="1045"
+                fill="#aaaaaa"
+                font-family="monospace"
+                font-size="10"
+                text-anchor="middle"
+              >
+                Isolated User Schema
+              </text>
+              <text
+                x="420"
+                y="1065"
+                fill="#ffffff"
+                font-size="10"
+                text-anchor="middle"
+              >
+                Tables: users, profiles,
+              </text>
+              <text
+                x="420"
+                y="1080"
+                fill="#ffffff"
+                font-size="10"
+                text-anchor="middle"
+              >
+                emergency_contacts
+              </text>
+            </g>
+
+            <g class="arch-node" onclick="inspectComponent('db-flight')">
+              <path
+                d="M 560 985 C 560 970, 760 970, 760 985 L 760 1105 C 760 1120, 560 1120, 560 1105 Z"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="2"
+              />
+              <ellipse
+                cx="660"
+                cy="985"
+                rx="100"
+                ry="15"
+                fill="#111111"
+                stroke="#ffffff"
+                stroke-width="2"
+              />
+              <text
+                x="660"
+                y="1025"
+                fill="#ffffff"
+                font-size="12"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                aerobook_flight_db
+              </text>
+              <text
+                x="660"
+                y="1045"
+                fill="#aaaaaa"
+                font-family="monospace"
+                font-size="10"
+                text-anchor="middle"
+              >
+                Isolated Flight Schema
+              </text>
+              <text
+                x="660"
+                y="1065"
+                fill="#ffffff"
+                font-size="10"
+                text-anchor="middle"
+              >
+                Tables: aircrafts, flights,
+              </text>
+              <text
+                x="660"
+                y="1080"
+                fill="#ffffff"
+                font-size="10"
+                text-anchor="middle"
+              >
+                seats, seat_locks
+              </text>
+            </g>
+
+            <g class="arch-node" onclick="inspectComponent('db-fare')">
+              <path
+                d="M 800 985 C 800 970, 1000 970, 1000 985 L 1000 1105 C 1000 1120, 800 1120, 800 1105 Z"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="2"
+              />
+              <ellipse
+                cx="900"
+                cy="985"
+                rx="100"
+                ry="15"
+                fill="#111111"
+                stroke="#ffffff"
+                stroke-width="2"
+              />
+              <text
+                x="900"
+                y="1025"
+                fill="#ffffff"
+                font-size="12"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                aerobook_fare_db
+              </text>
+              <text
+                x="900"
+                y="1045"
+                fill="#aaaaaa"
+                font-family="monospace"
+                font-size="10"
+                text-anchor="middle"
+              >
+                Isolated Fare Schema
+              </text>
+              <text
+                x="900"
+                y="1065"
+                fill="#ffffff"
+                font-size="10"
+                text-anchor="middle"
+              >
+                Tables: fare_rules, base_fares,
+              </text>
+              <text
+                x="900"
+                y="1080"
+                fill="#ffffff"
+                font-size="10"
+                text-anchor="middle"
+              >
+                multipliers, surcharges
+              </text>
+            </g>
+
+            <g class="arch-node" onclick="inspectComponent('db-booking')">
+              <path
+                d="M 1045 985 C 1045 970, 1255 970, 1255 985 L 1255 1105 C 1255 1120, 1045 1120, 1045 1105 Z"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="2"
+              />
+              <ellipse
+                cx="1150"
+                cy="985"
+                rx="105"
+                ry="15"
+                fill="#111111"
+                stroke="#ffffff"
+                stroke-width="2"
+              />
+              <text
+                x="1150"
+                y="1025"
+                fill="#ffffff"
+                font-size="12"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                aerobook_booking_db
+              </text>
+              <text
+                x="1150"
+                y="1045"
+                fill="#aaaaaa"
+                font-family="monospace"
+                font-size="10"
+                text-anchor="middle"
+              >
+                Isolated Booking Schema
+              </text>
+              <text
+                x="1150"
+                y="1065"
+                fill="#ffffff"
+                font-size="10"
+                text-anchor="middle"
+              >
+                Tables: bookings, passengers,
+              </text>
+              <text
+                x="1150"
+                y="1080"
+                fill="#ffffff"
+                font-size="10"
+                text-anchor="middle"
+              >
+                payments, audit_logs
+              </text>
+            </g>
+
+            <g class="arch-node" onclick="inspectComponent('db-checkin')">
+              <path
+                d="M 1305 985 C 1305 970, 1515 970, 1515 985 L 1515 1105 C 1515 1120, 1305 1120, 1305 1105 Z"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="2"
+              />
+              <ellipse
+                cx="1410"
+                cy="985"
+                rx="105"
+                ry="15"
+                fill="#111111"
+                stroke="#ffffff"
+                stroke-width="2"
+              />
+              <text
+                x="1410"
+                y="1025"
+                fill="#ffffff"
+                font-size="12"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                aerobook_checkin_db
+              </text>
+              <text
+                x="1410"
+                y="1045"
+                fill="#aaaaaa"
+                font-family="monospace"
+                font-size="10"
+                text-anchor="middle"
+              >
+                Isolated Check-In Schema
+              </text>
+              <text
+                x="1410"
+                y="1065"
+                fill="#ffffff"
+                font-size="10"
+                text-anchor="middle"
+              >
+                Tables: check_ins,
+              </text>
+              <text
+                x="1410"
+                y="1080"
+                fill="#ffffff"
+                font-size="10"
+                text-anchor="middle"
+              >
+                boarding_passes, qr_tokens
+              </text>
+            </g>
+          </g>
+
+          <!-- Vertical DB lines -->
+          <g id="lines-db">
+            <line
+              x1="180"
+              y1="740"
+              x2="180"
+              y2="970"
+              stroke="#ffffff"
+              stroke-width="1.8"
+              marker-end="url(#arrow)"
+            />
+            <line
+              x1="420"
+              y1="740"
+              x2="420"
+              y2="970"
+              stroke="#ffffff"
+              stroke-width="1.8"
+              marker-end="url(#arrow)"
+            />
+            <line
+              x1="660"
+              y1="740"
+              x2="660"
+              y2="970"
+              stroke="#ffffff"
+              stroke-width="1.8"
+              marker-end="url(#arrow)"
+            />
+            <line
+              x1="900"
+              y1="740"
+              x2="900"
+              y2="970"
+              stroke="#ffffff"
+              stroke-width="1.8"
+              marker-end="url(#arrow)"
+            />
+            <line
+              x1="1150"
+              y1="740"
+              x2="1150"
+              y2="970"
+              stroke="#ffffff"
+              stroke-width="1.8"
+              marker-end="url(#arrow)"
+            />
+            <line
+              x1="1410"
+              y1="740"
+              x2="1410"
+              y2="970"
+              stroke="#ffffff"
+              stroke-width="1.8"
+              marker-end="url(#arrow)"
+            />
+          </g>
+        </svg>
+      </div>
+
+      <!-- Inspector Drawer -->
+      <div
+        id="inspector-panel"
+        class="border-t-2 border-white bg-black p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
+      >
+        <div class="flex-1">
+          <div class="flex items-center gap-2 mb-1">
+            <span
+              id="insp-badge"
+              class="px-2 py-0.5 text-xs font-mono bg-white text-black font-bold rounded"
+              >SPRING CLOUD</span
+            >
+            <h3 id="insp-title" class="text-base font-bold text-white">
+              API Gateway Platform Hub (Port 8083)
+            </h3>
+          </div>
+          <p id="insp-desc" class="text-xs text-neutral-300">
+            Reactive Netty reverse proxy routing all public and secured HTTP
+            client traffic to downstream microservices with JWT enforcement.
+          </p>
+        </div>
+
+        <div
+          class="flex flex-wrap items-center gap-4 text-xs font-mono border-t md:border-t-0 md:border-l border-white/30 pt-2 md:pt-0 md:pl-4"
+        >
+          <div>
+            <span class="text-neutral-400 block">Port &amp; Protocol:</span>
+            <span id="insp-port" class="text-white font-bold"
+              >Port 8083 (HTTP/Netty)</span
+            >
+          </div>
+          <div>
+            <span class="text-neutral-400 block">Persistence Store:</span>
+            <span
+              id="insp-db"
+              class="text-white bg-neutral-900 border border-white/40 px-2 py-0.5 rounded"
+              >Stateless (No DB)</span
+            >
+          </div>
+          <div>
+            <span class="text-neutral-400 block">Inter-Service:</span>
+            <span id="insp-comm" class="text-white font-bold"
+              >Reverse Proxy / WebFlux</span
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <footer
+      class="w-full max-w-[1600px] mt-4 flex flex-wrap items-center justify-between text-xs text-neutral-400 border border-white/20 rounded-lg p-3 bg-black gap-3 font-mono"
+    >
+      <div class="flex items-center gap-4">
+        <span class="font-bold text-white uppercase">Legend:</span>
+        <div class="flex items-center gap-1.5">
+          <span class="inline-block w-4 h-0.5 bg-white"></span> HTTP/REST
+          Routing
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span
+            class="inline-block w-4 h-0.5 border-b border-dashed border-white"
+          ></span>
+          Feign Synchronous Client
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span
+            class="inline-block w-4 h-0.5 border-b-2 border-dotted border-white"
+          ></span>
+          RabbitMQ Event Bus
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span
+            class="inline-block w-3 h-3 border border-white bg-black"
+          ></span>
+          Microservice / Database
+        </div>
+      </div>
+      <div>
+        AeroBook Enterprise Architecture • Spring Boot 3 &amp; Spring Cloud 2023
+      </div>
+    </footer>
+
+    <script>
+      const compData = {
+        gateway: {
+          badge: "SPRING CLOUD GATEWAY",
+          title: "API Gateway Hub (Port 8083)",
+          desc: "Central entry point built on Project Reactor & Netty. Handles SSL termination, CORS, routing, rate limiting, and JWT authentication.",
+          port: "Port 8083 (Netty)",
+          db: "Stateless (In-Memory)",
+          comm: "Client &rarr; Gateway &rarr; Services",
+        },
+        auth: {
+          badge: "MICROSERVICE",
+          title: "auth-service (Port 8082)",
+          desc: "Security authority. Responsible for registration, BCrypt password hashing, JWT Bearer generation, refresh token rotations, and role management.",
+          port: "Port 8082 (Tomcat)",
+          db: "aerobook_auth_db (MySQL)",
+          comm: "Invokes user-service via OpenFeign",
+        },
+        user: {
+          badge: "MICROSERVICE",
+          title: "user-service (Port 8084)",
+          desc: "Customer domain vault. Stores traveler demographic profiles, passport records, emergency contacts, and address preferences.",
+          port: "Port 8084 (Tomcat)",
+          db: "aerobook_user_db (MySQL)",
+          comm: "Queried by auth-service on registration",
+        },
+        flight: {
+          badge: "MICROSERVICE",
+          title: "flight-service (Port 8087)",
+          desc: "Fleet & schedule management. Stores aircraft models (Boeing 737, Airbus A320), seat maps, daily schedules, and enforces atomic seat locking.",
+          port: "Port 8087 (Tomcat)",
+          db: "aerobook_flight_db (MySQL)",
+          comm: "Called by booking-service (Lock/Release Seat)",
+        },
+        fare: {
+          badge: "MICROSERVICE",
+          title: "fare-service (Port 8089)",
+          desc: "Yield & dynamic pricing engine. Computes quotes based on base route fare, cabin class multipliers, and real-time demand surge coefficients.",
+          port: "Port 8089 (Tomcat)",
+          db: "aerobook_fare_db (MySQL)",
+          comm: "Called by booking-service (Verify Fare)",
+        },
+        booking: {
+          badge: "CORE ORCHESTRATOR",
+          title: "booking-service (Port 8088)",
+          desc: "Financial and transactional core. Coordinates seat locks with flight-service, fare verification with fare-service, generates 6-char PNRs, and publishes RabbitMQ events.",
+          port: "Port 8088 (Tomcat)",
+          db: "aerobook_booking_db (MySQL)",
+          comm: "OpenFeign + RabbitMQ Producer",
+        },
+        checkin: {
+          badge: "MICROSERVICE",
+          title: "check-in-service (Port 8090)",
+          desc: "Airport operations engine. Manages 24-hour web check-in window, seat matrix picking, QR code boarding pass issuance, and gate staff validation.",
+          port: "Port 8090 (Tomcat)",
+          db: "aerobook_checkin_db (MySQL)",
+          comm: "OpenFeign to booking-service",
+        },
+        eureka: {
+          badge: "SERVICE DISCOVERY",
+          title: "Netflix Eureka Registry (Port 8761)",
+          desc: "Maintains live service registry. Downstream microservices register on startup and emit 30s heartbeats. Gateway queries Eureka for dynamic load-balanced IPs.",
+          port: "Port 8761 (Eureka)",
+          db: "In-Memory Registry Table",
+          comm: "Heartbeat Probes & Dynamic DNS",
+        },
+        exchange: {
+          badge: "AMQP BROKER",
+          title: "RabbitMQ Topic Exchange (Port 5672)",
+          desc: "Asynchronous event bus. Decouples reservation transaction from downstream notification and analytics workers via booking.events queue.",
+          port: "Port 5672 / UI 15672",
+          db: "Durable Disk Mapped Queues",
+          comm: "AMQP Topic Exchange",
+        },
+        "db-booking": {
+          badge: "DATABASE-PER-SERVICE",
+          title: "aerobook_booking_db (MySQL 8.0)",
+          desc: "Isolated MySQL schema holding bookings, passenger details, payment audit logs, and PNR references. No foreign keys to other services.",
+          port: "Port 3306 (MySQL)",
+          db: "Schema: aerobook_booking_db",
+          comm: "JDBC / Spring Data JPA",
+        },
+      };
+
+      function inspectComponent(key) {
+        const data = compData[key] || compData["gateway"];
+        document.getElementById("insp-badge").innerText = data.badge;
+        document.getElementById("insp-title").innerText = data.title;
+        document.getElementById("insp-desc").innerText = data.desc;
+        document.getElementById("insp-port").innerText = data.port;
+        document.getElementById("insp-db").innerText = data.db;
+        document.getElementById("insp-comm").innerText = data.comm;
+      }
+
+      function filterTier(layer) {
+        const buttons = [
+          "all",
+          "gateway",
+          "services",
+          "feign",
+          "messaging",
+          "db",
+        ];
+        buttons.forEach((b) => {
+          const el = document.getElementById("btn-" + b);
+          if (b === layer)
+            el.className =
+              "px-3 py-1 rounded bg-white text-black font-semibold transition";
+          else
+            el.className =
+              "px-3 py-1 rounded border border-white/40 hover:border-white transition";
+        });
+
+        const clients = document.getElementById("layer-clients");
+        const linesClient = document.getElementById("lines-client");
+        const gateway = document.getElementById("layer-gateway");
+        const linesGw = document.getElementById("lines-gateway-routing");
+        const services = document.getElementById("layer-services");
+        const feign = document.getElementById("layer-feign-lines");
+        const messaging = document.getElementById("layer-messaging");
+        const lineMsg = document.getElementById("line-booking-rabbitmq");
+        const dbs = document.getElementById("layer-databases");
+        const linesDb = document.getElementById("lines-db");
+
+        const allGroups = [
+          clients,
+          linesClient,
+          gateway,
+          linesGw,
+          services,
+          feign,
+          messaging,
+          lineMsg,
+          dbs,
+          linesDb,
+        ];
+        allGroups.forEach((g) => g.classList.remove("dimmed"));
+
+        if (layer === "gateway") {
+          [clients, services, feign, messaging, lineMsg, dbs, linesDb].forEach(
+            (g) => g.classList.add("dimmed"),
+          );
+          inspectComponent("gateway");
+        } else if (layer === "services") {
+          [
+            clients,
+            linesClient,
+            gateway,
+            linesGw,
+            messaging,
+            lineMsg,
+            dbs,
+            linesDb,
+          ].forEach((g) => g.classList.add("dimmed"));
+          inspectComponent("booking");
+        } else if (layer === "feign") {
+          [
+            clients,
+            linesClient,
+            gateway,
+            linesGw,
+            messaging,
+            lineMsg,
+            dbs,
+            linesDb,
+          ].forEach((g) => g.classList.add("dimmed"));
+          inspectComponent("booking");
+        } else if (layer === "messaging") {
+          [clients, linesClient, gateway, linesGw, feign, dbs, linesDb].forEach(
+            (g) => g.classList.add("dimmed"),
+          );
+          inspectComponent("exchange");
+        } else if (layer === "db") {
+          [
+            clients,
+            linesClient,
+            gateway,
+            linesGw,
+            feign,
+            messaging,
+            lineMsg,
+          ].forEach((g) => g.classList.add("dimmed"));
+          inspectComponent("db-booking");
+        } else {
+          inspectComponent("gateway");
+        }
+      }
+
+      let currentScale = 1.0;
+      function zoom(factor) {
+        currentScale = Math.min(Math.max(currentScale * factor, 0.6), 2.2);
+        const svg = document.getElementById("arch-svg");
+        svg.style.transform = `scale(${currentScale})`;
+        svg.style.transformOrigin = "center top";
+      }
+
+      function resetZoom() {
+        currentScale = 1.0;
+        const svg = document.getElementById("arch-svg");
+        svg.style.transform = "scale(1)";
+      }
+
+      function downloadSVG() {
+        const svgEl = document.getElementById("arch-svg");
+        const serializer = new XMLSerializer();
+        let source = serializer.serializeToString(svgEl);
+        if (
+          !source.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)
+        ) {
+          source = source.replace(
+            /^<svg/,
+            '<svg xmlns="http://www.w3.org/2000/svg"',
+          );
+        }
+        const svgBlob = new Blob([source], {
+          type: "image/svg+xml;charset=utf-8",
+        });
+        const svgUrl = URL.createObjectURL(svgBlob);
+        const downloadLink = document.createElement("a");
+        downloadLink.href = svgUrl;
+        downloadLink.download = "AeroBook_Architecture_Diagram.svg";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+      }
+
+      inspectComponent("gateway");
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aerobook - Central API Gateway & Microservices Platform</title>
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --secondary: #0f172a;
+        --accent: #38bdf8;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --bg: #f8fafc;
+        --card-bg: #ffffff;
+        --border: #e2e8f0;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+      }
+
+      body {
+        background-color: var(--bg);
+        color: var(--text-main);
+        line-height: 1.6;
+        padding: 0;
+        margin: 0;
+      }
+
+      header {
+        background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+        color: #ffffff;
+        padding: 2.5rem 2rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .header-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+      }
+
+      .header-title h1 {
+        font-size: 2.2rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .header-title p {
+        color: #94a3b8;
+        margin-top: 0.5rem;
+        font-size: 1.05rem;
+      }
+
+      .header-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.4rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+      }
+
+      .btn-primary {
+        background-color: #38bdf8;
+        color: #0f172a;
+      }
+
+      .btn-primary:hover {
+        background-color: #7dd3fc;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+      }
+
+      .btn-outline {
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+      }
+
+      .btn-outline:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1.5rem;
+      }
+
+      .stats-bar {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 2.5rem;
+      }
+
+      .stat-card {
+        background: var(--card-bg);
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+
+      .stat-card span.label {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
+        font-weight: 600;
+      }
+
+      .stat-card span.value {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: var(--secondary);
+      }
+
+      .stat-card span.sub {
+        font-size: 0.85rem;
+        color: var(--success);
+        font-weight: 500;
+      }
+
+      .section-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 1.25rem;
+        color: var(--secondary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .services-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+      }
+
+      .service-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: all 0.2s ease;
+      }
+
+      .service-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+        border-color: #cbd5e1;
+      }
+
+      .service-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+      }
+
+      .service-name {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--secondary);
+      }
+
+      .port-badge {
+        background: #e0f2fe;
+        color: #0369a1;
+        padding: 0.25rem 0.6rem;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.85rem;
+      }
+
+      .service-desc {
+        color: var(--text-muted);
+        font-size: 0.92rem;
+        margin-bottom: 1.2rem;
+        flex-grow: 1;
+      }
+
+      .service-meta {
+        background: #f1f5f9;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        margin-bottom: 1rem;
+      }
+
+      .service-meta div {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .service-meta span.key {
+        color: var(--text-muted);
+        font-weight: 500;
+      }
+
+      .service-meta span.val {
+        font-family: monospace;
+        font-weight: 600;
+        color: var(--secondary);
+      }
+
+      .table-container {
+        background: var(--card-bg);
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+        overflow: hidden;
+        margin-bottom: 3rem;
+      }
+
+      .table-header-filter {
+        padding: 1.25rem;
+        background: #f8fafc;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .search-input {
+        padding: 0.6rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 0.9rem;
+        width: 320px;
+        max-width: 100%;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+        font-size: 0.92rem;
+      }
+
+      th {
+        background-color: #f1f5f9;
+        color: var(--text-muted);
+        font-weight: 600;
+        padding: 0.85rem 1.25rem;
+        border-bottom: 1px solid var(--border);
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+      }
+
+      td {
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid var(--border);
+        vertical-align: middle;
+      }
+
+      tr:last-child td {
+        border-bottom: none;
+      }
+
+      tr:hover {
+        background-color: #f8fafc;
+      }
+
+      .badge-method {
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-weight: 700;
+        font-size: 0.75rem;
+        font-family: monospace;
+        display: inline-block;
+        text-align: center;
+        min-width: 55px;
+      }
+
+      .badge-get {
+        background: #dcfce7;
+        color: #15803d;
+      }
+      .badge-post {
+        background: #e0e7ff;
+        color: #4338ca;
+      }
+      .badge-put {
+        background: #fef3c7;
+        color: #b45309;
+      }
+      .badge-delete {
+        background: #fee2e2;
+        color: #b91c1c;
+      }
+
+      .badge-role-public {
+        background: #f1f5f9;
+        color: #475569;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-weight: 600;
+        font-size: 0.75rem;
+      }
+      .badge-role-user {
+        background: #e0f2fe;
+        color: #0369a1;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-weight: 600;
+        font-size: 0.75rem;
+      }
+      .badge-role-admin {
+        background: #fee2e2;
+        color: #991b1b;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-weight: 700;
+        font-size: 0.75rem;
+      }
+
+      .path-code {
+        font-family: monospace;
+        font-weight: 600;
+        color: #0f172a;
+      }
+
+      .demo-steps {
+        background: var(--card-bg);
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        padding: 1.5rem;
+        margin-bottom: 3rem;
+      }
+
+      .step-item {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+        align-items: flex-start;
+      }
+
+      .step-num {
+        background: #2563eb;
+        color: #ffffff;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+      }
+
+      .step-content strong {
+        color: var(--secondary);
+      }
+
+      footer {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        border-top: 1px solid var(--border);
+        margin-top: 4rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-container">
+        <div class="header-title">
+          <h1>✈️ Aerobook Platform Gateway</h1>
+          <p>
+            Centralized Reverse Proxy, Aggregated OpenAPI / Swagger Hub & RBAC
+            Security Engine
+          </p>
+        </div>
+        <div class="header-actions">
+          <a href="/swagger-ui.html" class="btn btn-primary"
+            >📖 Open Unified Swagger UI</a
+          >
+          <a
+            href="/api/gateway/endpoints"
+            target="_blank"
+            class="btn btn-outline"
+            >📋 API JSON Catalog</a
+          >
+          <a
+            href="/api/gateway/rbac-matrix"
+            target="_blank"
+            class="btn btn-outline"
+            >🛡️ RBAC Matrix</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <div class="container">
+      <!-- Metrics Row -->
+      <div class="stats-bar">
+        <div class="stat-card">
+          <span class="label">API Gateway Port</span>
+          <span class="value">8083</span>
+          <span class="sub">Spring Cloud WebFlux</span>
+        </div>
+        <div class="stat-card">
+          <span class="label">Total Microservices</span>
+          <span class="value">7</span>
+          <span class="sub">100% Eureka Discovered</span>
+        </div>
+        <div class="stat-card">
+          <span class="label">Total Platform APIs</span>
+          <span class="value">38+</span>
+          <span class="sub">Documented & Functional</span>
+        </div>
+        <div class="stat-card">
+          <span class="label">Security & RBAC</span>
+          <span class="value">JWT</span>
+          <span class="sub">ROLE_USER & ROLE_ADMIN</span>
+        </div>
+      </div>
+
+      <!-- Microservices Topology -->
+      <h2 class="section-title">
+        🏛️ Microservice Architecture & Port Directory
+      </h2>
+      <div class="services-grid">
+        <!-- Gateway -->
+        <div class="service-card">
+          <div class="service-card-header">
+            <span class="service-name">🌐 API Gateway</span>
+            <span class="port-badge">Port 8083</span>
+          </div>
+          <p class="service-desc">
+            Central reverse proxy routing, JWT token verification, master
+            endpoint catalog, and aggregated Swagger documentation.
+          </p>
+          <div class="service-meta">
+            <div>
+              <span class="key">Routing Prefix:</span
+              ><span class="val">/api/**</span>
+            </div>
+            <div>
+              <span class="key">Tech Stack:</span
+              ><span class="val">Reactive WebFlux Gateway</span>
+            </div>
+          </div>
+          <a
+            href="/swagger-ui.html"
+            class="btn btn-primary"
+            style="justify-content: center"
+            >Scroll in Swagger UI</a
+          >
+        </div>
+
+        <!-- Auth Service -->
+        <div class="service-card">
+          <div class="service-card-header">
+            <span class="service-name">🔑 Auth Service</span>
+            <span class="port-badge">Port 8082</span>
+          </div>
+          <p class="service-desc">
+            User registration, BCrypt password hashing, JWT token lifecycle
+            management, master administrator setup, and role auditing.
+          </p>
+          <div class="service-meta">
+            <div>
+              <span class="key">Routing Prefix:</span
+              ><span class="val">/api/auth/**</span>
+            </div>
+            <div>
+              <span class="key">Database:</span
+              ><span class="val">aerobook_auth_db</span>
+            </div>
+          </div>
+          <a
+            href="/swagger-ui.html"
+            class="btn btn-outline"
+            style="
+              color: #2563eb;
+              border-color: #cbd5e1;
+              justify-content: center;
+            "
+            >Test in Swagger</a
+          >
+        </div>
+
+        <!-- User Service -->
+        <div class="service-card">
+          <div class="service-card-header">
+            <span class="service-name">👤 User Profile Service</span>
+            <span class="port-badge">Port 8084</span>
+          </div>
+          <p class="service-desc">
+            Customer account profiles, personal demographics, and administrative
+            user account CRUD operations.
+          </p>
+          <div class="service-meta">
+            <div>
+              <span class="key">Routing Prefix:</span
+              ><span class="val">/api/v1/users/**</span>
+            </div>
+            <div>
+              <span class="key">Database:</span
+              ><span class="val">aerobook_user_db</span>
+            </div>
+          </div>
+          <a
+            href="/swagger-ui.html"
+            class="btn btn-outline"
+            style="
+              color: #2563eb;
+              border-color: #cbd5e1;
+              justify-content: center;
+            "
+            >Test in Swagger</a
+          >
+        </div>
+
+        <!-- Flight Service -->
+        <div class="service-card">
+          <div class="service-card-header">
+            <span class="service-name">✈️ Flight Service</span>
+            <span class="port-badge">Port 8087</span>
+          </div>
+          <p class="service-desc">
+            Commercial flight schedule search (source/destination), timetable
+            lookup, and administrator fleet aircraft inventory.
+          </p>
+          <div class="service-meta">
+            <div>
+              <span class="key">Routing Prefix:</span
+              ><span class="val">/api/flights/**, /api/admin/**</span>
+            </div>
+            <div>
+              <span class="key">Database:</span
+              ><span class="val">aerobook_flight_db</span>
+            </div>
+          </div>
+          <a
+            href="/swagger-ui.html"
+            class="btn btn-outline"
+            style="
+              color: #2563eb;
+              border-color: #cbd5e1;
+              justify-content: center;
+            "
+            >Test in Swagger</a
+          >
+        </div>
+
+        <!-- Fare Service -->
+        <div class="service-card">
+          <div class="service-card-header">
+            <span class="service-name">💳 Fare & Pricing Service</span>
+            <span class="port-badge">Port 8089</span>
+          </div>
+          <p class="service-desc">
+            Multi-tier cabin pricing (Economy, Business, First Class), GST tax
+            calculations, and seasonal promotional discounts.
+          </p>
+          <div class="service-meta">
+            <div>
+              <span class="key">Routing Prefix:</span
+              ><span class="val">/api/fares/**</span>
+            </div>
+            <div>
+              <span class="key">Database:</span
+              ><span class="val">aerobook_fare_db</span>
+            </div>
+          </div>
+          <a
+            href="/swagger-ui.html"
+            class="btn btn-outline"
+            style="
+              color: #2563eb;
+              border-color: #cbd5e1;
+              justify-content: center;
+            "
+            >Test in Swagger</a
+          >
+        </div>
+
+        <!-- Booking Service -->
+        <div class="service-card">
+          <div class="service-card-header">
+            <span class="service-name">🎟️ Booking & Messaging Service</span>
+            <span class="port-badge">Port 8088</span>
+          </div>
+          <p class="service-desc">
+            Seat reservations, PNR generation, past departure validation,
+            OpenFeign flight checks, and RabbitMQ event streaming.
+          </p>
+          <div class="service-meta">
+            <div>
+              <span class="key">Routing Prefix:</span
+              ><span class="val">/api/bookings/**</span>
+            </div>
+            <div>
+              <span class="key">Database:</span
+              ><span class="val">aerobook_booking_db</span>
+            </div>
+          </div>
+          <a
+            href="/swagger-ui.html"
+            class="btn btn-outline"
+            style="
+              color: #2563eb;
+              border-color: #cbd5e1;
+              justify-content: center;
+            "
+            >Test in Swagger</a
+          >
+        </div>
+
+        <!-- Check-In Service -->
+        <div class="service-card">
+          <div class="service-card-header">
+            <span class="service-name">🛂 Check-In & Boarding Service</span>
+            <span class="port-badge">Port 8090</span>
+          </div>
+          <p class="service-desc">
+            Passenger airport check-in, seat assignment, automatic boarding pass
+            generation (BP-1-12A), and boarding records.
+          </p>
+          <div class="service-meta">
+            <div>
+              <span class="key">Routing Prefix:</span
+              ><span class="val">/api/check-ins/**</span>
+            </div>
+            <div>
+              <span class="key">Database:</span
+              ><span class="val">aerobook_checkin_db</span>
+            </div>
+          </div>
+          <a
+            href="/swagger-ui.html"
+            class="btn btn-outline"
+            style="
+              color: #2563eb;
+              border-color: #cbd5e1;
+              justify-content: center;
+            "
+            >Test in Swagger</a
+          >
+        </div>
+      </div>
+
+      <!-- Master Endpoint Catalog -->
+      <h2 class="section-title">
+        📋 Master Platform API Directory (All Endpoints)
+      </h2>
+      <div class="table-container">
+        <div class="table-header-filter">
+          <span style="font-weight: 600; color: var(--text-muted)"
+            >Unified Gateway Reverse Proxy Endpoints</span
+          >
+          <input
+            type="text"
+            id="endpointSearch"
+            class="search-input"
+            placeholder="🔍 Search endpoint by path or description..."
+            onkeyup="filterEndpoints()"
+          />
+        </div>
+        <table id="endpointsTable">
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Path / Gateway Route</th>
+              <th>Microservice</th>
+              <th>Authority Required</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Auth Service -->
+            <tr>
+              <td><span class="badge-method badge-post">POST</span></td>
+              <td class="path-code">/api/auth/register</td>
+              <td>Auth (8082)</td>
+              <td><span class="badge-role-public">Public</span></td>
+              <td>Register customer account (ROLE_USER)</td>
+            </tr>
+            <tr>
+              <td><span class="badge-method badge-post">POST</span></td>
+              <td class="path-code">/api/auth/register-admin</td>
+              <td>Auth (8082)</td>
+              <td><span class="badge-role-admin">X-Admin-Setup-Key</span></td>
+              <td>Admin setup or role elevation</td>
+            </tr>
+            <tr>
+              <td><span class="badge-method badge-post">POST</span></td>
+              <td class="path-code">/api/auth/login</td>
+              <td>Auth (8082)</td>
+              <td><span class="badge-role-public">Public</span></td>
+              <td>User login & JWT token issuance</td>
+            </tr>
+            <tr>
+              <td><span class="badge-method badge-post">POST</span></td>
+              <td class="path-code">/api/auth/refresh-token</td>
+              <td>Auth (8082)</td>
+              <td><span class="badge-role-public">Public</span></td>
+              <td>Exchange refresh token for access token</td>
+            </tr>
+            <tr>
+              <td><span class="badge-method badge-get">GET</span></td>
+              <td class="path-code">/api/auth/credentials</td>
+              <td>Auth (8082)</td>
+              <td><span class="badge-role-admin">ROLE_ADMIN</span></td>
+              <td>List all credentials and security roles</td>
+            </tr>
+            <tr>
+              <td><span class="badge-method badge-put">PUT</span></td>
+              <td class="path-code">/api/auth/credentials/{id}/role</td>
+              <td>Auth (8082)</td>
+              <td><span class="badge-role-admin">ROLE_ADMIN</span></td>
+              <td>Promote or demote user authority</td>
+            </tr>
+
+            <!-- User Service -->
+            <tr>
+              <td><span class="badge-method badge-get">GET</span></td>
+              <td class="path-code">/api/v1/users/{id}</td>
+              <td>User (8084)</td>
+              <td><span class="badge-role-user">ROLE_USER, ADMIN</span></td>
+              <td>Get user profile by database ID</td>
+            </tr>
+            <tr>
+              <td><span class="badge-method badge-get">GET</span></td>
+              <td class="path-code">/api/v1/users/email/{email}</td>
+              <td>User (8084)</td>
+              <td><span class="badge-role-user">ROLE_USER, ADMIN</span></td>
+              <td>Lookup user profile by email address</td>
+            </tr>
+            <tr>
+              <td><span class="badge-method badge-put">PUT</span></td>
+              <td class="path-code">/api/v1/users/{id}</td>
+              <td>User (8084)</td>
+              <td><span class="badge-role-user">ROLE_USER, ADMIN</span></td>
+              <td>Update personal account details</td>
+            </tr>
+            <tr>
+              <td><span class="badge-method badge-get">GET</span></td>
+              <td class="path-code">/api/v1/users</td>
+              <td>User (8084)</td>
+              <td><span class="badge-role-admin">ROLE_ADMIN</span></td>
+              <td>List all registered user accounts</td>
+            </tr>
+            <tr>
+              <td><span class="badge-method badge-post">POST</span></td>
+              <td class="path-code">/api/v1/users</td>
+              <td>User (8084)</td>
+              <td><span class="badge-role-admin">ROLE_ADMIN</span></td>
+              <td>Create user profile directly</td>
+            </tr>
+            <tr>
+              <td><span class="badge-method badge-delete">DELETE</span></td>
+              <td class="path-code">/api/v1/users/{id}</td>
+              <td>User (8084)</td>
+              <td><span class="badge-role-admin">ROLE_ADMIN</span></td>
+              <td>Delete user profile account</td>
+            </tr>
+
+            <!-- Flight Service -->
+            <tr>
+              <td><span class="badge-method badge-get">GET</span></td>
+              <td class="path-code">/api/flights/search</td>
+              <td>Flight (8087)</td>
+              <td><span class="badge-role-user">ROLE_USER, ADMIN</span></td>
+              <td>Search flights by source and destination</td>
+            </tr>
+            <tr>
+              <td><span class="badge-method badge-get">GET</span></td>
+              <td class="path-code">/api/flights</td>
+              <td>Flight (8087)</td>
+              <td><span class="badge-role-user">ROLE_USER, ADMIN</span></td>
+              <td>Browse complete flight catalog</td>
+            </tr>
+            <tr>
+              <td><span class="badge-method badge-get">GET</span></td>
+              <td class="path-code">/api/flights/{id}</td>
+              <td>Flight (8087)</td>
+              <td><span class="badge-role-user">ROLE_USER, ADMIN</span></td>
+              <td>Get flight details, timetable & available seats</td>
+            </tr>
+            <tr>
+              <td><span class="badge-method badge-post">POST</span></td>
+              <td class="path-code">/api/admin/aircrafts</td>
+              <td>Flight (8087)</td>
+              <td><span class="badge-role-admin">ROLE_ADMIN</span></td>
+              <td>Register aircraft model into fleet</td>
+            </tr>
+            <tr>
+              <td><span class="badge-method badge-get">GET</span></td>
+              <td class="path-code">/api/admin/aircrafts</td>
+              <td>Flight (8087)</td>
+              <td><span class="badge-role-admin">ROLE_ADMIN</span></td>
+              <td>List all aircraft in fleet inventory</td>
+            </tr>
+            <tr>
+              <td><span class="badge-method badge-delete">DELETE</span></td>
+              <td class="path-code">/api/admin/aircrafts/{id}</td>
+              <td>Flight (8087)</td>
+              <td><span class="badge-role-admin">ROLE_ADMIN</span></td>
+              <td>Decommission fleet aircraft</td>
+            </tr>
+            <tr>
+              <td><span class="badge-method badge-post">POST</span></td>
+              <td class="path-code">/api/admin/flights</td>
+              <td>Flight (8087)</td>
+              <td><span class="badge-role-admin">ROLE_ADMIN</span></td>
+              <td>Schedule new commercial flight</td>
+            </tr>
+            <tr>
+              <td><span class="badge-method badge-put">PUT</span></td>
+              <td class="path-code">/api/admin/flights/{id}</td>
+              <td>Flight (8087)</td>
+              <td><span class="badge-role-admin">ROLE_ADMIN</span></td>
+              <td>Reschedule or update flight timings</td>
+            </tr>
+            <tr>
+              <td><span class="badge-method badge-delete">DELETE</span></td>
+              <td class="path-code">/api/admin/flights/{id}</td>
+              <td>Flight (8087)</td>
+              <td><span class="badge-role-admin">ROLE_ADMIN</span></td>
+              <td>Cancel commercial flight schedule</td>
+            </tr>
+
+            <!-- Fare Service -->
+            <tr>
+              <td><span class="badge-method badge-get">GET</span></td>
+              <td class="path-code">/api/fares/{id}</td>
+              <td>Fare (8089)</td>
+              <td><span class="badge-role-user">ROLE_USER, ADMIN</span></td>
+              <td>Get pricing breakdown by Fare ID</td>
+            </tr>
+            <tr>
+              <td><span class="badge-method badge-get">GET</span></td>
+              <td class="path-code">/api/fares/flight/{flightId}</td>
+              <td>Fare (8089)</td>
+              <td><span class="badge-role-user">ROLE_USER, ADMIN</span></td>
+              <td>Get fare configuration for flight</td>
+            </tr>
+            <tr>
+              <td><span class="badge-method badge-get">GET</span></td>
+              <td class="path-code">/api/fares</td>
+              <td>Fare (8089)</td>
+              <td><span class="badge-role-user">ROLE_USER, ADMIN</span></td>
+              <td>List all flight fares</td>
+            </tr>
+            <tr>
+              <td><span class="badge-method badge-post">POST</span></td>
+              <td class="path-code">/api/fares</td>
+              <td>Fare (8089)</td>
+              <td><span class="badge-role-admin">ROLE_ADMIN</span></td>
+              <td>Configure tiered pricing for flight</td>
+            </tr>
+            <tr>
+              <td><span class="badge-method badge-put">PUT</span></td>
+              <td class="path-code">/api/fares/{id}</td>
+              <td>Fare (8089)</td>
+              <td><span class="badge-role-admin">ROLE_ADMIN</span></td>
+              <td>Update fare prices, discounts, or taxes</td>
+            </tr>
+            <tr>
+              <td><span class="badge-method badge-delete">DELETE</span></td>
+              <td class="path-code">/api/fares/{id}</td>
+              <td>Fare (8089)</td>
+              <td><span class="badge-role-admin">ROLE_ADMIN</span></td>
+              <td>Delete fare configuration</td>
+            </tr>
+
+            <!-- Booking Service -->
+            <tr>
+              <td><span class="badge-method badge-post">POST</span></td>
+              <td class="path-code">/api/bookings</td>
+              <td>Booking (8088)</td>
+              <td><span class="badge-role-user">ROLE_USER, ADMIN</span></td>
+              <td>Reserve flight seats (Date, status & seat check)</td>
+            </tr>
+            <tr>
+              <td><span class="badge-method badge-get">GET</span></td>
+              <td class="path-code">/api/bookings/{id}</td>
+              <td>Booking (8088)</td>
+              <td><span class="badge-role-user">ROLE_USER, ADMIN</span></td>
+              <td>Get booking details by ID</td>
+            </tr>
+            <tr>
+              <td><span class="badge-method badge-get">GET</span></td>
+              <td class="path-code">/api/bookings/pnr/{pnr}</td>
+              <td>Booking (8088)</td>
+              <td><span class="badge-role-user">ROLE_USER, ADMIN</span></td>
+              <td>Lookup booking by PNR code</td>
+            </tr>
+            <tr>
+              <td><span class="badge-method badge-get">GET</span></td>
+              <td class="path-code">/api/bookings/user/{userId}</td>
+              <td>Booking (8088)</td>
+              <td><span class="badge-role-user">ROLE_USER, ADMIN</span></td>
+              <td>List all bookings for customer ID</td>
+            </tr>
+            <tr>
+              <td><span class="badge-method badge-get">GET</span></td>
+              <td class="path-code">/api/bookings</td>
+              <td>Booking (8088)</td>
+              <td><span class="badge-role-admin">ROLE_ADMIN</span></td>
+              <td>Administrative view of all airline bookings</td>
+            </tr>
+            <tr>
+              <td><span class="badge-method badge-delete">DELETE</span></td>
+              <td class="path-code">/api/bookings/{id}</td>
+              <td>Booking (8088)</td>
+              <td><span class="badge-role-user">ROLE_USER, ADMIN</span></td>
+              <td>Cancel flight booking (safeguarded)</td>
+            </tr>
+
+            <!-- Check-In Service -->
+            <tr>
+              <td><span class="badge-method badge-post">POST</span></td>
+              <td class="path-code">/api/check-ins</td>
+              <td>Check-In (8090)</td>
+              <td><span class="badge-role-user">ROLE_USER, ADMIN</span></td>
+              <td>Check in passenger & generate boarding pass</td>
+            </tr>
+            <tr>
+              <td><span class="badge-method badge-get">GET</span></td>
+              <td class="path-code">/api/check-ins/booking/{bookingId}</td>
+              <td>Check-In (8090)</td>
+              <td><span class="badge-role-user">ROLE_USER, ADMIN</span></td>
+              <td>Get check-in record by booking ID</td>
+            </tr>
+            <tr>
+              <td><span class="badge-method badge-get">GET</span></td>
+              <td class="path-code">/api/check-ins/{id}</td>
+              <td>Check-In (8090)</td>
+              <td><span class="badge-role-user">ROLE_USER, ADMIN</span></td>
+              <td>Get check-in record by ID</td>
+            </tr>
+            <tr>
+              <td><span class="badge-method badge-get">GET</span></td>
+              <td class="path-code">/api/check-ins</td>
+              <td>Check-In (8090)</td>
+              <td><span class="badge-role-admin">ROLE_ADMIN</span></td>
+              <td>List all passenger check-ins</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Presentation Checklist -->
+      <h2 class="section-title">🎓 Live Presentation Walkthrough Script</h2>
+      <div class="demo-steps">
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <strong>Open Swagger UI:</strong> Navigate to
+            <a href="/swagger-ui.html" target="_blank"
+              >http://localhost:8083/swagger-ui.html</a
+            >. Point out the single unified scrolling view containing all 7
+            microservices.
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <strong>Register Admin:</strong> Expand
+            <code>1. Authentication Service</code> &rarr; Execute
+            <code>POST /api/auth/register-admin</code> with header
+            <code>X-Admin-Setup-Key: AerobookAdminSetup2026</code>. Copy the
+            returned <code>accessToken</code>.
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <strong>Authorize Globally:</strong> Click the green
+            <strong>Authorize 🔓</strong> button at top right &rarr; Paste token
+            &rarr; Click <strong>Authorize</strong>. All requests now pass JWT
+            claims.
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <strong>Fleet Registration:</strong> Scroll down to
+            <code>3. Flight Scheduling Service</code> &rarr; Execute
+            <code>POST /api/admin/aircrafts</code> (Airbus A320, 180 seats).
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <strong>Schedule Flight:</strong> Execute
+            <code>POST /api/admin/flights</code> (Flight AI101 Mumbai &rarr;
+            Delhi).
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">6</div>
+          <div class="step-content">
+            <strong>Configure Fares:</strong> Scroll down to
+            <code>4. Fare & Pricing Service</code> &rarr; Execute
+            <code>POST /api/fares</code> (Economy ₹4500, Business ₹8500, Tax
+            18%).
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">7</div>
+          <div class="step-content">
+            <strong>Customer Flight Search:</strong> Scroll to
+            <code>3. Flight Scheduling Service</code> &rarr; Execute
+            <code>GET /api/flights/search?source=Mumbai&destination=Delhi</code
+            >.
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">8</div>
+          <div class="step-content">
+            <strong>Reserve Ticket:</strong> Scroll down to
+            <code>5. Booking & Messaging Service</code> &rarr; Execute
+            <code>POST /api/bookings</code> for Asha Khan. Note the generated
+            PNR and RabbitMQ event.
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">9</div>
+          <div class="step-content">
+            <strong>Airport Check-In:</strong> Scroll down to
+            <code>6. Airport Check-In Service</code> &rarr; Execute
+            <code>POST /api/check-ins</code> for Booking ID 1 (Seat 12A).
+            Observe issued boarding pass <code>BP-1-12A</code>.
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">10</div>
+          <div class="step-content">
+            <strong>Demonstrate RBAC Enforcement:</strong> Try accessing
+            <code>GET /api/bookings</code> without admin authority to show
+            <code>403 Forbidden</code> vs with admin authority (<code
+              >200 OK</code
+            >).
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      Aerobook Cloud Airline Platform &bull; API Gateway 8083 &bull; Academic
+      Evaluation Ready
+    </footer>
+
+    <script>
+      function filterEndpoints() {
+        var input = document.getElementById("endpointSearch");
+        var filter = input.value.toUpperCase();
+        var table = document.getElementById("endpointsTable");
+        var tr = table.getElementsByTagName("tr");
+
+        for (var i = 1; i < tr.length; i++) {
+          var visible = false;
+          var tds = tr[i].getElementsByTagName("td");
+          for (var j = 0; j < tds.length; j++) {
+            if (
+              tds[j] &&
+              tds[j].textContent.toUpperCase().indexOf(filter) > -1
+            ) {
+              visible = true;
+              break;
+            }
+          }
+          tr[i].style.display = visible ? "" : "none";
+        }
+      }
+    </script>
+  </body>
+</html>

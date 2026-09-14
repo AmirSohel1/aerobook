@@ -1,0 +1,592 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1650 1250" width="1650" height="1250" style="background-color: #000000; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <!-- Linear Gradients -->
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#18181b" />
+      <stop offset="50%" stop-color="#27272a" />
+      <stop offset="100%" stop-color="#18181b" />
+    </linearGradient>
+    <linearGradient id="entityGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#18181b" />
+      <stop offset="100%" stop-color="#09090b" />
+    </linearGradient>
+    <linearGradient id="processGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1c1917" />
+      <stop offset="100%" stop-color="#0c0a09" />
+    </linearGradient>
+    <linearGradient id="coreProcessGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#27272a" />
+      <stop offset="100%" stop-color="#111111" />
+    </linearGradient>
+    <linearGradient id="storeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#020617" />
+    </linearGradient>
+
+    <!-- Arrow Markers -->
+    <marker id="arrow-white" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#ffffff" />
+    </marker>
+    <marker id="arrow-cyan" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#38bdf8" />
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#4ade80" />
+    </marker>
+    <marker id="arrow-amber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#fbbf24" />
+    </marker>
+    <marker id="arrow-purple" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#c084fc" />
+    </marker>
+
+    <!-- Drop Glow Filter -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#ffffff" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <!-- Background Grid lines -->
+  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1f2937" stroke-width="0.5" stroke-opacity="0.4" />
+  </pattern>
+  <rect width="100%" height="100%" fill="#000000" />
+  <rect width="100%" height="100%" fill="url(#grid)" />
+
+  <!-- Outer Frame -->
+  <rect x="20" y="20" width="1610" height="1210" rx="12" fill="none" stroke="#27272a" stroke-width="1.5" />
+  <rect x="25" y="25" width="1600" height="1200" rx="10" fill="none" stroke="#3f3f46" stroke-width="0.75" />
+
+  <!-- ========================================================================= -->
+  <!-- HEADER BLOCK -->
+  <!-- ========================================================================= -->
+  <rect x="40" y="36" width="1570" height="84" rx="8" fill="url(#headerGrad)" stroke="#52525b" stroke-width="1" />
+  
+  <rect x="58" y="48" width="145" height="22" rx="4" fill="#000000" stroke="#ffffff" stroke-width="1" />
+  <text x="130" y="63" fill="#ffffff" font-size="11" font-weight="700" text-anchor="middle" letter-spacing="1">DFD LEVEL 1 MODEL</text>
+  
+  <text x="218" y="67" fill="#ffffff" font-size="22" font-weight="800" letter-spacing="0.5">AeroBook Flight Platform — Data Flow Architecture</text>
+  <text x="58" y="98" fill="#a1a1aa" font-size="11.5">Gane &amp; Sarson Standard  •  Microservice Transformation Nodes, Isolated Repositories &amp; External Integrations  •  Black Canvas System Standard</text>
+  
+  <!-- Right Header Badges -->
+  <rect x="1310" y="48" width="135" height="26" rx="13" fill="#18181b" stroke="#38bdf8" stroke-width="1" />
+  <circle cx="1325" cy="61" r="5" fill="#38bdf8" />
+  <text x="1382" y="65" fill="#e0f2fe" font-size="10.5" font-weight="600" text-anchor="middle">7 Core Processes</text>
+
+  <rect x="1458" y="48" width="135" height="26" rx="13" fill="#18181b" stroke="#4ade80" stroke-width="1" />
+  <circle cx="1473" cy="61" r="5" fill="#4ade80" />
+  <text x="1530" y="65" fill="#dcfce7" font-size="10.5" font-weight="600" text-anchor="middle">7 Isolated Stores</text>
+
+  <!-- ========================================================================= -->
+  <!-- LEGEND BLOCK -->
+  <!-- ========================================================================= -->
+  <g transform="translate(40, 130)">
+    <rect width="1570" height="38" rx="6" fill="#09090b" stroke="#27272a" stroke-width="1" />
+    <text x="20" y="24" fill="#ffffff" font-size="11" font-weight="700" letter-spacing="0.5">NOTATION GUIDE:</text>
+    
+    <!-- Entity Legend -->
+    <rect x="150" y="9" width="20" height="20" rx="3" fill="#18181b" stroke="#ffffff" stroke-width="1.5" />
+    <text x="178" y="23" fill="#e4e4e7" font-size="10.5">External Entity [E#] (Source/Sink)</text>
+
+    <!-- Process Legend -->
+    <rect x="420" y="8" width="22" height="22" rx="5" fill="#1c1917" stroke="#38bdf8" stroke-width="1.5" />
+    <circle cx="431" cy="19" r="4.5" fill="#38bdf8" />
+    <text x="452" y="23" fill="#e4e4e7" font-size="10.5">Process [P#] (Transformation Node)</text>
+
+    <!-- Data Store Legend -->
+    <path d="M 700 10 L 728 10 M 700 28 L 728 28 M 700 10 L 700 28" stroke="#4ade80" stroke-width="1.5" fill="none" />
+    <text x="738" y="23" fill="#e4e4e7" font-size="10.5">Data Store [D#] (Isolated DB / Broker)</text>
+
+    <!-- Data Flow Arrows Legend -->
+    <line x1="1020" y1="19" x2="1055" y2="19" stroke="#ffffff" stroke-width="1.5" marker-end="url(#arrow-white)" />
+    <text x="1065" y="23" fill="#e4e4e7" font-size="10.5">Synchronous REST Data Flow</text>
+
+    <line x1="1310" y1="19" x2="1345" y2="19" stroke="#c084fc" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-purple)" />
+    <text x="1355" y="23" fill="#e4e4e7" font-size="10.5">Async Event Notification (RabbitMQ)</text>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- ZONE 1: LEFT EXTERNAL ENTITIES (E1, E2) -->
+  <!-- ========================================================================= -->
+
+  <!-- E1: Passenger / Client -->
+  <g id="entity-e1" transform="translate(45, 230)">
+    <rect width="180" height="370" rx="8" fill="url(#entityGrad)" stroke="#ffffff" stroke-width="2" filter="url(#glow)" />
+    <rect x="12" y="12" width="40" height="24" rx="4" fill="#27272a" stroke="#ffffff" stroke-width="1" />
+    <text x="32" y="28" fill="#ffffff" font-size="12" font-weight="800" text-anchor="middle">E1</text>
+    
+    <text x="90" y="65" fill="#ffffff" font-size="16" font-weight="800" text-anchor="middle">PASSENGER</text>
+    <text x="90" y="85" fill="#38bdf8" font-size="11.5" font-weight="600" text-anchor="middle">Web &amp; Mobile Client</text>
+    
+    <line x1="12" y1="98" x2="168" y2="98" stroke="#3f3f46" stroke-width="1" />
+    
+    <text x="15" y="120" fill="#a1a1aa" font-size="10" font-weight="700">DATA GENERATED:</text>
+    <text x="15" y="140" fill="#e4e4e7" font-size="9.5">• Credentials (Auth)</text>
+    <text x="15" y="158" fill="#e4e4e7" font-size="9.5">• Profile &amp; Passport</text>
+    <text x="15" y="176" fill="#e4e4e7" font-size="9.5">• Search Criteria</text>
+    <text x="15" y="194" fill="#e4e4e7" font-size="9.5">• Booking Info &amp; Seats</text>
+    <text x="15" y="212" fill="#e4e4e7" font-size="9.5">• Payment Auth Token</text>
+    <text x="15" y="230" fill="#e4e4e7" font-size="9.5">• Web Check-In Request</text>
+
+    <line x1="12" y1="245" x2="168" y2="245" stroke="#3f3f46" stroke-width="1" />
+    <text x="15" y="265" fill="#a1a1aa" font-size="10" font-weight="700">DATA RECEIVED:</text>
+    <text x="15" y="285" fill="#38bdf8" font-size="9.5">• Signed JWT Token</text>
+    <text x="15" y="303" fill="#38bdf8" font-size="9.5">• Available Flight List</text>
+    <text x="15" y="321" fill="#4ade80" font-size="9.5">• Confirmed PNR Record</text>
+    <text x="15" y="339" fill="#38bdf8" font-size="9.5">• QR Boarding Pass</text>
+    <text x="15" y="357" fill="#c084fc" font-size="9.5">• Email &amp; SMS Alerts</text>
+  </g>
+
+  <!-- E2: Airline Administrator -->
+  <g id="entity-e2" transform="translate(45, 640)">
+    <rect width="180" height="235" rx="8" fill="url(#entityGrad)" stroke="#ffffff" stroke-width="2" filter="url(#glow)" />
+    <rect x="12" y="12" width="40" height="24" rx="4" fill="#27272a" stroke="#ffffff" stroke-width="1" />
+    <text x="32" y="28" fill="#ffffff" font-size="12" font-weight="800" text-anchor="middle">E2</text>
+    
+    <text x="90" y="65" fill="#ffffff" font-size="15" font-weight="800" text-anchor="middle">AIRLINE ADMIN</text>
+    <text x="90" y="85" fill="#fbbf24" font-size="11" font-weight="600" text-anchor="middle">Fleet &amp; Fare Manager</text>
+    
+    <line x1="12" y1="98" x2="168" y2="98" stroke="#3f3f46" stroke-width="1" />
+    
+    <text x="15" y="120" fill="#a1a1aa" font-size="10" font-weight="700">DATA GENERATED:</text>
+    <text x="15" y="140" fill="#e4e4e7" font-size="9.5">• Aircraft Models</text>
+    <text x="15" y="158" fill="#e4e4e7" font-size="9.5">• Flight Schedules</text>
+    <text x="15" y="176" fill="#e4e4e7" font-size="9.5">• Route Timetables</text>
+    <text x="15" y="194" fill="#e4e4e7" font-size="9.5">• Base Fares &amp; Surge</text>
+    <text x="15" y="212" fill="#e4e4e7" font-size="9.5">• Class Multipliers</text>
+
+    <text x="15" y="228" fill="#fbbf24" font-size="9.5" font-weight="600">Sinks: Fleet Manifests</text>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- ZONE 2: MIDDLE-LEFT PROCESSES (P1.0, P2.0, P3.0, P4.0) -->
+  <!-- ========================================================================= -->
+
+  <!-- P1.0: Authentication & JWT Engine -->
+  <g id="process-p1" transform="translate(280, 230)">
+    <rect width="250" height="115" rx="12" fill="url(#processGrad)" stroke="#38bdf8" stroke-width="2" />
+    <rect x="12" y="10" width="44" height="22" rx="11" fill="#0284c7" />
+    <text x="34" y="25" fill="#ffffff" font-size="11" font-weight="800" text-anchor="middle">P 1.0</text>
+    <text x="64" y="25" fill="#94a3b8" font-size="10" font-weight="700">auth-service : 8082</text>
+    
+    <text x="16" y="54" fill="#ffffff" font-size="14" font-weight="800">Authentication &amp; JWT</text>
+    <text x="16" y="70" fill="#94a3b8" font-size="10">Verifies credentials, BCrypt hashing,</text>
+    <text x="16" y="84" fill="#94a3b8" font-size="10">issues signed HMAC-SHA256 tokens.</text>
+
+    <rect x="14" y="93" width="105" height="15" rx="3" fill="#0f172a" stroke="#38bdf8" stroke-width="0.8" />
+    <text x="66" y="104" fill="#38bdf8" font-size="8.5" font-weight="700" text-anchor="middle">In: User Credentials</text>
+    
+    <rect x="126" y="93" width="110" height="15" rx="3" fill="#0f172a" stroke="#4ade80" stroke-width="0.8" />
+    <text x="181" y="104" fill="#4ade80" font-size="8.5" font-weight="700" text-anchor="middle">Out: Bearer Token</text>
+  </g>
+
+  <!-- P2.0: Profile & Customer Records -->
+  <g id="process-p2" transform="translate(280, 365)">
+    <rect width="250" height="115" rx="12" fill="url(#processGrad)" stroke="#38bdf8" stroke-width="2" />
+    <rect x="12" y="10" width="44" height="22" rx="11" fill="#0284c7" />
+    <text x="34" y="25" fill="#ffffff" font-size="11" font-weight="800" text-anchor="middle">P 2.0</text>
+    <text x="64" y="25" fill="#94a3b8" font-size="10" font-weight="700">user-service : 8084</text>
+    
+    <text x="16" y="54" fill="#ffffff" font-size="14" font-weight="800">Passenger Profile Store</text>
+    <text x="16" y="70" fill="#94a3b8" font-size="10">Maintains traveler identity, passport,</text>
+    <text x="16" y="84" fill="#94a3b8" font-size="10">emergency contacts &amp; travel addresses.</text>
+
+    <rect x="14" y="93" width="105" height="15" rx="3" fill="#0f172a" stroke="#38bdf8" stroke-width="0.8" />
+    <text x="66" y="104" fill="#38bdf8" font-size="8.5" font-weight="700" text-anchor="middle">In: Profile Data</text>
+    
+    <rect x="126" y="93" width="110" height="15" rx="3" fill="#0f172a" stroke="#4ade80" stroke-width="0.8" />
+    <text x="181" y="104" fill="#4ade80" font-size="8.5" font-weight="700" text-anchor="middle">Out: Profile Details</text>
+  </g>
+
+  <!-- P3.0: Flight Search & Scheduling Engine -->
+  <g id="process-p3" transform="translate(280, 500)">
+    <rect width="250" height="125" rx="12" fill="url(#processGrad)" stroke="#38bdf8" stroke-width="2" />
+    <rect x="12" y="10" width="44" height="22" rx="11" fill="#0284c7" />
+    <text x="34" y="25" fill="#ffffff" font-size="11" font-weight="800" text-anchor="middle">P 3.0</text>
+    <text x="64" y="25" fill="#94a3b8" font-size="10" font-weight="700">flight-service : 8087</text>
+    
+    <text x="16" y="54" fill="#ffffff" font-size="14" font-weight="800">Flight Search &amp; Schedule</text>
+    <text x="16" y="70" fill="#94a3b8" font-size="10">Queries routes, filters available dates,</text>
+    <text x="16" y="84" fill="#94a3b8" font-size="10">manages aircraft seat maps &amp; locks.</text>
+
+    <rect x="14" y="100" width="105" height="16" rx="3" fill="#0f172a" stroke="#38bdf8" stroke-width="0.8" />
+    <text x="66" y="112" fill="#38bdf8" font-size="8.5" font-weight="700" text-anchor="middle">In: Search Criteria</text>
+    
+    <rect x="126" y="100" width="110" height="16" rx="3" fill="#0f172a" stroke="#4ade80" stroke-width="0.8" />
+    <text x="181" y="112" fill="#4ade80" font-size="8.5" font-weight="700" text-anchor="middle">Out: Flight List+Seats</text>
+  </g>
+
+  <!-- P4.0: Dynamic Pricing & Fare Engine -->
+  <g id="process-p4" transform="translate(280, 645)">
+    <rect width="250" height="120" rx="12" fill="url(#processGrad)" stroke="#38bdf8" stroke-width="2" />
+    <rect x="12" y="10" width="44" height="22" rx="11" fill="#0284c7" />
+    <text x="34" y="25" fill="#ffffff" font-size="11" font-weight="800" text-anchor="middle">P 4.0</text>
+    <text x="64" y="25" fill="#94a3b8" font-size="10" font-weight="700">fare-service : 8089</text>
+    
+    <text x="16" y="54" fill="#ffffff" font-size="14" font-weight="800">Dynamic Fare Engine</text>
+    <text x="16" y="70" fill="#94a3b8" font-size="10">Computes base fare + demand surge</text>
+    <text x="16" y="84" fill="#94a3b8" font-size="10">+ cabin multiplier + tax breakdown.</text>
+
+    <rect x="14" y="96" width="105" height="15" rx="3" fill="#0f172a" stroke="#38bdf8" stroke-width="0.8" />
+    <text x="66" y="107" fill="#38bdf8" font-size="8.5" font-weight="700" text-anchor="middle">In: FlightId + Class</text>
+    
+    <rect x="126" y="96" width="110" height="15" rx="3" fill="#0f172a" stroke="#4ade80" stroke-width="0.8" />
+    <text x="181" y="107" fill="#4ade80" font-size="8.5" font-weight="700" text-anchor="middle">Out: Fare Quote ($)</text>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- ZONE 3: DATA STORES FOR P1-P4 (D1, D2, D3, D4) -->
+  <!-- ========================================================================= -->
+
+  <!-- D1: aerobook_auth_db -->
+  <g id="store-d1" transform="translate(565, 240)">
+    <rect width="210" height="75" rx="4" fill="url(#storeGrad)" stroke="#4ade80" stroke-width="1.5" />
+    <rect x="0" y="0" width="34" height="75" rx="4" fill="#14532d" />
+    <text x="17" y="44" fill="#ffffff" font-size="12" font-weight="900" text-anchor="middle">D1</text>
+    
+    <text x="44" y="24" fill="#4ade80" font-size="10.5" font-weight="700">aerobook_auth_db</text>
+    <text x="44" y="40" fill="#ffffff" font-size="11.5" font-weight="800">Auth Credentials</text>
+    <text x="44" y="58" fill="#94a3b8" font-size="9">users, roles, refresh_tokens</text>
+  </g>
+
+  <!-- D2: aerobook_user_db -->
+  <g id="store-d2" transform="translate(565, 375)">
+    <rect width="210" height="75" rx="4" fill="url(#storeGrad)" stroke="#4ade80" stroke-width="1.5" />
+    <rect x="0" y="0" width="34" height="75" rx="4" fill="#14532d" />
+    <text x="17" y="44" fill="#ffffff" font-size="12" font-weight="900" text-anchor="middle">D2</text>
+    
+    <text x="44" y="24" fill="#4ade80" font-size="10.5" font-weight="700">aerobook_user_db</text>
+    <text x="44" y="40" fill="#ffffff" font-size="11.5" font-weight="800">Customer Records</text>
+    <text x="44" y="58" fill="#94a3b8" font-size="9">user_profiles, passports, addr</text>
+  </g>
+
+  <!-- D3: aerobook_flight_db -->
+  <g id="store-d3" transform="translate(565, 515)">
+    <rect width="210" height="85" rx="4" fill="url(#storeGrad)" stroke="#4ade80" stroke-width="1.5" />
+    <rect x="0" y="0" width="34" height="85" rx="4" fill="#14532d" />
+    <text x="17" y="49" fill="#ffffff" font-size="12" font-weight="900" text-anchor="middle">D3</text>
+    
+    <text x="44" y="24" fill="#4ade80" font-size="10.5" font-weight="700">aerobook_flight_db</text>
+    <text x="44" y="40" fill="#ffffff" font-size="11.5" font-weight="800">Flight &amp; Fleet Data</text>
+    <text x="44" y="58" fill="#94a3b8" font-size="9">flights, aircraft, seats,</text>
+    <text x="44" y="72" fill="#94a3b8" font-size="9">seat_inventory (locks)</text>
+  </g>
+
+  <!-- D4: aerobook_fare_db -->
+  <g id="store-d4" transform="translate(565, 660)">
+    <rect width="210" height="75" rx="4" fill="url(#storeGrad)" stroke="#4ade80" stroke-width="1.5" />
+    <rect x="0" y="0" width="34" height="75" rx="4" fill="#14532d" />
+    <text x="17" y="44" fill="#ffffff" font-size="12" font-weight="900" text-anchor="middle">D4</text>
+    
+    <text x="44" y="24" fill="#4ade80" font-size="10.5" font-weight="700">aerobook_fare_db</text>
+    <text x="44" y="40" fill="#ffffff" font-size="11.5" font-weight="800">Pricing &amp; Surge Rules</text>
+    <text x="44" y="58" fill="#94a3b8" font-size="9">fares, surge_multipliers, tax</text>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- ZONE 4: TRANSACTIONAL & EVENT PROCESSES (P5.0, P6.0, P7.0) -->
+  <!-- ========================================================================= -->
+
+  <!-- P5.0: Flight Booking & PNR Orchestration -->
+  <g id="process-p5" transform="translate(855, 230)">
+    <rect width="320" height="205" rx="14" fill="url(#coreProcessGrad)" stroke="#ffffff" stroke-width="2.5" filter="url(#glow)" />
+    <rect x="14" y="12" width="48" height="24" rx="12" fill="#ffffff" />
+    <text x="38" y="28" fill="#000000" font-size="11" font-weight="900" text-anchor="middle">P 5.0</text>
+    <text x="72" y="28" fill="#ffffff" font-size="11" font-weight="800">booking-service : 8088 (CORE ENGINE)</text>
+    
+    <text x="20" y="62" fill="#ffffff" font-size="16" font-weight="800">Flight Booking &amp; PNR Workflow</text>
+    <text x="20" y="82" fill="#e4e4e7" font-size="10.5">• Orchestrates multi-passenger reservations</text>
+    <text x="20" y="98" fill="#e4e4e7" font-size="10.5">• Validates seat availability lock with P3.0</text>
+    <text x="20" y="114" fill="#e4e4e7" font-size="10.5">• Inquires dynamic pricing quote with P4.0</text>
+    <text x="20" y="130" fill="#e4e4e7" font-size="10.5">• Coordinates payment authorization with E4</text>
+    <text x="20" y="146" fill="#e4e4e7" font-size="10.5">• Generates 6-character PNR &amp; commits record</text>
+    <text x="20" y="162" fill="#e4e4e7" font-size="10.5">• Publishes async BookingConfirmedEvent</text>
+
+    <rect x="18" y="172" width="138" height="20" rx="4" fill="#0f172a" stroke="#38bdf8" stroke-width="1" />
+    <text x="87" y="186" fill="#38bdf8" font-size="9" font-weight="700" text-anchor="middle">In: Booking Request</text>
+    
+    <rect x="164" y="172" width="138" height="20" rx="4" fill="#0f172a" stroke="#4ade80" stroke-width="1" />
+    <text x="233" y="186" fill="#4ade80" font-size="9" font-weight="700" text-anchor="middle">Out: PNR + E-Ticket</text>
+  </g>
+
+  <!-- P6.0: Airport Web Check-In & Gate Verification -->
+  <g id="process-p6" transform="translate(855, 470)">
+    <rect width="320" height="175" rx="14" fill="url(#processGrad)" stroke="#38bdf8" stroke-width="2" />
+    <rect x="14" y="12" width="48" height="24" rx="12" fill="#0284c7" />
+    <text x="38" y="28" fill="#ffffff" font-size="11" font-weight="800" text-anchor="middle">P 6.0</text>
+    <text x="72" y="28" fill="#94a3b8" font-size="10.5" font-weight="700">check-in-service : 8090</text>
+    
+    <text x="20" y="60" fill="#ffffff" font-size="15" font-weight="800">Web Check-In &amp; Gate Engine</text>
+    <text x="20" y="78" fill="#94a3b8" font-size="10.5">• Checks flight departure window (T-24h to T-1h)</text>
+    <text x="20" y="94" fill="#94a3b8" font-size="10.5">• Verifies PNR &amp; passenger eligibility with D5</text>
+    <text x="20" y="110" fill="#94a3b8" font-size="10.5">• Assigns seat, generates encrypted QR pass</text>
+    <text x="20" y="126" fill="#94a3b8" font-size="10.5">• Verifies gate barcode scans for E3 gate staff</text>
+
+    <rect x="18" y="140" width="138" height="20" rx="4" fill="#0f172a" stroke="#38bdf8" stroke-width="1" />
+    <text x="87" y="154" fill="#38bdf8" font-size="9" font-weight="700" text-anchor="middle">In: PNR + Last Name</text>
+    
+    <rect x="164" y="140" width="138" height="20" rx="4" fill="#0f172a" stroke="#4ade80" stroke-width="1" />
+    <text x="233" y="154" fill="#4ade80" font-size="9" font-weight="700" text-anchor="middle">Out: QR Boarding Pass</text>
+  </g>
+
+  <!-- P7.0: Async Notification Broker -->
+  <g id="process-p7" transform="translate(855, 680)">
+    <rect width="320" height="155" rx="14" fill="url(#processGrad)" stroke="#c084fc" stroke-width="2" />
+    <rect x="14" y="12" width="48" height="24" rx="12" fill="#9333ea" />
+    <text x="38" y="28" fill="#ffffff" font-size="11" font-weight="800" text-anchor="middle">P 7.0</text>
+    <text x="72" y="28" fill="#a1a1aa" font-size="10.5" font-weight="700">RabbitMQ Event Consumer Worker</text>
+    
+    <text x="20" y="60" fill="#ffffff" font-size="15" font-weight="800">Async Notification Dispatcher</text>
+    <text x="20" y="78" fill="#94a3b8" font-size="10.5">• Subscribes to queue 'booking.events'</text>
+    <text x="20" y="94" fill="#94a3b8" font-size="10.5">• Deserializes JSON BookingConfirmedEvent</text>
+    <text x="20" y="110" fill="#94a3b8" font-size="10.5">• Formats HTML flight itinerary &amp; SMS payload</text>
+
+    <rect x="18" y="124" width="138" height="18" rx="4" fill="#0f172a" stroke="#c084fc" stroke-width="0.8" />
+    <text x="87" y="137" fill="#c084fc" font-size="8.5" font-weight="700" text-anchor="middle">In: AMQP Event Queue</text>
+    
+    <rect x="164" y="124" width="138" height="18" rx="4" fill="#0f172a" stroke="#4ade80" stroke-width="0.8" />
+    <text x="233" y="137" fill="#4ade80" font-size="8.5" font-weight="700" text-anchor="middle">Out: Dispatch API Call</text>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- ZONE 5 & 6: RIGHT DATA STORES (D5, D6, D7) & ENTITIES (E4, E3, E5) -->
+  <!-- ========================================================================= -->
+
+  <!-- E4: Third-Party Payment Gateway (Positioned above D5) -->
+  <g id="entity-e4" transform="translate(1450, 230)">
+    <rect width="160" height="95" rx="8" fill="url(#entityGrad)" stroke="#ffffff" stroke-width="2" filter="url(#glow)" />
+    <rect x="10" y="10" width="34" height="20" rx="4" fill="#27272a" stroke="#ffffff" stroke-width="1" />
+    <text x="27" y="24" fill="#ffffff" font-size="10" font-weight="800" text-anchor="middle">E4</text>
+    
+    <text x="80" y="32" fill="#ffffff" font-size="12" font-weight="800" text-anchor="middle">PAYMENT GATEWAY</text>
+    <text x="80" y="48" fill="#4ade80" font-size="10" font-weight="600" text-anchor="middle">Stripe / Razorpay API</text>
+    
+    <line x1="10" y1="56" x2="150" y2="56" stroke="#3f3f46" stroke-width="1" />
+    <text x="14" y="72" fill="#a1a1aa" font-size="9">Sink: Auth Charge ($)</text>
+    <text x="14" y="86" fill="#4ade80" font-size="9">Source: Txn Status Callback</text>
+  </g>
+
+  <!-- D5: aerobook_booking_db (Positioned at y=345) -->
+  <g id="store-d5" transform="translate(1220, 345)">
+    <rect width="205" height="90" rx="4" fill="url(#storeGrad)" stroke="#ffffff" stroke-width="2" />
+    <rect x="0" y="0" width="34" height="90" rx="4" fill="#ffffff" />
+    <text x="17" y="52" fill="#000000" font-size="13" font-weight="900" text-anchor="middle">D5</text>
+    
+    <text x="44" y="24" fill="#38bdf8" font-size="10.5" font-weight="700">aerobook_booking_db</text>
+    <text x="44" y="42" fill="#ffffff" font-size="12" font-weight="800">PNR &amp; Reservations</text>
+    <text x="44" y="60" fill="#e4e4e7" font-size="9">bookings, passengers,</text>
+    <text x="44" y="74" fill="#e4e4e7" font-size="9">booking_payments, logs</text>
+  </g>
+
+  <!-- E3: Airport Gate Staff (Positioned at y=470) -->
+  <g id="entity-e3" transform="translate(1450, 470)">
+    <rect width="160" height="90" rx="8" fill="url(#entityGrad)" stroke="#ffffff" stroke-width="2" filter="url(#glow)" />
+    <rect x="10" y="10" width="34" height="20" rx="4" fill="#27272a" stroke="#ffffff" stroke-width="1" />
+    <text x="27" y="24" fill="#ffffff" font-size="10" font-weight="800" text-anchor="middle">E3</text>
+    
+    <text x="80" y="32" fill="#ffffff" font-size="11.5" font-weight="800" text-anchor="middle">AIRPORT GATE STAFF</text>
+    <text x="80" y="48" fill="#38bdf8" font-size="10" font-weight="600" text-anchor="middle">Barcode Scanner Device</text>
+    
+    <line x1="10" y1="56" x2="150" y2="56" stroke="#3f3f46" stroke-width="1" />
+    <text x="14" y="72" fill="#a1a1aa" font-size="9">Source: QR Boarding Scan</text>
+    <text x="14" y="86" fill="#38bdf8" font-size="9">Sink: Gate Clearance OK</text>
+  </g>
+
+  <!-- D6: aerobook_checkin_db (Positioned at y=575) -->
+  <g id="store-d6" transform="translate(1220, 575)">
+    <rect width="205" height="85" rx="4" fill="url(#storeGrad)" stroke="#4ade80" stroke-width="1.5" />
+    <rect x="0" y="0" width="34" height="85" rx="4" fill="#14532d" />
+    <text x="17" y="49" fill="#ffffff" font-size="13" font-weight="900" text-anchor="middle">D6</text>
+    
+    <text x="44" y="24" fill="#4ade80" font-size="10.5" font-weight="700">aerobook_checkin_db</text>
+    <text x="44" y="42" fill="#ffffff" font-size="12" font-weight="800">Boarding &amp; Gate Store</text>
+    <text x="44" y="60" fill="#94a3b8" font-size="9">check_ins, boarding_passes,</text>
+    <text x="44" y="74" fill="#94a3b8" font-size="9">gate_verifications, qr_records</text>
+  </g>
+
+  <!-- D7: RabbitMQ Broker (AMQP Queues) (Positioned at y=685) -->
+  <g id="store-d7" transform="translate(1220, 685)">
+    <rect width="205" height="80" rx="4" fill="url(#storeGrad)" stroke="#c084fc" stroke-width="1.5" />
+    <rect x="0" y="0" width="34" height="80" rx="4" fill="#7e22ce" />
+    <text x="17" y="47" fill="#ffffff" font-size="13" font-weight="900" text-anchor="middle">D7</text>
+    
+    <text x="44" y="24" fill="#c084fc" font-size="10.5" font-weight="700">RabbitMQ Broker</text>
+    <text x="44" y="42" fill="#ffffff" font-size="12" font-weight="800">AMQP Message Queues</text>
+    <text x="44" y="60" fill="#94a3b8" font-size="9">Exchange: aerobook.direct</text>
+    <text x="44" y="74" fill="#94a3b8" font-size="9">Queue: booking.events</text>
+  </g>
+
+  <!-- E5: Notification Delivery Service (Positioned at y=685) -->
+  <g id="entity-e5" transform="translate(1450, 685)">
+    <rect width="160" height="150" rx="8" fill="url(#entityGrad)" stroke="#ffffff" stroke-width="2" filter="url(#glow)" />
+    <rect x="10" y="10" width="34" height="20" rx="4" fill="#27272a" stroke="#ffffff" stroke-width="1" />
+    <text x="27" y="24" fill="#ffffff" font-size="10" font-weight="800" text-anchor="middle">E5</text>
+    
+    <text x="80" y="52" fill="#ffffff" font-size="12.5" font-weight="800" text-anchor="middle">NOTIFICATION</text>
+    <text x="80" y="68" fill="#ffffff" font-size="12.5" font-weight="800" text-anchor="middle">DELIVERY</text>
+    <text x="80" y="85" fill="#c084fc" font-size="10" font-weight="600" text-anchor="middle">SendGrid / Twilio</text>
+    
+    <line x1="10" y1="98" x2="150" y2="98" stroke="#3f3f46" stroke-width="1" />
+    <text x="14" y="116" fill="#a1a1aa" font-size="9">Source: Dispatch API</text>
+    <text x="14" y="132" fill="#c084fc" font-size="9">Sink: Email / SMS Out</text>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- DIRECT LOCAL DATA STORE FLOWS (Clean horizontal links) -->
+  <!-- ========================================================================= -->
+
+  <!-- P1.0 <-> D1 -->
+  <path d="M 530 275 L 565 275" fill="none" stroke="#4ade80" stroke-width="1.8" marker-end="url(#arrow-green)" />
+
+  <!-- P2.0 <-> D2 -->
+  <path d="M 530 410 L 565 410" fill="none" stroke="#4ade80" stroke-width="1.8" marker-end="url(#arrow-green)" />
+
+  <!-- P3.0 <-> D3 -->
+  <path d="M 530 555 L 565 555" fill="none" stroke="#4ade80" stroke-width="1.8" marker-end="url(#arrow-green)" />
+
+  <!-- P4.0 <-> D4 -->
+  <path d="M 530 700 L 565 700" fill="none" stroke="#4ade80" stroke-width="1.8" marker-end="url(#arrow-green)" />
+
+  <!-- P5.0 <-> D5 (Side route into D5) -->
+  <path d="M 1175 385 L 1220 385" fill="none" stroke="#ffffff" stroke-width="2" marker-end="url(#arrow-white)" />
+
+  <!-- P6.0 <-> D6 (Side route into D6) -->
+  <path d="M 1175 615 L 1220 615" fill="none" stroke="#4ade80" stroke-width="1.8" marker-end="url(#arrow-green)" />
+
+  <!-- P5.0 -> D7 (Publish to RabbitMQ Queue - Runs down alley at x=1195) -->
+  <path d="M 1175 420 L 1195 420 L 1195 715 L 1220 715" fill="none" stroke="#c084fc" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrow-purple)" />
+  <rect x="1135" y="650" width="120" height="18" rx="4" fill="#000000" stroke="#c084fc" stroke-width="0.8" />
+  <text x="1195" y="662" fill="#c084fc" font-size="8.5" font-weight="700" text-anchor="middle">Publish Booking Event</text>
+
+  <!-- D7 -> P7.0 (Consume from RabbitMQ) -->
+  <path d="M 1220 745 L 1175 745" fill="none" stroke="#c084fc" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrow-purple)" />
+  <rect x="1165" y="736" width="95" height="18" rx="4" fill="#000000" stroke="#c084fc" stroke-width="0.8" />
+  <text x="1212" y="748" fill="#c084fc" font-size="8.5" font-weight="700" text-anchor="middle">Consume Event</text>
+
+  <!-- ========================================================================= -->
+  <!-- ACTOR <-> PROCESS FLOWS -->
+  <!-- ========================================================================= -->
+
+  <!-- Flow 1: E1 Passenger -> P1.0 (Credentials) -->
+  <path d="M 225 255 L 280 255" fill="none" stroke="#ffffff" stroke-width="1.8" marker-end="url(#arrow-white)" />
+  <text x="252" y="248" fill="#ffffff" font-size="8" font-weight="700" text-anchor="middle">1. Credentials</text>
+
+  <!-- Flow 2: P1.0 -> E1 (JWT Token) -->
+  <path d="M 280 285 L 225 285" fill="none" stroke="#38bdf8" stroke-width="1.8" marker-end="url(#arrow-cyan)" />
+  <text x="252" y="300" fill="#38bdf8" font-size="8" font-weight="700" text-anchor="middle">2. JWT Token</text>
+
+  <!-- Flow: E1 <-> P2.0 (Profile CRUD) -->
+  <path d="M 225 395 L 280 395" fill="none" stroke="#ffffff" stroke-width="1.5" marker-end="url(#arrow-white)" />
+  <path d="M 280 420 L 225 420" fill="none" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#arrow-cyan)" />
+  <text x="252" y="388" fill="#ffffff" font-size="8" font-weight="700" text-anchor="middle">Profile Data</text>
+  <text x="252" y="433" fill="#38bdf8" font-size="8" font-weight="700" text-anchor="middle">Verified Profile</text>
+
+  <!-- Flow 3: E1 -> P3.0 (Search Criteria) -->
+  <path d="M 225 530 L 280 530" fill="none" stroke="#ffffff" stroke-width="1.8" marker-end="url(#arrow-white)" />
+  <text x="252" y="523" fill="#ffffff" font-size="8" font-weight="700" text-anchor="middle">3. Search Flights</text>
+
+  <!-- Flow 4: P3.0 -> E1 (Available Flights + Seats) -->
+  <path d="M 280 560 L 225 560" fill="none" stroke="#38bdf8" stroke-width="1.8" marker-end="url(#arrow-cyan)" />
+  <text x="252" y="575" fill="#38bdf8" font-size="8" font-weight="700" text-anchor="middle">4. Flight Catalog</text>
+
+  <!-- Flow: E2 Admin -> P3.0 & P4.0 -->
+  <path d="M 225 670 L 280 610" fill="none" stroke="#fbbf24" stroke-width="1.8" marker-end="url(#arrow-amber)" />
+  <text x="252" y="645" fill="#fbbf24" font-size="8" font-weight="700" text-anchor="middle">Schedules</text>
+
+  <path d="M 225 710 L 280 710" fill="none" stroke="#fbbf24" stroke-width="1.8" marker-end="url(#arrow-amber)" />
+  <text x="252" y="703" fill="#fbbf24" font-size="8" font-weight="700" text-anchor="middle">Fare Rules</text>
+
+  <!-- ========================================================================= -->
+  <!-- HIGHWAYS: CORE BOOKING & CHECK-IN FLOWS -->
+  <!-- ========================================================================= -->
+
+  <!-- P3.0 & P4.0 into P5.0 (Seat lock & Fare quote routed in alley between C and D) -->
+  <path d="M 530 515 L 810 515 L 810 345 L 855 345" fill="none" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#arrow-cyan)" />
+  <rect x="760" y="440" width="100" height="18" rx="3" fill="#000000" stroke="#0284c7" stroke-width="0.8" />
+  <text x="810" y="452" fill="#38bdf8" font-size="8" font-weight="700" text-anchor="middle">Locked Seat Info</text>
+
+  <path d="M 530 655 L 825 655 L 825 385 L 855 385" fill="none" stroke="#4ade80" stroke-width="1.5" marker-end="url(#arrow-green)" />
+  <rect x="775" y="560" width="100" height="18" rx="3" fill="#000000" stroke="#14532d" stroke-width="0.8" />
+  <text x="825" y="572" fill="#4ade80" font-size="8" font-weight="700" text-anchor="middle">Dynamic Fare Total</text>
+
+  <!-- Flow 5: E1 -> P5.0 Booking Request via Top Clear Highway (y=180) -->
+  <path d="M 135 230 L 135 180 L 950 180 L 950 230" fill="none" stroke="#ffffff" stroke-width="2.2" marker-end="url(#arrow-white)" />
+  <rect x="470" y="170" width="180" height="20" rx="4" fill="#000000" stroke="#ffffff" stroke-width="1" />
+  <text x="560" y="184" fill="#ffffff" font-size="10" font-weight="800" text-anchor="middle">5. Create Booking Request</text>
+
+  <!-- Flow 8: P5.0 -> E1 Booking Confirmed + PNR via Top Clear Highway (y=202) -->
+  <path d="M 1030 230 L 1030 202 L 165 202 L 165 230" fill="none" stroke="#4ade80" stroke-width="2" marker-end="url(#arrow-green)" />
+  <rect x="680" y="192" width="200" height="20" rx="4" fill="#000000" stroke="#4ade80" stroke-width="1" />
+  <text x="780" y="206" fill="#4ade80" font-size="10" font-weight="800" text-anchor="middle">8. Booking Confirmed + 6-Char PNR</text>
+
+  <!-- Flow 6 & 7: P5.0 <-> E4 Payment Gateway (Direct unhindered highway above D5) -->
+  <path d="M 1175 255 L 1450 255" fill="none" stroke="#ffffff" stroke-width="2" marker-end="url(#arrow-white)" />
+  <rect x="1245" y="245" width="145" height="18" rx="4" fill="#000000" stroke="#ffffff" stroke-width="0.8" />
+  <text x="1317" y="258" fill="#ffffff" font-size="9" font-weight="700" text-anchor="middle">6. Authorize Charge ($)</text>
+
+  <path d="M 1450 285 L 1175 285" fill="none" stroke="#4ade80" stroke-width="2" marker-end="url(#arrow-green)" />
+  <rect x="1245" y="275" width="145" height="18" rx="4" fill="#000000" stroke="#4ade80" stroke-width="0.8" />
+  <text x="1317" y="288" fill="#4ade80" font-size="9" font-weight="700" text-anchor="middle">7. Payment Confirmed (TxnId)</text>
+
+  <!-- Flow 9 & 10: E1 <-> P6.0 Web Check-In Highway (Bottom clear lanes at y=890 & y=915) -->
+  <path d="M 180 600 L 180 890 L 890 890 L 890 645" fill="none" stroke="#ffffff" stroke-width="1.8" marker-end="url(#arrow-white)" />
+  <rect x="350" y="880" width="170" height="20" rx="4" fill="#000000" stroke="#ffffff" stroke-width="1" />
+  <text x="435" y="894" fill="#ffffff" font-size="9.5" font-weight="700" text-anchor="middle">9. Web Check-In (PNR + Name)</text>
+
+  <path d="M 950 645 L 950 915 L 205 915 L 205 600" fill="none" stroke="#38bdf8" stroke-width="1.8" marker-end="url(#arrow-cyan)" />
+  <rect x="550" y="905" width="180" height="20" rx="4" fill="#000000" stroke="#0284c7" stroke-width="1" />
+  <text x="640" y="919" fill="#38bdf8" font-size="9.5" font-weight="700" text-anchor="middle">10. Digital QR Boarding Pass</text>
+
+  <!-- Flow: P6.0 verifies with D5 Booking Store -->
+  <path d="M 980 470 L 980 435" fill="none" stroke="#ffffff" stroke-width="1.5" marker-end="url(#arrow-white)" />
+  <rect x="925" y="442" width="110" height="16" rx="3" fill="#000000" stroke="#52525b" stroke-width="0.8" />
+  <text x="980" y="454" fill="#ffffff" font-size="8.5" font-weight="700" text-anchor="middle">Verify PNR Record</text>
+
+  <!-- Flow 11 & 12: E3 Gate Staff <-> P6.0 Gate Clearance (Direct unhindered highway above D6) -->
+  <path d="M 1450 495 L 1175 495" fill="none" stroke="#ffffff" stroke-width="1.8" marker-end="url(#arrow-white)" />
+  <rect x="1245" y="485" width="150" height="18" rx="4" fill="#000000" stroke="#ffffff" stroke-width="0.8" />
+  <text x="1320" y="498" fill="#ffffff" font-size="9" font-weight="700" text-anchor="middle">11. Scan QR Code at Gate</text>
+
+  <path d="M 1175 525 L 1450 525" fill="none" stroke="#4ade80" stroke-width="1.8" marker-end="url(#arrow-green)" />
+  <rect x="1245" y="515" width="150" height="18" rx="4" fill="#000000" stroke="#4ade80" stroke-width="0.8" />
+  <text x="1320" y="528" fill="#4ade80" font-size="9" font-weight="700" text-anchor="middle">12. Gate Clearance OK</text>
+
+  <!-- Flow: P7.0 -> E5 Notification Service (Routed underneath D7 at y=795) -->
+  <path d="M 1175 795 L 1450 795" fill="none" stroke="#c084fc" stroke-width="2" marker-end="url(#arrow-purple)" />
+  <rect x="1255" y="785" width="150" height="20" rx="4" fill="#000000" stroke="#c084fc" stroke-width="0.8" />
+  <text x="1330" y="799" fill="#c084fc" font-size="9.5" font-weight="800" text-anchor="middle">Dispatch Email &amp; SMS</text>
+
+  <!-- Flow: E5 -> E1 Async Delivery Loopback Highway (Lies along y=980) -->
+  <path d="M 1535 835 L 1535 980 L 85 980 L 85 600" fill="none" stroke="#c084fc" stroke-width="1.8" stroke-dasharray="4,4" marker-end="url(#arrow-purple)" />
+  <rect x="680" y="970" width="280" height="20" rx="4" fill="#000000" stroke="#c084fc" stroke-width="1" />
+  <text x="820" y="984" fill="#e9d5ff" font-size="10" font-weight="700" text-anchor="middle">Asynchronous Delivery: Email Ticket &amp; SMS PNR Alert</text>
+
+  <!-- ========================================================================= -->
+  <!-- BOTTOM SYSTEM CHARACTERISTICS & DATA GOVERNANCE -->
+  <!-- ========================================================================= -->
+  <g transform="translate(40, 1040)">
+    <rect width="1570" height="155" rx="8" fill="#0d0d0f" stroke="#27272a" stroke-width="1" />
+    
+    <text x="25" y="28" fill="#ffffff" font-size="13" font-weight="800">AEROBOOK DATA FLOW GOVERNANCE &amp; ARCHITECTURAL GUARANTEES</text>
+    <line x1="25" y1="38" x2="1545" y2="38" stroke="#27272a" stroke-width="1" />
+
+    <!-- Column 1 -->
+    <text x="25" y="60" fill="#38bdf8" font-size="11" font-weight="700">1. Database-Per-Service Isolation (D1 - D6)</text>
+    <text x="25" y="78" fill="#d4d4d8" font-size="10">Each microservice encapsulates its own MySQL schema (aerobook_auth_db, aerobook_flight_db, etc.).</text>
+    <text x="25" y="94" fill="#a1a1aa" font-size="9.5">Direct foreign keys across databases are strictly prohibited; entity correlation occurs via immutable UUIDs and PNRs.</text>
+    <text x="25" y="110" fill="#a1a1aa" font-size="9.5">Prevents tight coupling, deadlock cascades, and allows independent scaling and horizontal database replication.</text>
+
+    <!-- Column 2 -->
+    <text x="560" y="60" fill="#4ade80" font-size="11" font-weight="700">2. Transaction Boundary &amp; Payment Security (E4, P5.0)</text>
+    <text x="560" y="78" fill="#d4d4d8" font-size="10">Zero plain-text credit card storage. Card tokens are authorized exclusively through third-party gateways (E4).</text>
+    <text x="560" y="94" fill="#a1a1aa" font-size="9.5">Booking saga coordinates two-phase seat lock verification before committing the reservation in aerobook_booking_db.</text>
+    <text x="560" y="110" fill="#a1a1aa" font-size="9.5">If payment fails or times out, the transient seat hold is immediately relinquished back into the flight inventory.</text>
+
+    <!-- Column 3 -->
+    <text x="1100" y="60" fill="#c084fc" font-size="11" font-weight="700">3. Eventual Consistency &amp; AMQP Messaging (D7, P7.0)</text>
+    <text x="1100" y="78" fill="#d4d4d8" font-size="10">High-throughput, asynchronous decoupling via RabbitMQ message broker with guaranteed delivery.</text>
+    <text x="1100" y="94" fill="#a1a1aa" font-size="9.5">Booking confirmation emails and SMS alerts are processed out-of-band by asynchronous notification consumers.</text>
+    <text x="1100" y="110" fill="#a1a1aa" font-size="9.5">Dead-Letter Exchanges (DLX) and retry backoff policies ensure zero notification drop during high-load surges.</text>
+  </g>
+</svg>
+

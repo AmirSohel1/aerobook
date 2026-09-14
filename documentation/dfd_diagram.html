@@ -1,0 +1,738 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>AeroBook - Data Flow Diagram (DFD Level 0 &amp; Level 1)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        background-color: #000000;
+        color: #ffffff;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        overflow-x: hidden;
+      }
+      .blueprint-grid {
+        background-size: 30px 30px;
+        background-image: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.08) 1px,
+          transparent 1px
+        );
+      }
+      .node-interactive {
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+      }
+      .node-interactive:hover rect {
+        stroke-width: 3.5px !important;
+        filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.9));
+      }
+      .highlight-active {
+        filter: drop-shadow(0 0 14px #ffffff) !important;
+        stroke-width: 4px !important;
+      }
+      .dimmed {
+        opacity: 0.15 !important;
+        transition: opacity 0.3s ease;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-black text-white min-h-screen p-4 blueprint-grid flex flex-col items-center"
+  >
+    <!-- Header Bar -->
+    <header
+      class="w-full max-w-[1650px] flex flex-col md:flex-row items-center justify-between border-b-2 border-white pb-4 mb-4 gap-4"
+    >
+      <div>
+        <div class="flex items-center gap-3">
+          <span
+            class="text-xs tracking-widest uppercase border border-white px-2 py-0.5 rounded font-mono"
+            >Gane &amp; Sarson DFD 1.0</span
+          >
+          <span
+            class="text-xs tracking-widest uppercase bg-white text-black px-2 py-0.5 rounded font-bold font-mono"
+            >Black Canvas • White Marker</span
+          >
+        </div>
+        <h1 class="text-2xl md:text-3xl font-black tracking-tight mt-1">
+          AeroBook Flight Platform — Data Flow Diagram
+        </h1>
+        <p class="text-xs text-zinc-400 mt-0.5">
+          End-to-end data transformation, storage isolation boundaries, and
+          asynchronous message broker topology.
+        </p>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex flex-wrap items-center gap-2">
+        <button
+          onclick="zoomIn()"
+          class="px-3 py-1.5 bg-zinc-900 border border-zinc-700 hover:border-white text-xs font-mono rounded transition"
+        >
+          Zoom +
+        </button>
+        <button
+          onclick="zoomOut()"
+          class="px-3 py-1.5 bg-zinc-900 border border-zinc-700 hover:border-white text-xs font-mono rounded transition"
+        >
+          Zoom -
+        </button>
+        <button
+          onclick="resetZoom()"
+          class="px-3 py-1.5 bg-zinc-900 border border-zinc-700 hover:border-white text-xs font-mono rounded transition"
+        >
+          Reset (100%)
+        </button>
+        <a
+          href="AeroBook_DFD_Diagram.svg"
+          download="AeroBook_DFD_Diagram.svg"
+          class="px-3 py-1.5 bg-zinc-900 border border-zinc-700 hover:border-white text-xs font-mono rounded transition flex items-center gap-1"
+        >
+          <span>SVG Export</span>
+        </a>
+        <a
+          href="AeroBook_DFD_Diagram.png"
+          download="AeroBook_DFD_Diagram.png"
+          class="px-3 py-1.5 bg-zinc-900 border border-zinc-700 hover:border-white text-xs font-mono rounded transition flex items-center gap-1"
+        >
+          <span>PNG Export</span>
+        </a>
+        <a
+          href="AeroBook_DFD_Guide.pdf"
+          target="_blank"
+          class="px-3 py-1.5 bg-white text-black font-bold text-xs font-mono rounded hover:bg-zinc-200 transition flex items-center gap-1"
+        >
+          <span>PDF Guide (8 Pgs)</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Filter & Mode Selector -->
+    <div
+      class="w-full max-w-[1650px] flex flex-wrap items-center justify-between gap-3 bg-zinc-950 border border-zinc-800 p-2.5 rounded-lg mb-4"
+    >
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="text-xs font-bold text-zinc-400 uppercase font-mono mr-2"
+          >Highlight Scope:</span
+        >
+        <button
+          onclick="filterScope('all')"
+          id="btn-all"
+          class="px-3 py-1 bg-white text-black text-xs font-bold rounded"
+        >
+          All Elements
+        </button>
+        <button
+          onclick="filterScope('processes')"
+          id="btn-processes"
+          class="px-3 py-1 bg-zinc-900 border border-zinc-700 hover:border-white text-xs rounded"
+        >
+          Processes (P1-P7)
+        </button>
+        <button
+          onclick="filterScope('stores')"
+          id="btn-stores"
+          class="px-3 py-1 bg-zinc-900 border border-zinc-700 hover:border-white text-xs rounded"
+        >
+          Data Stores (D1-D7)
+        </button>
+        <button
+          onclick="filterScope('entities')"
+          id="btn-entities"
+          class="px-3 py-1 bg-zinc-900 border border-zinc-700 hover:border-white text-xs rounded"
+        >
+          External Entities (E1-E5)
+        </button>
+        <button
+          onclick="filterScope('booking')"
+          id="btn-booking"
+          class="px-3 py-1 bg-zinc-900 border border-zinc-700 hover:border-white text-xs rounded text-sky-400"
+        >
+          Search &amp; Booking Cycle
+        </button>
+        <button
+          onclick="filterScope('checkin')"
+          id="btn-checkin"
+          class="px-3 py-1 bg-zinc-900 border border-zinc-700 hover:border-white text-xs rounded text-emerald-400"
+        >
+          Web Check-In &amp; Gate
+        </button>
+        <button
+          onclick="filterScope('events')"
+          id="btn-events"
+          class="px-3 py-1 bg-zinc-900 border border-zinc-700 hover:border-white text-xs rounded text-purple-400"
+        >
+          Async Event Queue
+        </button>
+      </div>
+      <div class="text-xs text-zinc-400 font-mono">
+        Click any node to inspect data flow payloads &amp; storage schema
+      </div>
+    </div>
+
+    <!-- Main Canvas and Inspector Drawer -->
+    <div
+      class="w-full max-w-[1650px] flex flex-col lg:flex-row gap-4 items-start mb-6"
+    >
+      <!-- SVG Container with Pan/Zoom -->
+      <div
+        id="canvas-container"
+        class="w-full lg:w-3/4 border-2 border-zinc-800 rounded-lg bg-black overflow-hidden relative shadow-2xl"
+        style="height: 820px; cursor: grab"
+      >
+        <div
+          id="viewport"
+          style="
+            transform-origin: 0 0;
+            transition: transform 0.1s ease-out;
+            width: 100%;
+            height: 100%;
+          "
+        >
+          <!-- Embedded SVG -->
+          <object
+            id="svg-object"
+            data="AeroBook_DFD_Diagram.svg"
+            type="image/svg+xml"
+            class="w-full h-full pointer-events-auto"
+          ></object>
+        </div>
+      </div>
+
+      <!-- Inspector Drawer (Right Column) -->
+      <div
+        id="inspector-drawer"
+        class="w-full lg:w-1/4 bg-zinc-950 border-2 border-zinc-800 rounded-lg p-5 flex flex-col gap-4 text-xs font-sans h-[820px] overflow-y-auto"
+      >
+        <div
+          class="border-b border-zinc-800 pb-3 flex items-center justify-between"
+        >
+          <div>
+            <span
+              id="insp-badge"
+              class="px-2 py-0.5 bg-zinc-800 text-zinc-300 font-mono text-[10px] rounded uppercase"
+              >COMPONENT INSPECTOR</span
+            >
+            <h2 id="insp-title" class="text-base font-bold text-white mt-1">
+              Select a Node
+            </h2>
+          </div>
+          <div
+            id="insp-icon"
+            class="w-8 h-8 rounded-full bg-zinc-900 border border-zinc-700 flex items-center justify-center font-bold font-mono text-xs"
+          >
+            ?
+          </div>
+        </div>
+
+        <div id="insp-body" class="space-y-4 text-zinc-300">
+          <p class="text-zinc-400 leading-relaxed">
+            Click on any process circle/box (P1.0 to P7.0), external actor
+            entity (E1 to E5), or database store (D1 to D7) in the diagram to
+            inspect its exact input/output flows, schemas, endpoints, and
+            architectural properties.
+          </p>
+
+          <div class="p-3 bg-zinc-900/60 border border-zinc-800 rounded">
+            <span class="text-white font-bold block mb-1"
+              >Architecture Snapshot:</span
+            >
+            <ul class="space-y-1 text-zinc-400 font-mono text-[11px]">
+              <li>• Architecture: Microservices + AMQP</li>
+              <li>• Database: Database-per-Service (MySQL 8)</li>
+              <li>• Security: Stateless JWT (HMAC-SHA256)</li>
+              <li>• Event Broker: RabbitMQ (Topic/Direct Exchange)</li>
+              <li>• Gate Verification: Encrypted 2D QR Payload</li>
+            </ul>
+          </div>
+        </div>
+
+        <div id="insp-flows" class="hidden flex-col gap-3">
+          <div class="p-2.5 bg-zinc-900 border border-zinc-800 rounded">
+            <span class="text-sky-400 font-bold block mb-1"
+              >Input Data Flows:</span
+            >
+            <ul
+              id="insp-in-flows"
+              class="list-disc list-inside text-zinc-300 space-y-0.5 text-[11px]"
+            ></ul>
+          </div>
+          <div class="p-2.5 bg-zinc-900 border border-zinc-800 rounded">
+            <span class="text-emerald-400 font-bold block mb-1"
+              >Output Data Flows:</span
+            >
+            <ul
+              id="insp-out-flows"
+              class="list-disc list-inside text-zinc-300 space-y-0.5 text-[11px]"
+            ></ul>
+          </div>
+          <div class="p-2.5 bg-zinc-900 border border-zinc-800 rounded">
+            <span class="text-purple-400 font-bold block mb-1"
+              >Encapsulated Storage / Tables:</span
+            >
+            <ul
+              id="insp-stores"
+              class="list-disc list-inside text-zinc-300 space-y-0.5 text-[11px] font-mono"
+            ></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interactive JavaScript Logic -->
+    <script>
+      let scale = 1;
+      let pointX = 0;
+      let pointY = 0;
+      let start = { x: 0, y: 0 };
+      let isPanning = false;
+      const viewport = document.getElementById("viewport");
+      const container = document.getElementById("canvas-container");
+
+      function updateTransform() {
+        viewport.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
+      }
+
+      function zoomIn() {
+        scale = Math.min(scale * 1.25, 4);
+        updateTransform();
+      }
+
+      function zoomOut() {
+        scale = Math.max(scale / 1.25, 0.4);
+        updateTransform();
+      }
+
+      function resetZoom() {
+        scale = 1;
+        pointX = 0;
+        pointY = 0;
+        updateTransform();
+      }
+
+      container.onmousedown = function (e) {
+        e.preventDefault();
+        start = { x: e.clientX - pointX, y: e.clientY - pointY };
+        isPanning = true;
+        container.style.cursor = "grabbing";
+      };
+
+      container.onmouseup = function () {
+        isPanning = false;
+        container.style.cursor = "grab";
+      };
+
+      container.onmousemove = function (e) {
+        e.preventDefault();
+        if (!isPanning) return;
+        pointX = e.clientX - start.x;
+        pointY = e.clientY - start.y;
+        updateTransform();
+      };
+
+      container.onwheel = function (e) {
+        e.preventDefault();
+        const xs = (e.clientX - pointX) / scale;
+        const ys = (e.clientY - pointY) / scale;
+        const delta = -e.deltaY;
+        delta > 0 ? (scale *= 1.15) : (scale /= 1.15);
+        scale = Math.max(0.4, Math.min(scale, 4));
+        pointX = e.clientX - xs * scale;
+        pointY = e.clientY - ys * scale;
+        updateTransform();
+      };
+
+      // Inspector Data Dictionary
+      const DFD_DATA = {
+        p1: {
+          badge: "PROCESS P 1.0",
+          title: "Authentication & Access Control (auth-service : 8082)",
+          icon: "P1",
+          desc: "Validates user credentials against BCrypt salted password hashes, verifies account status, and issues signed HMAC-SHA256 JWT tokens containing user roles and claims.",
+          inputs: [
+            "User credentials (username, password)",
+            "Registration request (email, role)",
+            "JWT refresh token",
+          ],
+          outputs: [
+            "Signed JWT Bearer token",
+            "Authentication verification response",
+            "Access expiration timestamp",
+          ],
+          stores: [
+            "aerobook_auth_db.users",
+            "aerobook_auth_db.roles",
+            "aerobook_auth_db.user_roles",
+            "aerobook_auth_db.refresh_tokens",
+          ],
+        },
+        p2: {
+          badge: "PROCESS P 2.0",
+          title: "Passenger Profile & Customer Records (user-service : 8084)",
+          icon: "P2",
+          desc: "Maintains comprehensive traveler profiles, emergency contacts, passport identifiers, date of birth, and frequent flyer mileage accounts.",
+          inputs: [
+            "Profile update payload",
+            "Passport details & expiration",
+            "Emergency contact data",
+          ],
+          outputs: [
+            "Verified passenger profile record",
+            "Address verification status",
+          ],
+          stores: [
+            "aerobook_user_db.user_profiles",
+            "aerobook_user_db.passports",
+            "aerobook_user_db.addresses",
+          ],
+        },
+        p3: {
+          badge: "PROCESS P 3.0",
+          title: "Flight Search & Fleet Scheduling (flight-service : 8087)",
+          icon: "P3",
+          desc: "Executes high-speed multi-criteria flight queries (Origin, Destination, Date, Cabin Class), manages aircraft seat inventory matrices, and handles atomic temporary seat locking.",
+          inputs: [
+            "Search criteria (origin, destination, departure date, cabin)",
+            "Seat lock request (flightId, seatNumber, holdDuration)",
+          ],
+          outputs: [
+            "Catalog of matching flights & schedules",
+            "Aircraft cabin seat allocation map",
+            "Seat lock confirmation token",
+          ],
+          stores: [
+            "aerobook_flight_db.flights",
+            "aerobook_flight_db.aircraft",
+            "aerobook_flight_db.seats",
+            "aerobook_flight_db.seat_inventories",
+          ],
+        },
+        p4: {
+          badge: "PROCESS P 4.0",
+          title: "Dynamic Fare & Pricing Engine (fare-service : 8089)",
+          icon: "P4",
+          desc: "Computes real-time dynamic pricing based on base distance fares, aircraft load factors, cabin multipliers, seasonal demand surge, and applicable airport taxes.",
+          inputs: [
+            "Flight ID, Cabin Class, Booking Date",
+            "Current cabin occupancy percentage",
+            "Admin surge multiplier updates",
+          ],
+          outputs: [
+            "Detailed fare breakdown quote (base fare, surge, fuel surcharge, airport taxes, final total)",
+          ],
+          stores: [
+            "aerobook_fare_db.fares",
+            "aerobook_fare_db.surge_multipliers",
+            "aerobook_fare_db.class_pricing_rules",
+          ],
+        },
+        p5: {
+          badge: "PROCESS P 5.0 (CORE)",
+          title: "Flight Booking & PNR Orchestration (booking-service : 8088)",
+          icon: "P5",
+          desc: "Core transactional coordinator. Receives passenger manifests, confirms atomic seat locks with P3.0, verifies dynamic fares with P4.0, authorizes payment with E4, creates immutable 6-character PNRs, and publishes async events.",
+          inputs: [
+            "Booking request (passenger list, flight details, selected seats)",
+            "Payment confirmation token from E4",
+          ],
+          outputs: [
+            "Confirmed PNR record & electronic ticket",
+            "BookingConfirmedEvent (AMQP payload to RabbitMQ)",
+          ],
+          stores: [
+            "aerobook_booking_db.bookings",
+            "aerobook_booking_db.passengers",
+            "aerobook_booking_db.booking_payments",
+            "aerobook_booking_db.booking_audit_logs",
+          ],
+        },
+        p6: {
+          badge: "PROCESS P 6.0",
+          title:
+            "Airport Web Check-In & Gate Clearance (check-in-service : 8090)",
+          icon: "P6",
+          desc: "Validates departure time window (T-24h to T-1h), verifies PNR reservation validity with D5, generates digital boarding passes with encrypted 2D QR codes, and processes gate staff scans.",
+          inputs: [
+            "Web check-in request (PNR, Passenger Last Name)",
+            "Gate barcode scanner scan event from E3",
+          ],
+          outputs: [
+            "Digital Boarding Pass with QR code",
+            "Gate embarkation clearance OK (Green / Audio signal)",
+          ],
+          stores: [
+            "aerobook_checkin_db.check_ins",
+            "aerobook_checkin_db.boarding_passes",
+            "aerobook_checkin_db.gate_verifications",
+          ],
+        },
+        p7: {
+          badge: "PROCESS P 7.0",
+          title: "Async Notification Broker (RabbitMQ Worker : 5672)",
+          icon: "P7",
+          desc: "Subscribes to RabbitMQ queue `booking.events`. Consumes BookingConfirmedEvent and CheckInCompletedEvent asynchronously, formats HTML tickets and SMS payloads, and dispatches via external gateways.",
+          inputs: [
+            "AMQP message payload (BookingConfirmedEvent, CheckInCompletedEvent)",
+          ],
+          outputs: [
+            "Email dispatch API request (SendGrid)",
+            "SMS notification alert API request (Twilio)",
+          ],
+          stores: [
+            "RabbitMQ broker queue: booking.events",
+            "RabbitMQ dead-letter queue: booking.dlq",
+          ],
+        },
+        d1: {
+          badge: "DATA STORE D 1",
+          title: "aerobook_auth_db (MySQL 8.0)",
+          icon: "D1",
+          desc: "Secure isolated repository for authentication credentials, BCrypt salted password hashes, system security roles, and active refresh token sessions.",
+          inputs: [
+            "User registration credentials",
+            "Refresh token rotation records",
+          ],
+          outputs: [
+            "Hashed user credentials for authentication comparison",
+            "Assigned role permissions",
+          ],
+          stores: [
+            "users (id, username, password_hash, email, enabled)",
+            "roles (id, name)",
+            "user_roles",
+            "refresh_tokens",
+          ],
+        },
+        d5: {
+          badge: "DATA STORE D 5",
+          title: "aerobook_booking_db (MySQL 8.0)",
+          icon: "D5",
+          desc: "Primary business transaction datastore holding all booking reservations, multi-passenger traveler manifests, payment transaction IDs, and 6-character PNR records.",
+          inputs: [
+            "Confirmed booking entity from P5.0",
+            "Payment transaction reference from E4",
+          ],
+          outputs: [
+            "PNR verification response to Check-In service (P6.0)",
+            "Passenger booking history queries",
+          ],
+          stores: [
+            "bookings (id, pnr, flight_id, total_amount, status)",
+            "passengers (id, booking_id, first_name, last_name, seat_number)",
+            "booking_payments (id, booking_id, txn_id, amount, status)",
+          ],
+        },
+        d7: {
+          badge: "DATA STORE D 7",
+          title: "RabbitMQ Message Broker (AMQP 0-9-1)",
+          icon: "D7",
+          desc: "High-throughput enterprise message broker providing decoupled, durable event queuing between transactional services and asynchronous workers.",
+          inputs: [
+            "BookingConfirmedEvent published by P5.0",
+            "CheckInCompletedEvent published by P6.0",
+          ],
+          outputs: [
+            "Buffered message streams consumed by P7.0 notification workers",
+          ],
+          stores: [
+            "Exchange: aerobook.direct",
+            "Queue: booking.events",
+            "Queue: checkin.events",
+            "DLQ: dead_letter_queue",
+          ],
+        },
+        e1: {
+          badge: "EXTERNAL ENTITY E 1",
+          title: "Passenger / Customer (Source & Sink)",
+          icon: "E1",
+          desc: "Primary human actor accessing the AeroBook system through modern web browsers and mobile application clients.",
+          inputs: [
+            "JWT bearer token",
+            "Flight availability search results",
+            "Booking confirmation & PNR receipt",
+            "QR Boarding Pass",
+            "Email & SMS alerts",
+          ],
+          outputs: [
+            "Login credentials",
+            "Profile & passport data",
+            "Search queries (Orig, Dest, Date)",
+            "Booking traveler details",
+            "Payment authorization token",
+            "Check-in request",
+          ],
+          stores: ["Client LocalStorage (JWT token, user session state)"],
+        },
+        e4: {
+          badge: "EXTERNAL ENTITY E 4",
+          title: "Third-Party Payment Gateway (Stripe / Razorpay)",
+          icon: "E4",
+          desc: "External PCI-DSS compliant financial gateway that processes secure credit card and net banking transactions without AeroBook ever storing sensitive PAN data.",
+          inputs: [
+            "Charge authorization request (amount, currency, payment token, pnr)",
+          ],
+          outputs: [
+            "Transaction authorization status (SUCCESS, FAILED)",
+            "Unique transaction reference ID (txn_id)",
+          ],
+          stores: ["External Banking Ledger"],
+        },
+      };
+
+      function inspect(key) {
+        const data = DFD_DATA[key];
+        if (!data) return;
+
+        document.getElementById("insp-badge").innerText = data.badge;
+        document.getElementById("insp-title").innerText = data.title;
+        document.getElementById("insp-icon").innerText = data.icon;
+
+        let bodyHtml = `<p class="text-zinc-300 leading-relaxed text-xs">${data.desc}</p>`;
+        document.getElementById("insp-body").innerHTML = bodyHtml;
+
+        const flowsContainer = document.getElementById("insp-flows");
+        flowsContainer.classList.remove("hidden");
+        flowsContainer.classList.add("flex");
+
+        const inUl = document.getElementById("insp-in-flows");
+        inUl.innerHTML = data.inputs.map((i) => `<li>${i}</li>`).join("");
+
+        const outUl = document.getElementById("insp-out-flows");
+        outUl.innerHTML = data.outputs.map((o) => `<li>${o}</li>`).join("");
+
+        const storesUl = document.getElementById("insp-stores");
+        storesUl.innerHTML = data.stores.map((s) => `<li>${s}</li>`).join("");
+      }
+
+      // Attach click listeners to SVG object once loaded
+      document
+        .getElementById("svg-object")
+        .addEventListener("load", function () {
+          const svgDoc = this.contentDocument;
+          if (!svgDoc) return;
+
+          // Make nodes interactive
+          const map = {
+            "process-p1": "p1",
+            "process-p2": "p2",
+            "process-p3": "p3",
+            "process-p4": "p4",
+            "process-p5": "p5",
+            "process-p6": "p6",
+            "process-p7": "p7",
+            "store-d1": "d1",
+            "store-d5": "d5",
+            "store-d7": "d7",
+            "entity-e1": "e1",
+            "entity-e4": "e4",
+          };
+
+          for (let [id, key] of Object.entries(map)) {
+            const el = svgDoc.getElementById(id);
+            if (el) {
+              el.style.cursor = "pointer";
+              el.addEventListener("click", () => {
+                inspect(key);
+                highlightElement(el, svgDoc);
+              });
+            }
+          }
+        });
+
+      let currentHighlighted = null;
+      function highlightElement(el, svgDoc) {
+        if (currentHighlighted) {
+          currentHighlighted.classList.remove("highlight-active");
+        }
+        currentHighlighted = el;
+        el.classList.add("highlight-active");
+      }
+
+      function filterScope(type) {
+        // Update button styling
+        [
+          "all",
+          "processes",
+          "stores",
+          "entities",
+          "booking",
+          "checkin",
+          "events",
+        ].forEach((t) => {
+          const btn = document.getElementById(`btn-${t}`);
+          if (!btn) return;
+          if (t === type) {
+            btn.className =
+              "px-3 py-1 bg-white text-black font-bold text-xs rounded";
+          } else {
+            btn.className =
+              "px-3 py-1 bg-zinc-900 border border-zinc-700 hover:border-white text-xs rounded";
+          }
+        });
+
+        const svgDoc = document.getElementById("svg-object").contentDocument;
+        if (!svgDoc) return;
+
+        const allElements = svgDoc.querySelectorAll(
+          'g[id^="process-"], g[id^="store-"], g[id^="entity-"]',
+        );
+
+        if (type === "all") {
+          allElements.forEach((el) => el.classList.remove("dimmed"));
+          return;
+        }
+
+        allElements.forEach((el) => {
+          const id = el.id;
+          let match = false;
+          if (type === "processes" && id.startsWith("process-")) match = true;
+          if (type === "stores" && id.startsWith("store-")) match = true;
+          if (type === "entities" && id.startsWith("entity-")) match = true;
+          if (
+            type === "booking" &&
+            [
+              "entity-e1",
+              "process-p3",
+              "process-p4",
+              "process-p5",
+              "store-d5",
+              "entity-e4",
+            ].includes(id)
+          )
+            match = true;
+          if (
+            type === "checkin" &&
+            [
+              "entity-e1",
+              "process-p6",
+              "store-d6",
+              "store-d5",
+              "entity-e3",
+            ].includes(id)
+          )
+            match = true;
+          if (
+            type === "events" &&
+            [
+              "process-p5",
+              "store-d7",
+              "process-p7",
+              "entity-e5",
+              "entity-e1",
+            ].includes(id)
+          )
+            match = true;
+
+          if (match) {
+            el.classList.remove("dimmed");
+          } else {
+            el.classList.add("dimmed");
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

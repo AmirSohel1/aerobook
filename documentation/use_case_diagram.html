@@ -1,0 +1,2069 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>
+      AeroBook - UML Use Case Diagram (Black & White Chalkboard Theme)
+    </title>
+    <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+    <style>
+      body {
+        background-color: #000000;
+        color: #ffffff;
+        font-family:
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        overflow-x: hidden;
+      }
+      .chalk-border {
+        border: 2px solid #ffffff;
+      }
+      .chalk-line {
+        stroke: #ffffff;
+        stroke-linecap: round;
+      }
+      .chalk-dashed {
+        stroke: #ffffff;
+        stroke-dasharray: 6, 5;
+        stroke-linecap: round;
+      }
+      .use-case-node {
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+      }
+      .use-case-node:hover ellipse {
+        fill: #222222;
+        stroke-width: 3.5px;
+        filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.8));
+      }
+      .actor-node:hover {
+        cursor: pointer;
+        filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.9));
+      }
+      .highlight-active {
+        filter: drop-shadow(0 0 10px #ffffff) !important;
+        stroke-width: 3.5px !important;
+      }
+      .dimmed {
+        opacity: 0.15 !important;
+        transition: opacity 0.3s ease;
+      }
+      /* Grid background */
+      .blueprint-grid {
+        background-size: 30px 30px;
+        background-image: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.08) 1px,
+          transparent 1px
+        );
+      }
+    </style>
+  </head>
+  <body
+    class="bg-black text-white min-h-screen p-4 blueprint-grid flex flex-col items-center"
+  >
+    <!-- Header & Action Bar -->
+    <header
+      class="w-full max-w-[1600px] flex flex-col md:flex-row items-center justify-between border-b-2 border-white pb-4 mb-4 gap-4"
+    >
+      <div>
+        <div class="flex items-center gap-3">
+          <span
+            class="text-xs tracking-widest uppercase border border-white px-2 py-0.5 rounded font-mono"
+            >UML 2.5 Specification</span
+          >
+          <span
+            class="text-xs tracking-widest uppercase bg-white text-black px-2 py-0.5 rounded font-bold font-mono"
+            >Black Canvas • White Marker</span
+          >
+        </div>
+        <h1
+          class="text-2xl md:text-3xl font-bold tracking-tight mt-1 flex items-center gap-2"
+        >
+          <span>✈️ AeroBook System Use Case Diagram</span>
+        </h1>
+        <p class="text-xs text-neutral-400 font-mono mt-0.5">
+          Enterprise Multi-Service Architecture (Ports 8082 - 8090) • Actors,
+          Boundaries & Core Inclusions
+        </p>
+      </div>
+
+      <!-- Filter Buttons & Controls -->
+      <div class="flex flex-wrap items-center gap-2">
+        <div
+          class="flex items-center border border-white rounded-lg p-1 bg-black gap-1 text-xs"
+        >
+          <span class="px-2 font-mono text-neutral-400">Filter:</span>
+          <button
+            id="btn-all"
+            onclick="filterActor('all')"
+            class="px-3 py-1 rounded bg-white text-black font-semibold transition hover:opacity-90"
+          >
+            All Actors
+          </button>
+          <button
+            id="btn-passenger"
+            onclick="filterActor('passenger')"
+            class="px-3 py-1 rounded border border-white/40 hover:border-white transition"
+          >
+            Passenger
+          </button>
+          <button
+            id="btn-admin"
+            onclick="filterActor('admin')"
+            class="px-3 py-1 rounded border border-white/40 hover:border-white transition"
+          >
+            Administrator
+          </button>
+          <button
+            id="btn-staff"
+            onclick="filterActor('staff')"
+            class="px-3 py-1 rounded border border-white/40 hover:border-white transition"
+          >
+            Gate Staff
+          </button>
+          <button
+            id="btn-system"
+            onclick="filterActor('system')"
+            class="px-3 py-1 rounded border border-white/40 hover:border-white transition"
+          >
+            External Systems
+          </button>
+        </div>
+
+        <div class="flex items-center gap-1.5 text-xs">
+          <button
+            onclick="zoom(1.1)"
+            class="px-2.5 py-1.5 border border-white rounded hover:bg-neutral-900 font-mono"
+            title="Zoom In"
+          >
+            🔍 +
+          </button>
+          <button
+            onclick="zoom(0.9)"
+            class="px-2.5 py-1.5 border border-white rounded hover:bg-neutral-900 font-mono"
+            title="Zoom Out"
+          >
+            🔍 -
+          </button>
+          <button
+            onclick="resetZoom()"
+            class="px-2.5 py-1.5 border border-white rounded hover:bg-neutral-900 font-mono"
+            title="Reset"
+          >
+            Reset
+          </button>
+          <button
+            onclick="downloadSVG()"
+            class="px-3 py-1.5 border-2 border-white rounded bg-neutral-900 hover:bg-white hover:text-black font-semibold transition font-mono"
+          >
+            ⬇ SVG
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Canvas Container -->
+    <div
+      class="w-full max-w-[1600px] relative border-2 border-white rounded-xl bg-black overflow-hidden shadow-2xl flex flex-col"
+    >
+      <!-- SVG Interactive Canvas -->
+      <div
+        id="svg-wrapper"
+        class="w-full overflow-auto cursor-grab active:cursor-grabbing"
+        style="min-height: 820px; max-height: 85vh"
+      >
+        <svg
+          id="usecase-svg"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 1600 1120"
+          class="w-full h-auto select-none"
+        >
+          <defs>
+            <!-- Marker: White Arrowhead for <<include>> / <<extend>> -->
+            <marker
+              id="white-arrow"
+              viewBox="0 0 10 10"
+              refX="9"
+              refY="5"
+              markerWidth="6"
+              markerHeight="6"
+              orient="auto-start-reverse"
+            >
+              <path d="M 0 1 L 10 5 L 0 9 z" fill="#ffffff" stroke="#ffffff" />
+            </marker>
+            <!-- Marker: Open Arrowhead -->
+            <marker
+              id="white-open-arrow"
+              viewBox="0 0 10 10"
+              refX="9"
+              refY="5"
+              markerWidth="6"
+              markerHeight="6"
+              orient="auto-start-reverse"
+            >
+              <path
+                d="M 0 1.5 L 9 5 L 0 8.5"
+                fill="none"
+                stroke="#ffffff"
+                stroke-width="1.8"
+              />
+            </marker>
+          </defs>
+
+          <!-- SYSTEM BOUNDARY RECTANGLE -->
+          <g id="system-boundary">
+            <rect
+              x="290"
+              y="40"
+              width="1000"
+              height="1040"
+              rx="16"
+              fill="#000000"
+              stroke="#ffffff"
+              stroke-width="2.5"
+              stroke-dasharray="8 6"
+            />
+            <rect
+              x="310"
+              y="25"
+              width="460"
+              height="30"
+              rx="4"
+              fill="#000000"
+              stroke="#ffffff"
+              stroke-width="1.5"
+            />
+            <text
+              x="540"
+              y="45"
+              fill="#ffffff"
+              font-family="'Segoe UI', monospace, sans-serif"
+              font-size="13"
+              font-weight="bold"
+              letter-spacing="1.5"
+              text-anchor="middle"
+            >
+              SYSTEM BOUNDARY: AeroBook Airline Platform
+            </text>
+          </g>
+
+          <!-- SUB-SYSTEM BOUNDARY GROUPINGS -->
+          <!-- Group 1: Auth & User -->
+          <g id="group-auth-user">
+            <rect
+              x="310"
+              y="70"
+              width="960"
+              height="190"
+              rx="10"
+              fill="#050505"
+              stroke="#ffffff"
+              stroke-width="1"
+              stroke-opacity="0.3"
+              stroke-dasharray="4 4"
+            />
+            <text
+              x="325"
+              y="90"
+              fill="#aaaaaa"
+              font-family="monospace"
+              font-size="11"
+              font-weight="bold"
+            >
+              MODULE: Identity, Auth & User Profile (Ports 8082, 8084)
+            </text>
+          </g>
+
+          <!-- Group 2: Flight & Fares -->
+          <g id="group-flight-fares">
+            <rect
+              x="310"
+              y="275"
+              width="960"
+              height="210"
+              rx="10"
+              fill="#050505"
+              stroke="#ffffff"
+              stroke-width="1"
+              stroke-opacity="0.3"
+              stroke-dasharray="4 4"
+            />
+            <text
+              x="325"
+              y="295"
+              fill="#aaaaaa"
+              font-family="monospace"
+              font-size="11"
+              font-weight="bold"
+            >
+              MODULE: Flight Schedules & Dynamic Pricing (Ports 8087, 8089)
+            </text>
+          </g>
+
+          <!-- Group 3: Reservations & Messaging -->
+          <g id="group-reservations">
+            <rect
+              x="310"
+              y="500"
+              width="960"
+              height="300"
+              rx="10"
+              fill="#050505"
+              stroke="#ffffff"
+              stroke-width="1"
+              stroke-opacity="0.3"
+              stroke-dasharray="4 4"
+            />
+            <text
+              x="325"
+              y="520"
+              fill="#aaaaaa"
+              font-family="monospace"
+              font-size="11"
+              font-weight="bold"
+            >
+              MODULE: Booking Engine & Event Messaging (Port 8088, RabbitMQ
+              5672)
+            </text>
+          </g>
+
+          <!-- Group 4: Airport Check-In & Gate -->
+          <g id="group-checkin">
+            <rect
+              x="310"
+              y="815"
+              width="960"
+              height="245"
+              rx="10"
+              fill="#050505"
+              stroke="#ffffff"
+              stroke-width="1"
+              stroke-opacity="0.3"
+              stroke-dasharray="4 4"
+            />
+            <text
+              x="325"
+              y="835"
+              fill="#aaaaaa"
+              font-family="monospace"
+              font-size="11"
+              font-weight="bold"
+            >
+              MODULE: Airport Check-In & Boarding Pass Gate (Port 8090)
+            </text>
+          </g>
+
+          <!-- ============================================================= -->
+          <!-- ASSOCIATION LINES: PASSENGER -->
+          <!-- ============================================================= -->
+          <g id="lines-passenger" class="association-group">
+            <!-- Passenger to UC01 -->
+            <line
+              x1="140"
+              y1="520"
+              x2="460"
+              y2="120"
+              stroke="#ffffff"
+              stroke-width="1.8"
+            />
+            <!-- Passenger to UC02 -->
+            <line
+              x1="140"
+              y1="520"
+              x2="460"
+              y2="175"
+              stroke="#ffffff"
+              stroke-width="1.8"
+            />
+            <!-- Passenger to UC03 -->
+            <line
+              x1="140"
+              y1="520"
+              x2="460"
+              y2="230"
+              stroke="#ffffff"
+              stroke-width="1.8"
+            />
+            <!-- Passenger to UC04 -->
+            <line
+              x1="140"
+              y1="520"
+              x2="460"
+              y2="330"
+              stroke="#ffffff"
+              stroke-width="1.8"
+            />
+            <!-- Passenger to UC05 -->
+            <line
+              x1="140"
+              y1="520"
+              x2="460"
+              y2="425"
+              stroke="#ffffff"
+              stroke-width="1.8"
+            />
+            <!-- Passenger to UC06 -->
+            <line
+              x1="140"
+              y1="520"
+              x2="460"
+              y2="570"
+              stroke="#ffffff"
+              stroke-width="2.2"
+            />
+            <!-- Passenger to UC07 -->
+            <line
+              x1="140"
+              y1="520"
+              x2="460"
+              y2="720"
+              stroke="#ffffff"
+              stroke-width="1.8"
+            />
+            <!-- Passenger to UC08 -->
+            <line
+              x1="140"
+              y1="520"
+              x2="460"
+              y2="870"
+              stroke="#ffffff"
+              stroke-width="1.8"
+            />
+            <!-- Passenger to UC10 -->
+            <line
+              x1="140"
+              y1="520"
+              x2="460"
+              y2="995"
+              stroke="#ffffff"
+              stroke-width="1.8"
+            />
+          </g>
+
+          <!-- ============================================================= -->
+          <!-- ASSOCIATION LINES: ADMIN -->
+          <!-- ============================================================= -->
+          <g id="lines-admin" class="association-group">
+            <!-- Admin to UC12 (Aircrafts) -->
+            <line
+              x1="1440"
+              y1="230"
+              x2="1140"
+              y2="135"
+              stroke="#ffffff"
+              stroke-width="1.8"
+            />
+            <!-- Admin to UC13 (Flights) -->
+            <line
+              x1="1440"
+              y1="230"
+              x2="1140"
+              y2="205"
+              stroke="#ffffff"
+              stroke-width="1.8"
+            />
+            <!-- Admin to UC14 (Fares) -->
+            <line
+              x1="1440"
+              y1="230"
+              x2="1140"
+              y2="335"
+              stroke="#ffffff"
+              stroke-width="1.8"
+            />
+            <!-- Admin to UC15 (Gateway Health) -->
+            <line
+              x1="1440"
+              y1="230"
+              x2="1140"
+              y2="420"
+              stroke="#ffffff"
+              stroke-width="1.8"
+            />
+          </g>
+
+          <!-- ============================================================= -->
+          <!-- ASSOCIATION LINES: STAFF -->
+          <!-- ============================================================= -->
+          <g id="lines-staff" class="association-group">
+            <!-- Staff to UC11 (Gate Boarding) -->
+            <line
+              x1="1440"
+              y1="940"
+              x2="790"
+              y2="980"
+              stroke="#ffffff"
+              stroke-width="2"
+            />
+            <!-- Staff to UC08 (Lookup Passenger Check-in) -->
+            <line
+              x1="1440"
+              y1="940"
+              x2="460"
+              y2="870"
+              stroke="#ffffff"
+              stroke-width="1.6"
+              stroke-dasharray="4 3"
+            />
+          </g>
+
+          <!-- ============================================================= -->
+          <!-- ASSOCIATION LINES: EXTERNAL SYSTEMS -->
+          <!-- ============================================================= -->
+          <g id="lines-system" class="association-group">
+            <!-- UC06b to Payment Gateway -->
+            <line
+              x1="900"
+              y1="630"
+              x2="1360"
+              y2="630"
+              stroke="#ffffff"
+              stroke-width="2"
+            />
+            <!-- UC06d to RabbitMQ -->
+            <line
+              x1="920"
+              y1="740"
+              x2="1360"
+              y2="740"
+              stroke="#ffffff"
+              stroke-width="2"
+            />
+          </g>
+
+          <!-- ============================================================= -->
+          <!-- INCLUDE / EXTEND DEPENDENCIES -->
+          <!-- ============================================================= -->
+          <g id="include-extend-lines">
+            <!-- UC02 -> UC02a (Verify JWT) -->
+            <path
+              d="M 570 175 L 670 175"
+              fill="none"
+              stroke="#ffffff"
+              stroke-width="1.6"
+              stroke-dasharray="5 4"
+              marker-end="url(#white-arrow)"
+            />
+            <text
+              x="620"
+              y="168"
+              fill="#ffffff"
+              font-size="10"
+              font-family="monospace"
+              text-anchor="middle"
+            >
+              &lt;&lt;include&gt;&gt;
+            </text>
+
+            <!-- UC04 -> UC04a (Check Seat Availability) -->
+            <path
+              d="M 575 330 L 665 330"
+              fill="none"
+              stroke="#ffffff"
+              stroke-width="1.6"
+              stroke-dasharray="5 4"
+              marker-end="url(#white-arrow)"
+            />
+            <text
+              x="620"
+              y="323"
+              fill="#ffffff"
+              font-size="10"
+              font-family="monospace"
+              text-anchor="middle"
+            >
+              &lt;&lt;include&gt;&gt;
+            </text>
+
+            <!-- UC05 -> UC05a (Surge Multiplier) -->
+            <path
+              d="M 570 425 L 655 425"
+              fill="none"
+              stroke="#ffffff"
+              stroke-width="1.6"
+              stroke-dasharray="5 4"
+              marker-end="url(#white-arrow)"
+            />
+            <text
+              x="612"
+              y="418"
+              fill="#ffffff"
+              font-size="10"
+              font-family="monospace"
+              text-anchor="middle"
+            >
+              &lt;&lt;include&gt;&gt;
+            </text>
+
+            <!-- UC06 -> UC06a (Lock Seat) -->
+            <path
+              d="M 560 560 L 685 550"
+              fill="none"
+              stroke="#ffffff"
+              stroke-width="1.6"
+              stroke-dasharray="5 4"
+              marker-end="url(#white-arrow)"
+            />
+            <text
+              x="620"
+              y="548"
+              fill="#ffffff"
+              font-size="10"
+              font-family="monospace"
+              text-anchor="middle"
+            >
+              &lt;&lt;include&gt;&gt;
+            </text>
+
+            <!-- UC06 -> UC06b (Process Payment) -->
+            <path
+              d="M 575 580 L 675 620"
+              fill="none"
+              stroke="#ffffff"
+              stroke-width="1.6"
+              stroke-dasharray="5 4"
+              marker-end="url(#white-arrow)"
+            />
+            <text
+              x="625"
+              y="608"
+              fill="#ffffff"
+              font-size="10"
+              font-family="monospace"
+              text-anchor="middle"
+            >
+              &lt;&lt;include&gt;&gt;
+            </text>
+
+            <!-- UC06 -> UC06c (Generate PNR) -->
+            <path
+              d="M 550 595 L 670 675"
+              fill="none"
+              stroke="#ffffff"
+              stroke-width="1.6"
+              stroke-dasharray="5 4"
+              marker-end="url(#white-arrow)"
+            />
+            <text
+              x="610"
+              y="650"
+              fill="#ffffff"
+              font-size="10"
+              font-family="monospace"
+              text-anchor="middle"
+            >
+              &lt;&lt;include&gt;&gt;
+            </text>
+
+            <!-- UC06 -> UC06d (Publish Event) -->
+            <path
+              d="M 520 605 L 670 735"
+              fill="none"
+              stroke="#ffffff"
+              stroke-width="1.6"
+              stroke-dasharray="5 4"
+              marker-end="url(#white-arrow)"
+            />
+            <text
+              x="595"
+              y="685"
+              fill="#ffffff"
+              font-size="10"
+              font-family="monospace"
+              text-anchor="middle"
+            >
+              &lt;&lt;include&gt;&gt;
+            </text>
+
+            <!-- UC07 -> UC07a (Release Seat) -->
+            <path
+              d="M 570 725 L 665 725"
+              fill="none"
+              stroke="#ffffff"
+              stroke-width="1.6"
+              stroke-dasharray="5 4"
+              marker-end="url(#white-arrow)"
+            />
+            <text
+              x="620"
+              y="718"
+              fill="#ffffff"
+              font-size="10"
+              font-family="monospace"
+              text-anchor="middle"
+            >
+              &lt;&lt;include&gt;&gt;
+            </text>
+
+            <!-- UC08 -> UC09 (Select Seat) -->
+            <path
+              d="M 570 875 L 670 875"
+              fill="none"
+              stroke="#ffffff"
+              stroke-width="1.6"
+              stroke-dasharray="5 4"
+              marker-end="url(#white-arrow)"
+            />
+            <text
+              x="620"
+              y="868"
+              fill="#ffffff"
+              font-size="10"
+              font-family="monospace"
+              text-anchor="middle"
+            >
+              &lt;&lt;include&gt;&gt;
+            </text>
+
+            <!-- UC08 -> UC10 (Boarding Pass) -->
+            <path
+              d="M 460 905 L 460 965"
+              fill="none"
+              stroke="#ffffff"
+              stroke-width="1.6"
+              stroke-dasharray="5 4"
+              marker-end="url(#white-arrow)"
+            />
+            <text
+              x="495"
+              y="938"
+              fill="#ffffff"
+              font-size="10"
+              font-family="monospace"
+              text-anchor="middle"
+            >
+              &lt;&lt;include&gt;&gt;
+            </text>
+          </g>
+
+          <!-- ============================================================= -->
+          <!-- USE CASE NODES (WHITE OVALS / BLACK FILL) -->
+          <!-- ============================================================= -->
+          <g id="use-case-nodes">
+            <!-- UC-01: Register Account -->
+            <g
+              id="node-uc01"
+              class="use-case-node"
+              onclick="showDetails('UC-01')"
+            >
+              <ellipse
+                cx="460"
+                cy="120"
+                rx="105"
+                ry="26"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="2"
+              />
+              <text
+                x="460"
+                y="124"
+                fill="#ffffff"
+                font-size="12"
+                font-weight="600"
+                text-anchor="middle"
+              >
+                UC-01: Register Account
+              </text>
+            </g>
+
+            <!-- UC-02: Login & Authenticate -->
+            <g
+              id="node-uc02"
+              class="use-case-node"
+              onclick="showDetails('UC-02')"
+            >
+              <ellipse
+                cx="460"
+                cy="175"
+                rx="110"
+                ry="26"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="2"
+              />
+              <text
+                x="460"
+                y="179"
+                fill="#ffffff"
+                font-size="12"
+                font-weight="600"
+                text-anchor="middle"
+              >
+                UC-02: Login & Authenticate
+              </text>
+            </g>
+
+            <!-- UC-02a: Verify JWT Credentials -->
+            <g
+              id="node-uc02a"
+              class="use-case-node"
+              onclick="showDetails('UC-02a')"
+            >
+              <ellipse
+                cx="780"
+                cy="175"
+                rx="110"
+                ry="25"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="1.8"
+                stroke-dasharray="5 4"
+              />
+              <text
+                x="780"
+                y="179"
+                fill="#ffffff"
+                font-size="11"
+                text-anchor="middle"
+              >
+                UC-02a: Verify JWT Token
+              </text>
+            </g>
+
+            <!-- UC-03: Manage Profile & Preferences -->
+            <g
+              id="node-uc03"
+              class="use-case-node"
+              onclick="showDetails('UC-03')"
+            >
+              <ellipse
+                cx="460"
+                cy="230"
+                rx="115"
+                ry="26"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="2"
+              />
+              <text
+                x="460"
+                y="234"
+                fill="#ffffff"
+                font-size="12"
+                font-weight="600"
+                text-anchor="middle"
+              >
+                UC-03: Manage Profile & Info
+              </text>
+            </g>
+
+            <!-- UC-04: Search Flights -->
+            <g
+              id="node-uc04"
+              class="use-case-node"
+              onclick="showDetails('UC-04')"
+            >
+              <ellipse
+                cx="460"
+                cy="330"
+                rx="115"
+                ry="26"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="2"
+              />
+              <text
+                x="460"
+                y="334"
+                fill="#ffffff"
+                font-size="12"
+                font-weight="600"
+                text-anchor="middle"
+              >
+                UC-04: Search Flights & Routes
+              </text>
+            </g>
+
+            <!-- UC-04a: Check Seat Availability -->
+            <g
+              id="node-uc04a"
+              class="use-case-node"
+              onclick="showDetails('UC-04a')"
+            >
+              <ellipse
+                cx="780"
+                cy="330"
+                rx="115"
+                ry="25"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="1.8"
+                stroke-dasharray="5 4"
+              />
+              <text
+                x="780"
+                y="334"
+                fill="#ffffff"
+                font-size="11"
+                text-anchor="middle"
+              >
+                UC-04a: Check Seat Inventory
+              </text>
+            </g>
+
+            <!-- UC-05: View Dynamic Fares -->
+            <g
+              id="node-uc05"
+              class="use-case-node"
+              onclick="showDetails('UC-05')"
+            >
+              <ellipse
+                cx="460"
+                cy="425"
+                rx="110"
+                ry="26"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="2"
+              />
+              <text
+                x="460"
+                y="429"
+                fill="#ffffff"
+                font-size="12"
+                font-weight="600"
+                text-anchor="middle"
+              >
+                UC-05: View Dynamic Fares
+              </text>
+            </g>
+
+            <!-- UC-05a: Calculate Dynamic Multiplier -->
+            <g
+              id="node-uc05a"
+              class="use-case-node"
+              onclick="showDetails('UC-05a')"
+            >
+              <ellipse
+                cx="790"
+                cy="425"
+                rx="130"
+                ry="25"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="1.8"
+                stroke-dasharray="5 4"
+              />
+              <text
+                x="790"
+                y="429"
+                fill="#ffffff"
+                font-size="11"
+                text-anchor="middle"
+              >
+                UC-05a: Calculate Surge Multipliers
+              </text>
+            </g>
+
+            <!-- UC-06: Book Flight Ticket -->
+            <g
+              id="node-uc06"
+              class="use-case-node"
+              onclick="showDetails('UC-06')"
+            >
+              <ellipse
+                cx="460"
+                cy="570"
+                rx="115"
+                ry="30"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="2.5"
+              />
+              <text
+                x="460"
+                y="574"
+                fill="#ffffff"
+                font-size="13"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                UC-06: Book Flight Ticket
+              </text>
+            </g>
+
+            <!-- UC-06a: Lock Seat -->
+            <g
+              id="node-uc06a"
+              class="use-case-node"
+              onclick="showDetails('UC-06a')"
+            >
+              <ellipse
+                cx="790"
+                cy="545"
+                rx="105"
+                ry="24"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="1.8"
+                stroke-dasharray="5 4"
+              />
+              <text
+                x="790"
+                y="549"
+                fill="#ffffff"
+                font-size="11"
+                text-anchor="middle"
+              >
+                UC-06a: Lock Seat
+              </text>
+            </g>
+
+            <!-- UC-06b: Process Payment Transaction -->
+            <g
+              id="node-uc06b"
+              class="use-case-node"
+              onclick="showDetails('UC-06b')"
+            >
+              <ellipse
+                cx="790"
+                cy="630"
+                rx="110"
+                ry="25"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="1.8"
+                stroke-dasharray="5 4"
+              />
+              <text
+                x="790"
+                y="634"
+                fill="#ffffff"
+                font-size="11"
+                text-anchor="middle"
+              >
+                UC-06b: Process Payment
+              </text>
+            </g>
+
+            <!-- UC-06c: Generate Unique 6-Char PNR -->
+            <g
+              id="node-uc06c"
+              class="use-case-node"
+              onclick="showDetails('UC-06c')"
+            >
+              <ellipse
+                cx="790"
+                cy="685"
+                rx="120"
+                ry="25"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="1.8"
+                stroke-dasharray="5 4"
+              />
+              <text
+                x="790"
+                y="689"
+                fill="#ffffff"
+                font-size="11"
+                text-anchor="middle"
+              >
+                UC-06c: Generate 6-Char PNR
+              </text>
+            </g>
+
+            <!-- UC-06d: Publish RabbitMQ Event -->
+            <g
+              id="node-uc06d"
+              class="use-case-node"
+              onclick="showDetails('UC-06d')"
+            >
+              <ellipse
+                cx="790"
+                cy="740"
+                rx="125"
+                ry="25"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="1.8"
+                stroke-dasharray="5 4"
+              />
+              <text
+                x="790"
+                y="744"
+                fill="#ffffff"
+                font-size="11"
+                text-anchor="middle"
+              >
+                UC-06d: Publish RabbitMQ Event
+              </text>
+            </g>
+
+            <!-- UC-07: Cancel Booking -->
+            <g
+              id="node-uc07"
+              class="use-case-node"
+              onclick="showDetails('UC-07')"
+            >
+              <ellipse
+                cx="460"
+                cy="725"
+                rx="110"
+                ry="26"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="2"
+              />
+              <text
+                x="460"
+                y="729"
+                fill="#ffffff"
+                font-size="12"
+                font-weight="600"
+                text-anchor="middle"
+              >
+                UC-07: Cancel Booking
+              </text>
+            </g>
+
+            <!-- UC-07a: Release Seat to Inventory -->
+            <g
+              id="node-uc07a"
+              class="use-case-node"
+              onclick="showDetails('UC-07a')"
+            >
+              <ellipse
+                cx="790"
+                cy="780"
+                rx="125"
+                ry="24"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="1.8"
+                stroke-dasharray="5 4"
+              />
+              <text
+                x="790"
+                y="784"
+                fill="#ffffff"
+                font-size="11"
+                text-anchor="middle"
+              >
+                UC-07a: Release Seat to Inventory
+              </text>
+            </g>
+
+            <!-- UC-08: Online Web Check-In -->
+            <g
+              id="node-uc08"
+              class="use-case-node"
+              onclick="showDetails('UC-08')"
+            >
+              <ellipse
+                cx="460"
+                cy="875"
+                rx="110"
+                ry="28"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="2"
+              />
+              <text
+                x="460"
+                y="879"
+                fill="#ffffff"
+                font-size="12"
+                font-weight="600"
+                text-anchor="middle"
+              >
+                UC-08: Online Web Check-In
+              </text>
+            </g>
+
+            <!-- UC-09: Select / Change Seat -->
+            <g
+              id="node-uc09"
+              class="use-case-node"
+              onclick="showDetails('UC-09')"
+            >
+              <ellipse
+                cx="790"
+                cy="875"
+                rx="115"
+                ry="26"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="1.8"
+                stroke-dasharray="5 4"
+              />
+              <text
+                x="790"
+                y="879"
+                fill="#ffffff"
+                font-size="11"
+                text-anchor="middle"
+              >
+                UC-09: Select / Change Seat
+              </text>
+            </g>
+
+            <!-- UC-10: Generate Digital Boarding Pass -->
+            <g
+              id="node-uc10"
+              class="use-case-node"
+              onclick="showDetails('UC-10')"
+            >
+              <ellipse
+                cx="460"
+                cy="995"
+                rx="120"
+                ry="28"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="2"
+              />
+              <text
+                x="460"
+                y="999"
+                fill="#ffffff"
+                font-size="12"
+                font-weight="600"
+                text-anchor="middle"
+              >
+                UC-10: Generate Boarding Pass
+              </text>
+            </g>
+
+            <!-- UC-11: Validate Boarding at Gate -->
+            <g
+              id="node-uc11"
+              class="use-case-node"
+              onclick="showDetails('UC-11')"
+            >
+              <ellipse
+                cx="790"
+                cy="980"
+                rx="125"
+                ry="28"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="2"
+              />
+              <text
+                x="790"
+                y="984"
+                fill="#ffffff"
+                font-size="12"
+                font-weight="600"
+                text-anchor="middle"
+              >
+                UC-11: Validate Boarding at Gate
+              </text>
+            </g>
+
+            <!-- UC-12: Manage Aircraft Fleet (Admin) -->
+            <g
+              id="node-uc12"
+              class="use-case-node"
+              onclick="showDetails('UC-12')"
+            >
+              <ellipse
+                cx="1140"
+                cy="135"
+                rx="115"
+                ry="26"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="2"
+              />
+              <text
+                x="1140"
+                y="139"
+                fill="#ffffff"
+                font-size="12"
+                font-weight="600"
+                text-anchor="middle"
+              >
+                UC-12: Manage Aircraft Fleet
+              </text>
+            </g>
+
+            <!-- UC-13: Manage Flight Schedules (Admin) -->
+            <g
+              id="node-uc13"
+              class="use-case-node"
+              onclick="showDetails('UC-13')"
+            >
+              <ellipse
+                cx="1140"
+                cy="205"
+                rx="120"
+                ry="26"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="2"
+              />
+              <text
+                x="1140"
+                y="209"
+                fill="#ffffff"
+                font-size="12"
+                font-weight="600"
+                text-anchor="middle"
+              >
+                UC-13: Manage Flight Schedules
+              </text>
+            </g>
+
+            <!-- UC-14: Configure Fare & Pricing Rules (Admin) -->
+            <g
+              id="node-uc14"
+              class="use-case-node"
+              onclick="showDetails('UC-14')"
+            >
+              <ellipse
+                cx="1140"
+                cy="335"
+                rx="115"
+                ry="26"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="2"
+              />
+              <text
+                x="1140"
+                y="339"
+                fill="#ffffff"
+                font-size="12"
+                font-weight="600"
+                text-anchor="middle"
+              >
+                UC-14: Configure Fare Rules
+              </text>
+            </g>
+
+            <!-- UC-15: Monitor Gateway Metrics (Admin) -->
+            <g
+              id="node-uc15"
+              class="use-case-node"
+              onclick="showDetails('UC-15')"
+            >
+              <ellipse
+                cx="1140"
+                cy="420"
+                rx="125"
+                ry="26"
+                fill="#000000"
+                stroke="#ffffff"
+                stroke-width="2"
+              />
+              <text
+                x="1140"
+                y="424"
+                fill="#ffffff"
+                font-size="12"
+                font-weight="600"
+                text-anchor="middle"
+              >
+                UC-15: Monitor Gateway Health
+              </text>
+            </g>
+          </g>
+
+          <!-- ============================================================= -->
+          <!-- ACTOR 1: PASSENGER (LEFT) -->
+          <!-- ============================================================= -->
+          <g
+            id="actor-passenger"
+            class="actor-node"
+            onclick="filterActor('passenger')"
+          >
+            <!-- Head -->
+            <circle
+              cx="140"
+              cy="480"
+              r="22"
+              fill="#000000"
+              stroke="#ffffff"
+              stroke-width="2.5"
+            />
+            <!-- Torso -->
+            <line
+              x1="140"
+              y1="502"
+              x2="140"
+              y2="555"
+              stroke="#ffffff"
+              stroke-width="2.5"
+            />
+            <!-- Arms -->
+            <line
+              x1="105"
+              y1="520"
+              x2="175"
+              y2="520"
+              stroke="#ffffff"
+              stroke-width="2.5"
+            />
+            <!-- Left Leg -->
+            <line
+              x1="140"
+              y1="555"
+              x2="115"
+              y2="605"
+              stroke="#ffffff"
+              stroke-width="2.5"
+            />
+            <!-- Right Leg -->
+            <line
+              x1="140"
+              y1="555"
+              x2="165"
+              y2="605"
+              stroke="#ffffff"
+              stroke-width="2.5"
+            />
+            <!-- Label -->
+            <text
+              x="140"
+              y="635"
+              fill="#ffffff"
+              font-size="14"
+              font-weight="bold"
+              text-anchor="middle"
+            >
+              Passenger
+            </text>
+            <text
+              x="140"
+              y="652"
+              fill="#aaaaaa"
+              font-size="11"
+              font-family="monospace"
+              text-anchor="middle"
+            >
+              [ROLE_PASSENGER]
+            </text>
+          </g>
+
+          <!-- ============================================================= -->
+          <!-- ACTOR 2: AIRLINE ADMINISTRATOR (TOP RIGHT) -->
+          <!-- ============================================================= -->
+          <g id="actor-admin" class="actor-node" onclick="filterActor('admin')">
+            <!-- Head -->
+            <circle
+              cx="1440"
+              cy="190"
+              r="22"
+              fill="#000000"
+              stroke="#ffffff"
+              stroke-width="2.5"
+            />
+            <!-- Torso -->
+            <line
+              x1="1440"
+              y1="212"
+              x2="1440"
+              y2="265"
+              stroke="#ffffff"
+              stroke-width="2.5"
+            />
+            <!-- Arms -->
+            <line
+              x1="1405"
+              y1="230"
+              x2="1475"
+              y2="230"
+              stroke="#ffffff"
+              stroke-width="2.5"
+            />
+            <!-- Legs -->
+            <line
+              x1="1440"
+              y1="265"
+              x2="1415"
+              y2="315"
+              stroke="#ffffff"
+              stroke-width="2.5"
+            />
+            <line
+              x1="1440"
+              y1="265"
+              x2="1465"
+              y2="315"
+              stroke="#ffffff"
+              stroke-width="2.5"
+            />
+            <!-- Label -->
+            <text
+              x="1440"
+              y="345"
+              fill="#ffffff"
+              font-size="14"
+              font-weight="bold"
+              text-anchor="middle"
+            >
+              Airline Administrator
+            </text>
+            <text
+              x="1440"
+              y="362"
+              fill="#aaaaaa"
+              font-size="11"
+              font-family="monospace"
+              text-anchor="middle"
+            >
+              [ROLE_ADMIN]
+            </text>
+          </g>
+
+          <!-- ============================================================= -->
+          <!-- ACTOR 3: AIRPORT GATE STAFF (BOTTOM RIGHT) -->
+          <!-- ============================================================= -->
+          <g id="actor-staff" class="actor-node" onclick="filterActor('staff')">
+            <!-- Head -->
+            <circle
+              cx="1440"
+              cy="900"
+              r="22"
+              fill="#000000"
+              stroke="#ffffff"
+              stroke-width="2.5"
+            />
+            <!-- Torso -->
+            <line
+              x1="1440"
+              y1="922"
+              x2="1440"
+              y2="975"
+              stroke="#ffffff"
+              stroke-width="2.5"
+            />
+            <!-- Arms -->
+            <line
+              x1="1405"
+              y1="940"
+              x2="1475"
+              y2="940"
+              stroke="#ffffff"
+              stroke-width="2.5"
+            />
+            <!-- Legs -->
+            <line
+              x1="1440"
+              y1="975"
+              x2="1415"
+              y2="1025"
+              stroke="#ffffff"
+              stroke-width="2.5"
+            />
+            <line
+              x1="1440"
+              y1="975"
+              x2="1465"
+              y2="1025"
+              stroke="#ffffff"
+              stroke-width="2.5"
+            />
+            <!-- Label -->
+            <text
+              x="1440"
+              y="1055"
+              fill="#ffffff"
+              font-size="14"
+              font-weight="bold"
+              text-anchor="middle"
+            >
+              Gate Agent / Staff
+            </text>
+            <text
+              x="1440"
+              y="1072"
+              fill="#aaaaaa"
+              font-size="11"
+              font-family="monospace"
+              text-anchor="middle"
+            >
+              [ROLE_STAFF]
+            </text>
+          </g>
+
+          <!-- ============================================================= -->
+          <!-- SECONDARY SYSTEMS (RIGHT) -->
+          <!-- ============================================================= -->
+          <!-- Payment Gateway -->
+          <g
+            id="system-payment"
+            class="actor-node"
+            onclick="filterActor('system')"
+          >
+            <rect
+              x="1360"
+              y="605"
+              width="165"
+              height="50"
+              rx="6"
+              fill="#0a0a0a"
+              stroke="#ffffff"
+              stroke-width="2"
+            />
+            <text
+              x="1442"
+              y="625"
+              fill="#aaaaaa"
+              font-size="10"
+              font-family="monospace"
+              text-anchor="middle"
+            >
+              &lt;&lt;External System&gt;&gt;
+            </text>
+            <text
+              x="1442"
+              y="643"
+              fill="#ffffff"
+              font-size="12"
+              font-weight="bold"
+              text-anchor="middle"
+            >
+              Payment Gateway
+            </text>
+          </g>
+
+          <!-- RabbitMQ Event Broker -->
+          <g
+            id="system-rabbitmq"
+            class="actor-node"
+            onclick="filterActor('system')"
+          >
+            <rect
+              x="1360"
+              y="715"
+              width="165"
+              height="50"
+              rx="6"
+              fill="#0a0a0a"
+              stroke="#ffffff"
+              stroke-width="2"
+            />
+            <text
+              x="1442"
+              y="735"
+              fill="#aaaaaa"
+              font-size="10"
+              font-family="monospace"
+              text-anchor="middle"
+            >
+              &lt;&lt;Event Broker&gt;&gt;
+            </text>
+            <text
+              x="1442"
+              y="753"
+              fill="#ffffff"
+              font-size="12"
+              font-weight="bold"
+              text-anchor="middle"
+            >
+              RabbitMQ Broker
+            </text>
+          </g>
+        </svg>
+      </div>
+
+      <!-- Inspector Modal / Details Drawer -->
+      <div
+        id="inspector-panel"
+        class="border-t-2 border-white bg-black p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
+      >
+        <div class="flex-1">
+          <div class="flex items-center gap-2 mb-1">
+            <span
+              id="insp-badge"
+              class="px-2 py-0.5 text-xs font-mono bg-white text-black font-bold rounded"
+              >UC-06</span
+            >
+            <h3 id="insp-title" class="text-base font-bold text-white">
+              Book Flight Ticket (Core Reservation Engine)
+            </h3>
+          </div>
+          <p id="insp-desc" class="text-xs text-neutral-300">
+            Orchestrates seat locking, payment execution, PNR generation, and
+            asynchronous event dispatch across microservices.
+          </p>
+        </div>
+
+        <div
+          class="flex flex-wrap items-center gap-4 text-xs font-mono border-t md:border-t-0 md:border-l border-white/30 pt-2 md:pt-0 md:pl-4"
+        >
+          <div>
+            <span class="text-neutral-400 block">Target Service:</span>
+            <span id="insp-service" class="text-white font-bold"
+              >booking-service (Port 8088)</span
+            >
+          </div>
+          <div>
+            <span class="text-neutral-400 block">REST Endpoint:</span>
+            <span
+              id="insp-endpoint"
+              class="text-white bg-neutral-900 border border-white/40 px-2 py-0.5 rounded"
+              >POST /api/bookings</span
+            >
+          </div>
+          <div>
+            <span class="text-neutral-400 block">Primary Actor:</span>
+            <span id="insp-actor" class="text-white font-bold"
+              >Passenger (ROLE_PASSENGER)</span
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legend Footer -->
+    <footer
+      class="w-full max-w-[1600px] mt-4 flex flex-wrap items-center justify-between text-xs text-neutral-400 border border-white/20 rounded-lg p-3 bg-black gap-3"
+    >
+      <div class="flex items-center gap-4">
+        <span class="font-bold text-white uppercase font-mono">Legend:</span>
+        <div class="flex items-center gap-1.5">
+          <span class="inline-block w-4 h-0.5 bg-white"></span> Association
+          (Actor &harr; Use Case)
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span
+            class="inline-block w-4 h-0.5 border-b border-dashed border-white"
+          ></span>
+          &lt;&lt;include&gt;&gt; / &lt;&lt;extend&gt;&gt; Dependency
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span
+            class="inline-block w-3.5 h-2.5 rounded-full border border-white bg-black"
+          ></span>
+          Use Case
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span
+            class="inline-block w-3.5 h-2.5 border border-dashed border-white bg-black"
+          ></span>
+          System Boundary
+        </div>
+      </div>
+      <div class="font-mono text-neutral-500">
+        AeroBook Documentation • Built with Spring Cloud Gateway & Spring Boot 3
+      </div>
+    </footer>
+
+    <!-- Script for Interactivity & SVG Export -->
+    <script>
+      const useCaseData = {
+        "UC-01": {
+          title: "UC-01: Register Account",
+          desc: "Registers a new traveler with BCrypt password hashing, profile generation, and default ROLE_PASSENGER security role.",
+          service: "auth-service (Port 8082) & user-service (Port 8084)",
+          endpoint: "POST /api/auth/register",
+          actor: "Passenger",
+        },
+        "UC-02": {
+          title: "UC-02: Login & Authenticate",
+          desc: "Validates email/username and password credentials. Returns an encrypted signed JWT Bearer token with 24h validity.",
+          service: "auth-service (Port 8082)",
+          endpoint: "POST /api/auth/login",
+          actor: "All Actors (Passenger, Admin, Staff)",
+        },
+        "UC-02a": {
+          title: "UC-02a: Verify JWT Credentials (Included)",
+          desc: "Internal security filter executed on every authenticated request by the API Gateway to validate JWT signature.",
+          service: "api-gateway (Port 8083) & auth-service",
+          endpoint: "GET /api/auth/credentials",
+          actor: "System / Gateway Filter",
+        },
+        "UC-03": {
+          title: "UC-03: Manage Profile & Info",
+          desc: "Allows passenger to update contact details, phone number, residential address, and passport expiration dates.",
+          service: "user-service (Port 8084)",
+          endpoint: "GET / PUT /api/v1/users/{id}",
+          actor: "Passenger",
+        },
+        "UC-04": {
+          title: "UC-04: Search Flights & Routes",
+          desc: "Queries available flights based on departure airport, destination airport, and target date with real-time seat counts.",
+          service: "flight-service (Port 8087)",
+          endpoint:
+            "GET /api/flights/search?origin=JFK&destination=LHR&date=2026-10-15",
+          actor: "Passenger",
+        },
+        "UC-04a": {
+          title: "UC-04a: Check Seat Inventory (Included)",
+          desc: "Inspects available cabin seat inventory in aircraft layout across Economy, Premium, Business, and First classes.",
+          service: "flight-service (Port 8087)",
+          endpoint: "GET /api/flights/{flightNumber}/seats",
+          actor: "System Component",
+        },
+        "UC-05": {
+          title: "UC-05: View Dynamic Fares",
+          desc: "Calculates real-time price quotes using dynamic pricing algorithm based on demand surge factor and booking lead days.",
+          service: "fare-service (Port 8089)",
+          endpoint: "POST /api/fares/calculate",
+          actor: "Passenger",
+        },
+        "UC-05a": {
+          title: "UC-05a: Calculate Surge Multipliers (Included)",
+          desc: "Evaluates seasonal multipliers, high-demand days, cabin multipliers, and applicable baggage allowance rates.",
+          service: "fare-service (Port 8089)",
+          endpoint: "Internal Rule Engine",
+          actor: "System Component",
+        },
+        "UC-06": {
+          title: "UC-06: Book Flight Ticket",
+          desc: "Master transaction: Locks selected seat, initiates payment, generates a 6-character PNR, and publishes confirmation.",
+          service: "booking-service (Port 8088)",
+          endpoint: "POST /api/bookings",
+          actor: "Passenger",
+        },
+        "UC-06a": {
+          title: "UC-06a: Lock Seat (Included)",
+          desc: "Temporarily reserves inventory seat in flight-service for 10 minutes to prevent double booking during checkout.",
+          service: "flight-service (Port 8087)",
+          endpoint: "POST /api/flights/{flightNumber}/seats/lock",
+          actor: "System Component",
+        },
+        "UC-06b": {
+          title: "UC-06b: Process Payment (Included)",
+          desc: "Delegates payment settlement to external payment gateway (Credit/Debit, Card Tokenization, Instant 3DS Verification).",
+          service: "booking-service (Port 8088) & External Gateway",
+          endpoint: "Payment Gateway API",
+          actor: "External System",
+        },
+        "UC-06c": {
+          title: "UC-06c: Generate 6-Char PNR (Included)",
+          desc: "Generates an immutable, collision-resistant 6-character alphanumeric Passenger Name Record (e.g. AB7K9Q).",
+          service: "booking-service (Port 8088) PnrGenerator",
+          endpoint: "Internal PNR Utility",
+          actor: "System Component",
+        },
+        "UC-06d": {
+          title: "UC-06d: Publish RabbitMQ Event (Included)",
+          desc: "Publishes BookingCreatedEvent payload onto RabbitMQ topic exchange to trigger async email and SMS notifications.",
+          service: "booking-service (Port 8088) & RabbitMQ Broker",
+          endpoint: "AMQP Exchange: booking.exchange",
+          actor: "RabbitMQ Broker",
+        },
+        "UC-07": {
+          title: "UC-07: Cancel Booking & Refund",
+          desc: "Cancels an existing reservation, releases the held seat back to public inventory, and triggers refund workflow.",
+          service: "booking-service (Port 8088)",
+          endpoint: "DELETE /api/bookings/{id}",
+          actor: "Passenger",
+        },
+        "UC-07a": {
+          title: "UC-07a: Release Seat to Inventory (Included)",
+          desc: "Notifies flight-service to decrement reserved seat counter and unlock the seat back to available seat pool.",
+          service: "flight-service (Port 8087)",
+          endpoint: "DELETE /api/flights/{flightNumber}/seats/lock",
+          actor: "System Component",
+        },
+        "UC-08": {
+          title: "UC-08: Online Web Check-In",
+          desc: "Allows passenger to check-in 24 hours prior to flight departure using PNR code and passenger surname.",
+          service: "check-in-service (Port 8090)",
+          endpoint: "POST /api/check-ins",
+          actor: "Passenger & Gate Staff",
+        },
+        "UC-09": {
+          title: "UC-09: Select / Change Seat (Included)",
+          desc: "Interactive seat selection matrix allowing passenger to choose specific window, aisle, or extra legroom seat.",
+          service: "check-in-service (Port 8090)",
+          endpoint: "POST /api/check-ins/select-seat",
+          actor: "Passenger",
+        },
+        "UC-10": {
+          title: "UC-10: Generate Boarding Pass",
+          desc: "Renders digital boarding pass with passenger name, PNR, flight number, gate, seat, and security QR code string.",
+          service: "check-in-service (Port 8090)",
+          endpoint: "GET /api/check-ins/{id}/boarding-pass",
+          actor: "Passenger",
+        },
+        "UC-11": {
+          title: "UC-11: Validate Boarding at Gate",
+          desc: "Gate agent scans QR code on passenger boarding pass to mark traveler as BOARDED prior to aircraft door closure.",
+          service: "check-in-service (Port 8090)",
+          endpoint: "PUT /api/check-ins/{id}/board",
+          actor: "Airport Gate Staff",
+        },
+        "UC-12": {
+          title: "UC-12: Manage Aircraft Fleet",
+          desc: "Allows administrator to register aircraft models (Boeing 737, Airbus A320), configure seat maps, and maintenance status.",
+          service: "flight-service (Port 8087)",
+          endpoint: "POST / GET / PUT /api/admin/aircrafts",
+          actor: "Airline Administrator",
+        },
+        "UC-13": {
+          title: "UC-13: Manage Flight Schedules",
+          desc: "Enables administrators to establish flight routes, flight numbers, departure/arrival terminals, and daily schedules.",
+          service: "flight-service (Port 8087)",
+          endpoint: "POST / GET / PUT /api/admin/flights",
+          actor: "Airline Administrator",
+        },
+        "UC-14": {
+          title: "UC-14: Configure Fare Rules",
+          desc: "Configures base fare pricing per route, seasonal multipliers, cabin class upgrade fees, and extra baggage surcharges.",
+          service: "fare-service (Port 8089)",
+          endpoint: "POST / PUT /api/fares",
+          actor: "Airline Administrator",
+        },
+        "UC-15": {
+          title: "UC-15: Monitor Gateway Health & RBAC",
+          desc: "Inspects real-time reactive routing health, microservice directory, platform route catalog, and security policy matrix.",
+          service: "api-gateway (Port 8083)",
+          endpoint: "GET /api/gateway/health & /api/gateway/services",
+          actor: "Airline Administrator",
+        },
+      };
+
+      function showDetails(ucId) {
+        const data = useCaseData[ucId];
+        if (!data) return;
+        document.getElementById("insp-badge").innerText = ucId;
+        document.getElementById("insp-title").innerText = data.title;
+        document.getElementById("insp-desc").innerText = data.desc;
+        document.getElementById("insp-service").innerText = data.service;
+        document.getElementById("insp-endpoint").innerText = data.endpoint;
+        document.getElementById("insp-actor").innerText = data.actor;
+
+        // Highlight active node
+        document
+          .querySelectorAll(".use-case-node")
+          .forEach((el) => el.classList.remove("highlight-active"));
+        const activeEl = document.getElementById(
+          "node-" + ucId.toLowerCase().replace("-", ""),
+        );
+        if (activeEl) activeEl.classList.add("highlight-active");
+      }
+
+      function filterActor(type) {
+        // Update buttons
+        const buttons = ["all", "passenger", "admin", "staff", "system"];
+        buttons.forEach((b) => {
+          const btn = document.getElementById("btn-" + b);
+          if (b === type) {
+            btn.className =
+              "px-3 py-1 rounded bg-white text-black font-semibold transition";
+          } else {
+            btn.className =
+              "px-3 py-1 rounded border border-white/40 hover:border-white transition";
+          }
+        });
+
+        const linesPass = document.getElementById("lines-passenger");
+        const linesAdmin = document.getElementById("lines-admin");
+        const linesStaff = document.getElementById("lines-staff");
+        const linesSys = document.getElementById("lines-system");
+        const actorPass = document.getElementById("actor-passenger");
+        const actorAdmin = document.getElementById("actor-admin");
+        const actorStaff = document.getElementById("actor-staff");
+        const sysPay = document.getElementById("system-payment");
+        const sysRab = document.getElementById("system-rabbitmq");
+
+        // Reset all opacities
+        [
+          linesPass,
+          linesAdmin,
+          linesStaff,
+          linesSys,
+          actorPass,
+          actorAdmin,
+          actorStaff,
+          sysPay,
+          sysRab,
+        ].forEach((el) => {
+          if (el) el.classList.remove("dimmed");
+        });
+
+        if (type === "passenger") {
+          [
+            linesAdmin,
+            linesStaff,
+            linesSys,
+            actorAdmin,
+            actorStaff,
+            sysPay,
+            sysRab,
+          ].forEach((el) => el.classList.add("dimmed"));
+          showDetails("UC-06");
+        } else if (type === "admin") {
+          [
+            linesPass,
+            linesStaff,
+            linesSys,
+            actorPass,
+            actorStaff,
+            sysPay,
+            sysRab,
+          ].forEach((el) => el.classList.add("dimmed"));
+          showDetails("UC-13");
+        } else if (type === "staff") {
+          [
+            linesPass,
+            linesAdmin,
+            linesSys,
+            actorPass,
+            actorAdmin,
+            sysPay,
+            sysRab,
+          ].forEach((el) => el.classList.add("dimmed"));
+          showDetails("UC-11");
+        } else if (type === "system") {
+          [
+            linesPass,
+            linesAdmin,
+            linesStaff,
+            actorPass,
+            actorAdmin,
+            actorStaff,
+          ].forEach((el) => el.classList.add("dimmed"));
+          showDetails("UC-06b");
+        } else {
+          showDetails("UC-06");
+        }
+      }
+
+      let currentScale = 1.0;
+      function zoom(factor) {
+        currentScale = Math.min(Math.max(currentScale * factor, 0.6), 2.2);
+        const svg = document.getElementById("usecase-svg");
+        svg.style.transform = `scale(${currentScale})`;
+        svg.style.transformOrigin = "center top";
+      }
+
+      function resetZoom() {
+        currentScale = 1.0;
+        const svg = document.getElementById("usecase-svg");
+        svg.style.transform = "scale(1)";
+      }
+
+      function downloadSVG() {
+        const svgEl = document.getElementById("usecase-svg");
+        const serializer = new XMLSerializer();
+        let source = serializer.serializeToString(svgEl);
+
+        // Add name spaces
+        if (
+          !source.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)
+        ) {
+          source = source.replace(
+            /^<svg/,
+            '<svg xmlns="http://www.w3.org/2000/svg"',
+          );
+        }
+
+        const svgBlob = new Blob([source], {
+          type: "image/svg+xml;charset=utf-8",
+        });
+        const svgUrl = URL.createObjectURL(svgBlob);
+        const downloadLink = document.createElement("a");
+        downloadLink.href = svgUrl;
+        downloadLink.download = "AeroBook_UseCase_Diagram.svg";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+      }
+
+      // Default inspection on load
+      showDetails("UC-06");
+    </script>
+  </body>
+</html>

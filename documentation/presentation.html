@@ -1,0 +1,937 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>AeroBook - Project Presentation Slides</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        background-color: #000000;
+        color: #ffffff;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        overflow: hidden;
+      }
+      .slide {
+        display: none;
+        animation: fadeIn 0.3s ease-in-out forwards;
+      }
+      .slide.active {
+        display: flex;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: scale(0.99);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      .blueprint-grid {
+        background-size: 35px 35px;
+        background-image: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.08) 1px,
+          transparent 1px
+        );
+      }
+    </style>
+  </head>
+  <body
+    class="bg-black text-white h-screen w-screen flex flex-col justify-between blueprint-grid select-none p-4 md:p-6"
+  >
+    <!-- Top Navigation & Actions Bar -->
+    <header
+      class="w-full max-w-[1600px] mx-auto flex items-center justify-between border-b border-zinc-800 pb-3"
+    >
+      <div class="flex items-center gap-3">
+        <span
+          class="px-2.5 py-0.5 bg-zinc-900 border border-zinc-700 text-xs font-mono font-bold rounded uppercase tracking-wider text-sky-400"
+        >
+          AeroBook 2026
+        </span>
+        <span
+          class="text-sm font-bold tracking-tight text-white hidden sm:inline"
+        >
+          Capstone Project Presentation
+        </span>
+      </div>
+
+      <!-- Slide Indicators -->
+      <div class="flex items-center gap-2">
+        <button
+          onclick="goToSlide(0)"
+          id="dot-0"
+          class="w-8 h-2 rounded-full bg-white transition-all"
+        ></button>
+        <button
+          onclick="goToSlide(1)"
+          id="dot-1"
+          class="w-8 h-2 rounded-full bg-zinc-800 hover:bg-zinc-600 transition-all"
+        ></button>
+        <button
+          onclick="goToSlide(2)"
+          id="dot-2"
+          class="w-8 h-2 rounded-full bg-zinc-800 hover:bg-zinc-600 transition-all"
+        ></button>
+        <button
+          onclick="goToSlide(3)"
+          id="dot-3"
+          class="w-8 h-2 rounded-full bg-zinc-800 hover:bg-zinc-600 transition-all"
+        ></button>
+        <button
+          onclick="goToSlide(4)"
+          id="dot-4"
+          class="w-8 h-2 rounded-full bg-zinc-800 hover:bg-zinc-600 transition-all"
+        ></button>
+        <span id="slide-number" class="text-xs font-mono text-zinc-400 ml-2"
+          >Slide 1 of 5</span
+        >
+      </div>
+
+      <!-- Export & Controls -->
+      <div class="flex items-center gap-2">
+        <a
+          href="AeroBook_Presentation.pptx"
+          download="AeroBook_Presentation.pptx"
+          class="px-3 py-1 bg-white text-black font-bold text-xs font-mono rounded hover:bg-zinc-200 transition"
+        >
+          Download PPTX
+        </a>
+        <a
+          href="AeroBook_Presentation.pdf"
+          target="_blank"
+          class="px-3 py-1 bg-zinc-900 border border-zinc-700 hover:border-white text-xs font-mono rounded transition"
+        >
+          PDF Deck
+        </a>
+        <button
+          onclick="toggleFullscreen()"
+          class="px-3 py-1 bg-zinc-900 border border-zinc-700 hover:border-white text-xs font-mono rounded transition"
+        >
+          Fullscreen [F]
+        </button>
+      </div>
+    </header>
+
+    <!-- Presentation Stage (Slides 1 to 5) -->
+    <main
+      class="w-full max-w-[1600px] mx-auto flex-1 flex items-center justify-center my-4 overflow-hidden relative"
+    >
+      <!-- ===================================================================== -->
+      <!-- SLIDE 1: TITLE & INTRODUCTIONS (Student, Project, Mentor) -->
+      <!-- ===================================================================== -->
+      <section
+        id="slide-0"
+        class="slide active w-full h-full flex-col justify-between p-6 md:p-8 bg-zinc-950/80 border-2 border-zinc-800 rounded-2xl shadow-2xl relative"
+      >
+        <div>
+          <div
+            class="inline-flex items-center gap-2 px-3 py-1 rounded border border-white bg-zinc-900 text-xs font-mono uppercase font-bold tracking-widest text-white mb-3"
+          >
+            CAPSTONE PROJECT PRESENTATION &bull; 2026
+          </div>
+          <h1 class="text-3xl md:text-5xl font-black tracking-tight text-white">
+            AeroBook Flight Platform
+          </h1>
+          <p class="text-lg md:text-xl font-bold text-sky-400 mt-1">
+            Next-Generation Airline Reservation &amp; Distributed Flight
+            Operations Engine
+          </p>
+          <p
+            class="text-xs md:text-sm text-zinc-400 max-w-4xl mt-2 leading-relaxed"
+          >
+            A cloud-native, microservices-driven distributed reservation
+            ecosystem featuring real-time seat inventory locking, dynamic fare
+            calculations, self-service web check-in with 2D QR boarding passes,
+            and event-driven asynchronous messaging.
+          </p>
+        </div>
+
+        <!-- 3 Profile Cards: Presenter | Mentor | Platform Specs -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 my-4">
+          <!-- Presenter Card -->
+          <div
+            class="bg-zinc-900/90 border border-sky-500/60 rounded-xl p-5 flex flex-col justify-between"
+          >
+            <div>
+              <span
+                class="text-[11px] font-mono font-bold tracking-widest text-sky-400 uppercase block mb-1"
+                >PROJECT LEAD &amp; DEVELOPER</span
+              >
+              <span class="text-xs text-zinc-400 block">Presented By:</span>
+              <h3 class="text-xl font-black text-white mt-0.5">
+                Lead Developer / Student
+              </h3>
+              <p class="text-xs text-zinc-300 mt-2 font-medium">
+                B.Tech in Computer Science &amp; Engineering<br />
+                Department of Computer Science &amp; Engineering<br />
+                Roll No / Project ID:
+                <span class="font-mono text-sky-300">AB-2026-CS</span>
+              </p>
+            </div>
+            <div
+              class="mt-4 pt-3 border-t border-zinc-800 text-[11px] text-zinc-400"
+            >
+              Specialization: Cloud Computing &amp; Microservice Systems
+            </div>
+          </div>
+
+          <!-- Mentor Card -->
+          <div
+            class="bg-zinc-900/90 border border-emerald-500/60 rounded-xl p-5 flex flex-col justify-between"
+          >
+            <div>
+              <span
+                class="text-[11px] font-mono font-bold tracking-widest text-emerald-400 uppercase block mb-1"
+                >PROJECT GUIDANCE &amp; MENTORSHIP</span
+              >
+              <span class="text-xs text-zinc-400 block"
+                >Project Mentor / Guide:</span
+              >
+              <h3 class="text-xl font-black text-white mt-0.5">
+                Prof. / Dr. Project Mentor
+              </h3>
+              <p class="text-xs text-zinc-300 mt-2 font-medium">
+                Professor &amp; Technical Project Guide<br />
+                Department of Computer Science &amp; Engineering<br />
+                Domain: Enterprise Distributed Systems
+              </p>
+            </div>
+            <div
+              class="mt-4 pt-3 border-t border-zinc-800 text-[11px] text-zinc-400"
+            >
+              Guidance Scope: Architectural Review, Security &amp; Concurrency
+            </div>
+          </div>
+
+          <!-- Platform Specs Card -->
+          <div
+            class="bg-zinc-900/90 border border-purple-500/60 rounded-xl p-5 flex flex-col justify-between"
+          >
+            <div>
+              <span
+                class="text-[11px] font-mono font-bold tracking-widest text-purple-400 uppercase block mb-1"
+                >PLATFORM ARCHITECTURAL CORE</span
+              >
+              <span class="text-xs text-zinc-400 block"
+                >System Foundation:</span
+              >
+              <h3 class="text-lg font-black text-white mt-0.5">
+                Microservices + AMQP Event Broker
+              </h3>
+              <ul class="text-[11px] text-zinc-300 mt-2 space-y-1 font-mono">
+                <li>&bull; Framework: Spring Boot 3.2.0</li>
+                <li>&bull; Edge Gateway: Spring Cloud Gateway</li>
+                <li>&bull; Discovery: Netflix Eureka (Port 8761)</li>
+                <li>&bull; Database: Database-per-Service (6x MySQL 8)</li>
+                <li>&bull; Messaging: RabbitMQ AMQP (Port 5672)</li>
+              </ul>
+            </div>
+            <div
+              class="mt-4 pt-3 border-t border-zinc-800 text-[11px] text-zinc-400"
+            >
+              Security: Stateless HMAC-SHA256 JWT Bearer Tokens
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="text-[11px] text-zinc-500 font-mono flex items-center justify-between border-t border-zinc-900 pt-2"
+        >
+          <span>Use Left/Right Arrow Keys to navigate</span>
+          <span>AeroBook Flight Platform &bull; Slide 1 of 5</span>
+        </div>
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- SLIDE 2: PROBLEM STATEMENT & PROJECT OVERVIEW -->
+      <!-- ===================================================================== -->
+      <section
+        id="slide-1"
+        class="slide w-full h-full flex-col justify-between p-6 md:p-8 bg-zinc-950/80 border-2 border-zinc-800 rounded-2xl shadow-2xl relative"
+      >
+        <div>
+          <div
+            class="inline-flex items-center gap-2 px-3 py-1 rounded border border-white bg-zinc-900 text-xs font-mono uppercase font-bold tracking-widest text-white mb-2"
+          >
+            PROBLEM &amp; SOLUTION
+          </div>
+          <h2 class="text-2xl md:text-4xl font-black tracking-tight text-white">
+            Project Motivation &amp; Problem Statement
+          </h2>
+          <p class="text-xs md:text-sm text-zinc-400 mt-1">
+            Addressing the vulnerabilities of legacy monolithic airline
+            reservation systems with cloud-native resilience.
+          </p>
+        </div>
+
+        <!-- 4 Bento Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 my-4">
+          <div class="bg-zinc-900/80 border border-red-500/50 rounded-xl p-5">
+            <h3
+              class="text-sm font-bold text-red-400 font-mono tracking-wide uppercase mb-2"
+            >
+              The Challenge: Monolithic Airline Failures
+            </h3>
+            <ul class="text-xs text-zinc-300 space-y-2 leading-relaxed">
+              <li>
+                <strong class="text-white"
+                  >&bull; Single Point of Failure (SPOF):</strong
+                >
+                When search traffic surges during holiday campaigns, checkout
+                and boarding systems crash together.
+              </li>
+              <li>
+                <strong class="text-white"
+                  >&bull; Shared Database Contention:</strong
+                >
+                High-frequency flight catalog reads cause row/table locks on
+                transactional booking tables.
+              </li>
+              <li>
+                <strong class="text-white">&bull; Fragile Deployments:</strong>
+                Minor adjustments to fare multipliers require building and
+                deploying the entire monolithic JAR.
+              </li>
+              <li>
+                <strong class="text-white">&bull; Thread Starvation:</strong>
+                Slow third-party payment or SMS APIs block server worker
+                threads, triggering system-wide cascades.
+              </li>
+            </ul>
+          </div>
+
+          <div
+            class="bg-zinc-900/80 border border-emerald-500/50 rounded-xl p-5"
+          >
+            <h3
+              class="text-sm font-bold text-emerald-400 font-mono tracking-wide uppercase mb-2"
+            >
+              The AeroBook Solution: Cloud-Native Microservices
+            </h3>
+            <ul class="text-xs text-zinc-300 space-y-2 leading-relaxed">
+              <li>
+                <strong class="text-white"
+                  >&bull; Domain Decentralization:</strong
+                >
+                6 autonomous microservices collaborating via lightweight REST
+                APIs and asynchronous AMQP messaging.
+              </li>
+              <li>
+                <strong class="text-white"
+                  >&bull; Database-per-Service Isolation:</strong
+                >
+                Dedicated MySQL schemas ensure flight search reads never
+                interfere with booking commits.
+              </li>
+              <li>
+                <strong class="text-white"
+                  >&bull; Non-Blocking Edge Gateway:</strong
+                >
+                Netty WebFlux pipeline enforces rate limits, JWT authentication,
+                and Swagger OpenAPI aggregation.
+              </li>
+              <li>
+                <strong class="text-white"
+                  >&bull; Event-Driven Decoupling:</strong
+                >
+                RabbitMQ queues offload notification dispatch, guaranteeing
+                sub-50ms checkout responses.
+              </li>
+            </ul>
+          </div>
+
+          <div class="bg-zinc-900/80 border border-sky-500/50 rounded-xl p-5">
+            <h3
+              class="text-sm font-bold text-sky-400 font-mono tracking-wide uppercase mb-2"
+            >
+              Core Business Capabilities
+            </h3>
+            <ul class="text-xs text-zinc-300 space-y-1.5 leading-relaxed">
+              <li>
+                &bull;
+                <strong class="text-white"
+                  >Multi-Criteria Flight Search:</strong
+                >
+                Origin, destination, date, and multi-cabin class real-time
+                availability querying.
+              </li>
+              <li>
+                &bull;
+                <strong class="text-white">Dynamic Surge Pricing:</strong>
+                Real-time algorithms compute distance fares, demand load
+                multipliers, and airport taxes.
+              </li>
+              <li>
+                &bull;
+                <strong class="text-white">Atomic Seat Locks:</strong> Two-phase
+                10-minute temporary seat hold with unique 6-character PNR record
+                generation.
+              </li>
+              <li>
+                &bull;
+                <strong class="text-white">Airport Web Check-In:</strong>
+                Departure window rules (T-24h to T-1h) with cryptographically
+                signed 2D QR boarding passes.
+              </li>
+            </ul>
+          </div>
+
+          <div
+            class="bg-zinc-900/80 border border-purple-500/50 rounded-xl p-5"
+          >
+            <h3
+              class="text-sm font-bold text-purple-400 font-mono tracking-wide uppercase mb-2"
+            >
+              Enterprise Quality Attributes
+            </h3>
+            <ul class="text-xs text-zinc-300 space-y-1.5 leading-relaxed">
+              <li>
+                &bull;
+                <strong class="text-white">High Availability:</strong> Eureka
+                service registry enables horizontal scaling with automated
+                client-side load balancing.
+              </li>
+              <li>
+                &bull;
+                <strong class="text-white">PCI-DSS Scope Minimization:</strong>
+                Zero plain-text credit card storage; utilizes opaque tokens with
+                Stripe/Razorpay.
+              </li>
+              <li>
+                &bull;
+                <strong class="text-white">Data Governance:</strong>
+                Microservices reference immutable UUIDs and PNRs across service
+                boundaries without joins.
+              </li>
+              <li>
+                &bull;
+                <strong class="text-white">At-Least-Once Messaging:</strong>
+                RabbitMQ Dead-Letter Exchanges (DLX) and retry backoffs
+                guarantee notification delivery.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div
+          class="text-[11px] text-zinc-500 font-mono flex items-center justify-between border-t border-zinc-900 pt-2"
+        >
+          <span>Slide 2 of 5</span>
+          <span>AeroBook Flight Platform</span>
+        </div>
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- SLIDE 3: SYSTEM ARCHITECTURE BLUEPRINT -->
+      <!-- ===================================================================== -->
+      <section
+        id="slide-2"
+        class="slide w-full h-full flex-col justify-between p-6 md:p-8 bg-zinc-950/80 border-2 border-zinc-800 rounded-2xl shadow-2xl relative"
+      >
+        <div>
+          <div
+            class="inline-flex items-center gap-2 px-3 py-1 rounded border border-white bg-zinc-900 text-xs font-mono uppercase font-bold tracking-widest text-white mb-2"
+          >
+            ARCHITECTURE BLUEPRINT
+          </div>
+          <h2 class="text-2xl md:text-4xl font-black tracking-tight text-white">
+            System Architecture &amp; Microservices Ecosystem
+          </h2>
+          <p class="text-xs md:text-sm text-zinc-400 mt-1">
+            Multi-tier distributed decomposition with edge routing, service
+            discovery, and isolated domain data stores.
+          </p>
+        </div>
+
+        <!-- Left Diagram & Right Detail Cards -->
+        <div
+          class="grid grid-cols-1 lg:grid-cols-12 gap-5 my-4 items-center flex-1"
+        >
+          <!-- Diagram Preview (7 cols) -->
+          <div
+            class="lg:col-span-7 bg-black border border-zinc-800 rounded-xl overflow-hidden p-2 flex items-center justify-center"
+          >
+            <img
+              src="AeroBook_Architecture_Diagram.png"
+              alt="Architecture Diagram"
+              class="max-h-[380px] w-auto object-contain rounded"
+            />
+          </div>
+
+          <!-- Structural Breakdown (5 cols) -->
+          <div class="lg:col-span-5 flex flex-col gap-3">
+            <div
+              class="p-3.5 bg-zinc-900/80 border border-sky-500/50 rounded-xl"
+            >
+              <span
+                class="text-xs font-bold text-sky-400 font-mono uppercase block mb-1"
+                >1. Edge Routing &amp; Security Tier</span
+              >
+              <p class="text-xs text-zinc-300 leading-relaxed">
+                <strong class="text-white">API Gateway (8083):</strong> Spring
+                Cloud Gateway (Netty WebFlux) with Global JWT
+                AuthenticationFilter, RouteValidator, and unified Swagger UI
+                dropdown hub.<br />
+                <strong class="text-white">Eureka Registry (8761):</strong>
+                Automated service registration, heartbeats, and client-side load
+                balancing.
+              </p>
+            </div>
+
+            <div
+              class="p-3.5 bg-zinc-900/80 border border-emerald-500/50 rounded-xl"
+            >
+              <span
+                class="text-xs font-bold text-emerald-400 font-mono uppercase block mb-1"
+                >2. Core Domain Microservices</span
+              >
+              <p class="text-xs text-zinc-300 leading-relaxed">
+                &bull;
+                <strong class="text-white">auth-service (8082):</strong> BCrypt
+                password hashing, JWT bearer tokens.<br />
+                &bull;
+                <strong class="text-white">user-service (8084):</strong>
+                Passenger profiles, passport identification.<br />
+                &bull;
+                <strong class="text-white">flight-service (8087):</strong> Fleet
+                scheduling, cabin seat hold maps.<br />
+                &bull;
+                <strong class="text-white">fare-service (8089):</strong>
+                Real-time dynamic surge pricing engine.<br />
+                &bull;
+                <strong class="text-white">booking-service (8088):</strong> PNR
+                orchestration, saga coordinator.<br />
+                &bull;
+                <strong class="text-white">check-in-service (8090):</strong> Web
+                check-in, 2D QR pass generation.
+              </p>
+            </div>
+
+            <div
+              class="p-3.5 bg-zinc-900/80 border border-purple-500/50 rounded-xl"
+            >
+              <span
+                class="text-xs font-bold text-purple-400 font-mono uppercase block mb-1"
+                >3. Storage &amp; Async Messaging</span
+              >
+              <p class="text-xs text-zinc-300 leading-relaxed">
+                <strong class="text-white">Database-per-Service:</strong> 6
+                isolated MySQL 8.0 databases.<br />
+                <strong class="text-white">RabbitMQ Broker (5672):</strong>
+                Durable message exchange decoupling transactional booking from
+                background email/SMS notification delivery.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="text-[11px] text-zinc-500 font-mono flex items-center justify-between border-t border-zinc-900 pt-2"
+        >
+          <span>Slide 3 of 5</span>
+          <span>AeroBook Flight Platform</span>
+        </div>
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- SLIDE 4: KEY TECHNICAL HIGHLIGHTS & DATA ARCHITECTURE -->
+      <!-- ===================================================================== -->
+      <section
+        id="slide-3"
+        class="slide w-full h-full flex-col justify-between p-6 md:p-8 bg-zinc-950/80 border-2 border-zinc-800 rounded-2xl shadow-2xl relative"
+      >
+        <div>
+          <div
+            class="inline-flex items-center gap-2 px-3 py-1 rounded border border-white bg-zinc-900 text-xs font-mono uppercase font-bold tracking-widest text-white mb-2"
+          >
+            TECHNICAL EXCELLENCE
+          </div>
+          <h2 class="text-2xl md:text-4xl font-black tracking-tight text-white">
+            Key Technical Highlights &amp; Data Architecture
+          </h2>
+          <p class="text-xs md:text-sm text-zinc-400 mt-1">
+            Deep architectural dive into database isolation, transactional
+            sagas, event streaming, and security guarantees.
+          </p>
+        </div>
+
+        <!-- 4 Feature Columns -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 my-4">
+          <!-- Col 1 -->
+          <div
+            class="bg-zinc-900/90 border border-sky-500/60 rounded-xl p-4 flex flex-col justify-between"
+          >
+            <div>
+              <h3
+                class="text-xs font-bold text-sky-400 font-mono uppercase tracking-wider mb-2"
+              >
+                Database-Per-Service Isolation Pattern
+              </h3>
+              <p class="text-xs text-zinc-300 leading-relaxed">
+                <strong class="text-white">&bull; 6 Isolated Schemas:</strong>
+                aerobook_auth_db, flight_db, booking_db, user_db, fare_db,
+                checkin_db.<br /><br />
+                <strong class="text-white">&bull; Zero Cross-DB Joins:</strong>
+                Direct SQL queries across database schemas are architecturally
+                banned.<br /><br />
+                <strong class="text-white">&bull; Entity Correlation:</strong>
+                Microservices reference raw immutable IDs (flightId, pnr)
+                validated via OpenFeign contracts.
+              </p>
+            </div>
+            <div
+              class="mt-3 pt-2 border-t border-zinc-800 text-[10px] text-zinc-400"
+            >
+              Eliminates distributed deadlocks &amp; enables independent
+              scaling.
+            </div>
+          </div>
+
+          <!-- Col 2 -->
+          <div
+            class="bg-zinc-900/90 border border-purple-500/60 rounded-xl p-4 flex flex-col justify-between"
+          >
+            <div>
+              <h3
+                class="text-xs font-bold text-purple-400 font-mono uppercase tracking-wider mb-2"
+              >
+                Asynchronous AMQP Event Streaming
+              </h3>
+              <p class="text-xs text-zinc-300 leading-relaxed">
+                <strong class="text-white">&bull; RabbitMQ Integration:</strong>
+                Direct exchange aerobook.direct bound to durable queue
+                booking.events.<br /><br />
+                <strong class="text-white"
+                  >&bull; Non-Blocking Checkout:</strong
+                >
+                Booking service publishes BookingConfirmedEvent in &lt;5ms and
+                returns immediately.<br /><br />
+                <strong class="text-white">&bull; Background Worker:</strong>
+                Consumes event, formats HTML tickets, and calls SendGrid/Twilio
+                APIs.
+              </p>
+            </div>
+            <div
+              class="mt-3 pt-2 border-t border-zinc-800 text-[10px] text-zinc-400"
+            >
+              Dead-Letter Exchanges (DLX) guarantee zero notification loss.
+            </div>
+          </div>
+
+          <!-- Col 3 -->
+          <div
+            class="bg-zinc-900/90 border border-emerald-500/60 rounded-xl p-4 flex flex-col justify-between"
+          >
+            <div>
+              <h3
+                class="text-xs font-bold text-emerald-400 font-mono uppercase tracking-wider mb-2"
+              >
+                PCI-DSS Scope &amp; Zero PAN Storage
+              </h3>
+              <p class="text-xs text-zinc-300 leading-relaxed">
+                <strong class="text-white"
+                  >&bull; Zero Sensitive Storage:</strong
+                >
+                Credit card numbers (PAN) and CVVs never touch AeroBook disks or
+                server memory.<br /><br />
+                <strong class="text-white">&bull; Client Tokenization:</strong>
+                Front-end clients tokenize card credentials directly with
+                Stripe/Razorpay.<br /><br />
+                <strong class="text-white">&bull; Opaque Handshakes:</strong>
+                Booking service only handles transient tokens and settlement
+                transaction IDs.
+              </p>
+            </div>
+            <div
+              class="mt-3 pt-2 border-t border-zinc-800 text-[10px] text-zinc-400"
+            >
+              Stateless JWT tokens &amp; BCrypt password hashing (strength 10).
+            </div>
+          </div>
+
+          <!-- Col 4 -->
+          <div
+            class="bg-zinc-900/90 border border-yellow-500/60 rounded-xl p-4 flex flex-col justify-between"
+          >
+            <div>
+              <h3
+                class="text-xs font-bold text-yellow-400 font-mono uppercase tracking-wider mb-2"
+              >
+                Concurrency &amp; Atomic Seat Hold Locks
+              </h3>
+              <p class="text-xs text-zinc-300 leading-relaxed">
+                <strong class="text-white">&bull; Flash-Sale Defense:</strong>
+                Prevents race conditions and double-booking during high-volume
+                ticket rushes.<br /><br />
+                <strong class="text-white">&bull; Two-Phase Hold:</strong> Seats
+                are atomically locked with status HELD and an expiration
+                timestamp of 10 minutes.<br /><br />
+                <strong class="text-white">&bull; Auto-Release:</strong> If
+                payment fails or times out, held seats are immediately released
+                back to inventory.
+              </p>
+            </div>
+            <div
+              class="mt-3 pt-2 border-t border-zinc-800 text-[10px] text-zinc-400"
+            >
+              Row-level pessimistic locking (SELECT ... FOR UPDATE).
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="text-[11px] text-zinc-500 font-mono flex items-center justify-between border-t border-zinc-900 pt-2"
+        >
+          <span>Slide 4 of 5</span>
+          <span>AeroBook Flight Platform</span>
+        </div>
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- SLIDE 5: VERIFICATION RESULTS & FUTURE ROADMAP -->
+      <!-- ===================================================================== -->
+      <section
+        id="slide-4"
+        class="slide w-full h-full flex-col justify-between p-6 md:p-8 bg-zinc-950/80 border-2 border-zinc-800 rounded-2xl shadow-2xl relative"
+      >
+        <div>
+          <div
+            class="inline-flex items-center gap-2 px-3 py-1 rounded border border-white bg-zinc-900 text-xs font-mono uppercase font-bold tracking-widest text-white mb-2"
+          >
+            RESULTS &amp; ROADMAP
+          </div>
+          <h2 class="text-2xl md:text-4xl font-black tracking-tight text-white">
+            Verification Results, Milestones &amp; Future Scope
+          </h2>
+          <p class="text-xs md:text-sm text-zinc-400 mt-1">
+            Demonstrating automated test verification, engineering milestones,
+            and the future evolutionary roadmap.
+          </p>
+        </div>
+
+        <!-- Testing & Milestones Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 my-3">
+          <div
+            class="bg-zinc-900/80 border border-emerald-500/50 rounded-xl p-4"
+          >
+            <h3
+              class="text-xs font-bold text-emerald-400 font-mono tracking-wide uppercase mb-1.5"
+            >
+              Comprehensive Automated Testing (90+ Tests)
+            </h3>
+            <ul class="text-xs text-zinc-300 space-y-1.5 leading-relaxed">
+              <li>
+                &bull;
+                <strong class="text-white"
+                  >100% Core Service Test Suite:</strong
+                >
+                Comprehensive unit, integration, and mock tests across all 6
+                microservices.
+              </li>
+              <li>
+                &bull;
+                <strong class="text-white">WebTestClient &amp; Mockito:</strong>
+                Verified Gateway dynamic OpenAPI routing and Netty WebFlux JWT
+                validation filters.
+              </li>
+              <li>
+                &bull;
+                <strong class="text-white">Boundary Testing:</strong> Verified
+                dynamic surge multipliers, negative seat inventory checks, and
+                expired token rejection.
+              </li>
+              <li>
+                &bull;
+                <strong class="text-white"
+                  >Inter-Service Contract Tests:</strong
+                >
+                OpenFeign client integration tests verified with
+                WireMock/Mockito.
+              </li>
+            </ul>
+          </div>
+
+          <div class="bg-zinc-900/80 border border-sky-500/50 rounded-xl p-4">
+            <h3
+              class="text-xs font-bold text-sky-400 font-mono tracking-wide uppercase mb-1.5"
+            >
+              Engineering Milestones Achieved
+            </h3>
+            <ul class="text-xs text-zinc-300 space-y-1.5 leading-relaxed">
+              <li>
+                &bull;
+                <strong class="text-white"
+                  >Sub-50ms Gateway Routing Latency:</strong
+                >
+                Achieved through non-blocking asynchronous Netty pipelines.
+              </li>
+              <li>
+                &bull;
+                <strong class="text-white">Centralized Swagger Hub:</strong>
+                Dynamically aggregates live OpenAPI specifications from all 6
+                domain services.
+              </li>
+              <li>
+                &bull;
+                <strong class="text-white"
+                  >Zero-Downtime Service Discovery:</strong
+                >
+                Eureka enables dynamic scale-up without restarting gateway
+                routers.
+              </li>
+              <li>
+                &bull;
+                <strong class="text-white"
+                  >End-to-End Visual Documentation:</strong
+                >
+                Complete Use Case, Architecture, Class, and DFD specifications.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Roadmap Row -->
+        <div class="bg-zinc-900/80 border border-purple-500/50 rounded-xl p-4">
+          <h3
+            class="text-xs font-bold text-purple-400 font-mono tracking-wide uppercase mb-2"
+          >
+            Future Evolutionary Roadmap
+          </h3>
+          <div
+            class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-zinc-300"
+          >
+            <div>
+              <strong class="text-white block mb-0.5"
+                >1. AI Dynamic Pricing Engine</strong
+              >
+              Machine learning models to forecast passenger demand curves and
+              adjust seat prices in real time based on historical booking
+              velocities and competitor flight pricing.
+            </div>
+            <div>
+              <strong class="text-white block mb-0.5"
+                >2. Biometric Gate Boarding</strong
+              >
+              Facial recognition integration with airport gate cameras, matching
+              passenger biometric facial embeddings directly against passport
+              photo records for frictionless boarding.
+            </div>
+            <div>
+              <strong class="text-white block mb-0.5"
+                >3. Multi-Carrier Interlining</strong
+              >
+              IATA ONE Order &amp; NDC compliance enabling multi-leg interline
+              bookings with partner airlines and unified real-time baggage RFID
+              telemetry tracking across airports.
+            </div>
+          </div>
+        </div>
+
+        <!-- Thank you banner -->
+        <div
+          class="w-full bg-white text-black py-2.5 rounded-xl font-bold font-mono text-center text-xs md:text-sm tracking-wider uppercase"
+        >
+          Thank You! &bull; Questions, Defense &amp; Discussion Are Welcomed
+        </div>
+      </section>
+    </main>
+
+    <!-- Bottom Controls -->
+    <footer
+      class="w-full max-w-[1600px] mx-auto flex items-center justify-between border-t border-zinc-800 pt-3"
+    >
+      <div class="flex items-center gap-2">
+        <button
+          onclick="prevSlide()"
+          class="px-4 py-1.5 bg-zinc-900 border border-zinc-700 hover:border-white text-xs font-mono rounded transition"
+        >
+          &larr; Previous
+        </button>
+        <button
+          onclick="nextSlide()"
+          class="px-4 py-1.5 bg-zinc-900 border border-zinc-700 hover:border-white text-xs font-mono rounded transition"
+        >
+          Next &rarr;
+        </button>
+      </div>
+      <div class="text-xs text-zinc-500 font-mono hidden sm:inline">
+        AeroBook Flight Platform &bull; Computer Science Capstone Presentation
+      </div>
+      <div class="text-xs text-zinc-400 font-mono">
+        Slide <span id="current-page">1</span> of 5
+      </div>
+    </footer>
+
+    <!-- Script for Slide Navigation -->
+    <script>
+      let currentSlide = 0;
+      const totalSlides = 5;
+
+      function updateSlides() {
+        for (let i = 0; i < totalSlides; i++) {
+          const slide = document.getElementById(`slide-${i}`);
+          const dot = document.getElementById(`dot-${i}`);
+          if (i === currentSlide) {
+            slide.classList.add("active");
+            dot.className = "w-8 h-2 rounded-full bg-white transition-all";
+          } else {
+            slide.classList.remove("active");
+            dot.className =
+              "w-8 h-2 rounded-full bg-zinc-800 hover:bg-zinc-600 transition-all";
+          }
+        }
+        document.getElementById("slide-number").innerText =
+          `Slide ${currentSlide + 1} of ${totalSlides}`;
+        document.getElementById("current-page").innerText =
+          `${currentSlide + 1}`;
+      }
+
+      function nextSlide() {
+        if (currentSlide < totalSlides - 1) {
+          currentSlide++;
+          updateSlides();
+        }
+      }
+
+      function prevSlide() {
+        if (currentSlide > 0) {
+          currentSlide--;
+          updateSlides();
+        }
+      }
+
+      function goToSlide(index) {
+        if (index >= 0 && index < totalSlides) {
+          currentSlide = index;
+          updateSlides();
+        }
+      }
+
+      // Keyboard Shortcuts
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowRight" || e.key === "Space") {
+          nextSlide();
+        } else if (e.key === "ArrowLeft") {
+          prevSlide();
+        } else if (e.key.toLowerCase() === "f") {
+          toggleFullscreen();
+        }
+      });
+
+      function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        } else {
+          if (document.exitFullscreen) {
+            document.exitFullscreen();
+          }
+        }
+      }
+    </script>
+  </body>
+</html>

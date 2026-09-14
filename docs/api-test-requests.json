@@ -1,0 +1,151 @@
+{
+  "baseUrl": "http://localhost:8083",
+  "headers": {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer <ACCESS_TOKEN>"
+  },
+  "requests": {
+    "registerNormalUser": {
+      "method": "POST",
+      "url": "/api/auth/register",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "firstName": "Asha",
+        "lastName": "Khan",
+        "email": "asha.khan@example.com",
+        "phoneNumber": "9876543210",
+        "dateOfBirth": "1998-05-12",
+        "nationality": "Indian",
+        "password": "Asha@12345"
+      },
+      "expectedRole": "ROLE_USER"
+    },
+    "registerAdminUser": {
+      "method": "POST",
+      "url": "/api/auth/register-admin",
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Admin-Setup-Key": "AerobookAdminSetup2026"
+      },
+      "body": {
+        "firstName": "Aerobook",
+        "lastName": "Admin",
+        "email": "admin1@aerobook.com",
+        "phoneNumber": "9876543211",
+        "dateOfBirth": "1990-01-01",
+        "nationality": "Indian",
+        "password": "Admin@12345"
+      },
+      "expectedRole": "ROLE_ADMIN"
+    },
+    "promoteExistingAdminUser": {
+      "method": "POST",
+      "url": "/api/auth/register-admin",
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Admin-Setup-Key": "AerobookAdminSetup2026"
+      },
+      "body": {
+        "firstName": "Aerobook",
+        "lastName": "Admin",
+        "email": "admin1@aerobook.com",
+        "phoneNumber": "9876543211",
+        "dateOfBirth": "1990-01-01",
+        "nationality": "Indian",
+        "password": "Admin@12345"
+      },
+      "expectedRole": "ROLE_ADMIN",
+      "useWhen": "The admin email already exists with ROLE_USER; call this request, then login again."
+    },
+    "loginNormalUser": {
+      "method": "POST",
+      "url": "/api/auth/login",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "email": "asha.khan@example.com",
+        "password": "Asha@12345"
+      }
+    },
+    "loginAdminUser": {
+      "method": "POST",
+      "url": "/api/auth/login",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "email": "admin1@aerobook.com",
+        "password": "Admin@12345"
+      }
+    },
+    "refreshToken": {
+      "method": "POST",
+      "url": "/api/auth/refresh-token",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "refreshToken": "<REFRESH_TOKEN_FROM_LOGIN_RESPONSE>"
+      }
+    },
+    "getAllUsers": {
+      "method": "GET",
+      "url": "/api/v1/users",
+      "headers": {
+        "Authorization": "Bearer <ACCESS_TOKEN>"
+      },
+      "body": null
+    },
+    "getUserById": {
+      "method": "GET",
+      "url": "/api/v1/users/1",
+      "headers": {
+        "Authorization": "Bearer <ACCESS_TOKEN>"
+      },
+      "body": null
+    },
+    "createUserAdminOnly": {
+      "method": "POST",
+      "url": "/api/v1/users",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer <ADMIN_ACCESS_TOKEN>"
+      },
+      "body": {
+        "firstName": "Ravi",
+        "lastName": "Patel",
+        "email": "ravi.patel@example.com",
+        "phoneNumber": "9876543212",
+        "dateOfBirth": "1995-09-20",
+        "nationality": "Indian"
+      }
+    },
+    "updateUserAdminOnly": {
+      "method": "PUT",
+      "url": "/api/v1/users/1",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer <ADMIN_ACCESS_TOKEN>"
+      },
+      "body": {
+        "firstName": "Ravi Updated",
+        "lastName": "Patel",
+        "email": "ravi.patel@example.com",
+        "phoneNumber": "9876543212",
+        "dateOfBirth": "1995-09-20",
+        "nationality": "Indian"
+      }
+    },
+    "deleteUserAdminOnly": {
+      "method": "DELETE",
+      "url": "/api/v1/users/1",
+      "headers": {
+        "Authorization": "Bearer <ADMIN_ACCESS_TOKEN>"
+      },
+      "body": null
+    }
+  }
+}

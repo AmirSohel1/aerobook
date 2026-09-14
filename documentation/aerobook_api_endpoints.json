@@ -1,0 +1,2067 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "platform": "AeroBook Multi-Module Microservices Platform",
+  "version": "1.0.0",
+  "description": "Complete consolidated REST API directory with realistic JSON request payloads and response bodies for all microservices.",
+  "generatedAt": "2026-09-14T20:50:00Z",
+  "gatewayBaseUrl": "http://localhost:8083",
+  "authentication": {
+    "type": "Bearer JWT (HMAC-SHA256)",
+    "headerName": "Authorization",
+    "headerPrefix": "Bearer ",
+    "roles": [
+      {
+        "role": "ROLE_USER",
+        "description": "Standard customer role for searching flights, making reservations, viewing bookings, and airport check-in."
+      },
+      {
+        "role": "ROLE_ADMIN",
+        "description": "Privileged airline administrative authority for aircraft fleet management, flight scheduling, fare pricing, and system-wide audits."
+      }
+    ],
+    "adminSetupKey": {
+      "headerName": "X-Admin-Setup-Key",
+      "defaultKey": "AerobookAdminSetup2026",
+      "description": "Required to register or bootstrap administrative accounts via /api/auth/register-admin"
+    }
+  },
+  "summary": {
+    "totalServices": 7,
+    "totalEndpoints": 50,
+    "serviceBreakdown": {
+      "api-gateway": 4,
+      "auth-service": 7,
+      "user-service": 7,
+      "flight-service": 13,
+      "fare-service": 7,
+      "booking-service": 7,
+      "check-in-service": 5
+    }
+  },
+  "services": [
+    {
+      "serviceId": "api-gateway",
+      "serviceName": "API Gateway & Ingress Platform Hub",
+      "port": 8083,
+      "directBaseUrl": "http://localhost:8083",
+      "gatewayRoute": "/*",
+      "description": "Reactive Netty Spring Cloud Gateway handling ingress traffic, JWT signature verification, CORS enforcement, downstream header propagation, and Swagger UI aggregation.",
+      "endpoints": [
+        {
+          "id": "GW-001",
+          "name": "Gateway Platform Health & Route Probe",
+          "category": "Diagnostics",
+          "method": "GET",
+          "path": "/api/gateway/health",
+          "gatewayUrl": "http://localhost:8083/api/gateway/health",
+          "directUrl": "http://localhost:8083/api/gateway/health",
+          "accessControl": "PUBLIC",
+          "requiredRole": null,
+          "headers": {},
+          "pathParams": null,
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "Gateway health and downstream services status",
+              "body": {
+                "service": "api-gateway",
+                "status": "UP",
+                "port": 8083,
+                "timestamp": "2026-09-14T20:30:00",
+                "registeredServices": [
+                  "auth-service",
+                  "user-service",
+                  "flight-service",
+                  "fare-service",
+                  "booking-service",
+                  "check-in-service"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "GW-002",
+          "name": "Gateway Dynamic Routes Inspection",
+          "category": "Diagnostics",
+          "method": "GET",
+          "path": "/api/gateway/routes",
+          "gatewayUrl": "http://localhost:8083/api/gateway/routes",
+          "directUrl": "http://localhost:8083/api/gateway/routes",
+          "accessControl": "PUBLIC",
+          "requiredRole": null,
+          "headers": {},
+          "pathParams": null,
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "List of active Eureka discovery routes",
+              "body": [
+                {
+                  "routeId": "auth-service",
+                  "path": "/api/auth/**",
+                  "targetUri": "lb://AUTH-SERVICE"
+                },
+                {
+                  "routeId": "user-service",
+                  "path": "/api/v1/users/**",
+                  "targetUri": "lb://USER-SERVICE"
+                },
+                {
+                  "routeId": "flight-service",
+                  "path": "/api/flights/**",
+                  "targetUri": "lb://FLIGHT-SERVICE"
+                },
+                {
+                  "routeId": "admin-flight-service",
+                  "path": "/api/admin/**",
+                  "targetUri": "lb://FLIGHT-SERVICE"
+                },
+                {
+                  "routeId": "fare-service",
+                  "path": "/api/fares/**",
+                  "targetUri": "lb://FARE-SERVICE"
+                },
+                {
+                  "routeId": "booking-service",
+                  "path": "/api/bookings/**",
+                  "targetUri": "lb://BOOKING-SERVICE"
+                },
+                {
+                  "routeId": "check-in-service",
+                  "path": "/api/check-ins/**",
+                  "targetUri": "lb://CHECK-IN-SERVICE"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "GW-003",
+          "name": "Gateway OpenAPI Aggregated Specification",
+          "category": "Documentation",
+          "method": "GET",
+          "path": "/v3/api-docs",
+          "gatewayUrl": "http://localhost:8083/v3/api-docs",
+          "directUrl": "http://localhost:8083/v3/api-docs",
+          "accessControl": "PUBLIC",
+          "requiredRole": null,
+          "headers": {},
+          "pathParams": null,
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "Combined OpenAPI 3.0 JSON specification for all microservices",
+              "body": {
+                "openapi": "3.0.1",
+                "info": {
+                  "title": "AeroBook Microservices Platform API",
+                  "version": "1.0.0",
+                  "description": "Consolidated OpenAPI 3.0 documentation combining all 6 AeroBook backend microservices."
+                },
+                "paths": {
+                  "/api/auth/login": {
+                    "post": {
+                      "tags": [
+                        "Authentication"
+                      ]
+                    }
+                  },
+                  "/api/flights/search": {
+                    "get": {
+                      "tags": [
+                        "Flight Search"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "id": "GW-004",
+          "name": "Single Service OpenAPI Documentation Proxy",
+          "category": "Documentation",
+          "method": "GET",
+          "path": "/api/gateway/docs/{serviceId}",
+          "gatewayUrl": "http://localhost:8083/api/gateway/docs/flight-service",
+          "directUrl": "http://localhost:8083/api/gateway/docs/flight-service",
+          "accessControl": "PUBLIC",
+          "requiredRole": null,
+          "headers": {},
+          "pathParams": {
+            "serviceId": "Target microservice identifier (e.g., auth-service, user-service, flight-service, fare-service, booking-service, check-in-service)"
+          },
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "Downstream service OpenAPI schema JSON",
+              "body": {
+                "openapi": "3.0.1",
+                "info": {
+                  "title": "Flight Service API",
+                  "version": "1.0.0"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "serviceId": "auth-service",
+      "serviceName": "Authentication & Identity Management Service",
+      "port": 8082,
+      "directBaseUrl": "http://localhost:8082",
+      "gatewayRoute": "/api/auth/**",
+      "description": "Credentials persistence (MySQL aerobook_auth_db), BCrypt hashing, JWT issuance and signing, refresh token rotation, and administrative elevation.",
+      "endpoints": [
+        {
+          "id": "AUTH-001",
+          "name": "Auth Service Health Probe",
+          "category": "Diagnostics",
+          "method": "GET",
+          "path": "/api/auth/health",
+          "gatewayUrl": "http://localhost:8083/api/auth/health",
+          "directUrl": "http://localhost:8082/api/auth/health",
+          "accessControl": "PUBLIC",
+          "requiredRole": null,
+          "headers": {},
+          "pathParams": null,
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "Auth service is healthy",
+              "body": {
+                "service": "auth-service",
+                "status": "UP",
+                "port": 8082,
+                "timestamp": "2026-09-14T20:30:00"
+              }
+            }
+          }
+        },
+        {
+          "id": "AUTH-002",
+          "name": "Customer User Registration",
+          "category": "Account Provisioning",
+          "method": "POST",
+          "path": "/api/auth/register",
+          "gatewayUrl": "http://localhost:8083/api/auth/register",
+          "directUrl": "http://localhost:8082/api/auth/register",
+          "accessControl": "PUBLIC",
+          "requiredRole": null,
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "pathParams": null,
+          "queryParams": null,
+          "requestBody": {
+            "firstName": "Asha",
+            "lastName": "Khan",
+            "email": "asha.khan@example.com",
+            "phoneNumber": "9876543210",
+            "dateOfBirth": "1998-05-12",
+            "nationality": "Indian",
+            "password": "Asha@12345"
+          },
+          "responses": {
+            "201": {
+              "description": "Customer registered successfully; JWT access and refresh tokens returned",
+              "body": {
+                "accessToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhc2hhLmtoYW5AZXhhbXBsZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzg5MTIzNDU2fQ.SAMPLE_SIGNATURE",
+                "refreshToken": "d8f3b2a1-b845-42cf-990a-993d052b65ec",
+                "tokenType": "Bearer",
+                "role": "ROLE_USER",
+                "userId": 1
+              }
+            },
+            "400": {
+              "description": "Validation error in request fields",
+              "body": {
+                "timestamp": "2026-09-14T20:30:00",
+                "status": 400,
+                "error": "Bad Request",
+                "message": "Email must be a valid email address format"
+              }
+            },
+            "409": {
+              "description": "Account with email already exists",
+              "body": {
+                "timestamp": "2026-09-14T20:30:00",
+                "status": 409,
+                "error": "Conflict",
+                "message": "Email already exists"
+              }
+            }
+          }
+        },
+        {
+          "id": "AUTH-003",
+          "name": "Administrator Account Setup / Elevation",
+          "category": "Account Provisioning",
+          "method": "POST",
+          "path": "/api/auth/register-admin",
+          "gatewayUrl": "http://localhost:8083/api/auth/register-admin",
+          "directUrl": "http://localhost:8082/api/auth/register-admin",
+          "accessControl": "ADMIN_KEY_PROTECTED",
+          "requiredRole": null,
+          "headers": {
+            "Content-Type": "application/json",
+            "X-Admin-Setup-Key": "AerobookAdminSetup2026"
+          },
+          "pathParams": null,
+          "queryParams": null,
+          "requestBody": {
+            "firstName": "Aerobook",
+            "lastName": "Admin",
+            "email": "admin@aerobook.com",
+            "phoneNumber": "9876543200",
+            "dateOfBirth": "1990-01-01",
+            "nationality": "Indian",
+            "password": "Admin@12345"
+          },
+          "responses": {
+            "201": {
+              "description": "Administrator account provisioned with ROLE_ADMIN privileges",
+              "body": {
+                "accessToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBhZXJvYm9vay5jb20iLCJyb2xlIjoiUk9MRV9BRE1JTiIsImV4cCI6MTc4OTEyMzQ1Nn0.SAMPLE_SIGNATURE",
+                "refreshToken": "7c3b1a89-21df-4ae8-8094-6d9b43e110ac",
+                "tokenType": "Bearer",
+                "role": "ROLE_ADMIN",
+                "userId": 2
+              }
+            },
+            "403": {
+              "description": "Missing or invalid administrative setup key",
+              "body": {
+                "timestamp": "2026-09-14T20:30:00",
+                "status": 403,
+                "error": "Forbidden",
+                "message": "Invalid or missing admin registration setup key. Access denied."
+              }
+            }
+          }
+        },
+        {
+          "id": "AUTH-004",
+          "name": "User Login & JWT Issuance",
+          "category": "Authentication",
+          "method": "POST",
+          "path": "/api/auth/login",
+          "gatewayUrl": "http://localhost:8083/api/auth/login",
+          "directUrl": "http://localhost:8082/api/auth/login",
+          "accessControl": "PUBLIC",
+          "requiredRole": null,
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "pathParams": null,
+          "queryParams": null,
+          "requestBody": {
+            "email": "asha.khan@example.com",
+            "password": "Asha@12345"
+          },
+          "responses": {
+            "200": {
+              "description": "Authentication successful; returns signed JWT and refresh token",
+              "body": {
+                "accessToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhc2hhLmtoYW5AZXhhbXBsZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzg5MTIzNDU2fQ.SAMPLE_SIGNATURE",
+                "refreshToken": "d8f3b2a1-b845-42cf-990a-993d052b65ec",
+                "tokenType": "Bearer",
+                "role": "ROLE_USER",
+                "userId": 1
+              }
+            },
+            "401": {
+              "description": "Invalid email or password",
+              "body": {
+                "timestamp": "2026-09-14T20:30:00",
+                "status": 401,
+                "error": "Unauthorized",
+                "message": "Invalid credentials"
+              }
+            },
+            "404": {
+              "description": "User account does not exist",
+              "body": {
+                "timestamp": "2026-09-14T20:30:00",
+                "status": 404,
+                "error": "Not Found",
+                "message": "User not found"
+              }
+            }
+          }
+        },
+        {
+          "id": "AUTH-005",
+          "name": "Refresh Expired Access Token",
+          "category": "Authentication",
+          "method": "POST",
+          "path": "/api/auth/refresh-token",
+          "gatewayUrl": "http://localhost:8083/api/auth/refresh-token",
+          "directUrl": "http://localhost:8082/api/auth/refresh-token",
+          "accessControl": "PUBLIC",
+          "requiredRole": null,
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "pathParams": null,
+          "queryParams": null,
+          "requestBody": {
+            "refreshToken": "d8f3b2a1-b845-42cf-990a-993d052b65ec"
+          },
+          "responses": {
+            "200": {
+              "description": "Fresh access token issued",
+              "body": {
+                "accessToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhc2hhLmtoYW5AZXhhbXBsZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzg5MTI3MDU2fQ.NEW_SAMPLE_SIGNATURE",
+                "refreshToken": "d8f3b2a1-b845-42cf-990a-993d052b65ec",
+                "tokenType": "Bearer",
+                "role": "ROLE_USER",
+                "userId": 1
+              }
+            },
+            "401": {
+              "description": "Refresh token is expired or revoked",
+              "body": {
+                "timestamp": "2026-09-14T20:30:00",
+                "status": 401,
+                "error": "Unauthorized",
+                "message": "Refresh token was expired. Please make a new sign in request"
+              }
+            }
+          }
+        },
+        {
+          "id": "AUTH-006",
+          "name": "Audit All Registered Credentials",
+          "category": "Administration",
+          "method": "GET",
+          "path": "/api/auth/credentials",
+          "gatewayUrl": "http://localhost:8083/api/auth/credentials",
+          "directUrl": "http://localhost:8082/api/auth/credentials",
+          "accessControl": "ROLE_ADMIN",
+          "requiredRole": "ROLE_ADMIN",
+          "headers": {
+            "Authorization": "Bearer <ROLE_ADMIN_JWT>"
+          },
+          "pathParams": null,
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "Complete credential directory for audit",
+              "body": [
+                {
+                  "credentialId": 1,
+                  "userId": 1,
+                  "email": "asha.khan@example.com",
+                  "role": "ROLE_USER",
+                  "createdAt": "2026-09-14T10:00:00",
+                  "updatedAt": "2026-09-14T10:00:00"
+                },
+                {
+                  "credentialId": 2,
+                  "userId": 2,
+                  "email": "admin@aerobook.com",
+                  "role": "ROLE_ADMIN",
+                  "createdAt": "2026-09-14T10:05:00",
+                  "updatedAt": "2026-09-14T10:05:00"
+                }
+              ]
+            },
+            "403": {
+              "description": "Forbidden: Requires ROLE_ADMIN authority",
+              "body": {
+                "timestamp": "2026-09-14T20:30:00",
+                "status": 403,
+                "error": "Forbidden",
+                "message": "Access Denied"
+              }
+            }
+          }
+        },
+        {
+          "id": "AUTH-007",
+          "name": "Promote / Demote User Role",
+          "category": "Administration",
+          "method": "PUT",
+          "path": "/api/auth/credentials/{userId}/role",
+          "gatewayUrl": "http://localhost:8083/api/auth/credentials/1/role?role=ROLE_ADMIN",
+          "directUrl": "http://localhost:8082/api/auth/credentials/1/role?role=ROLE_ADMIN",
+          "accessControl": "ROLE_ADMIN",
+          "requiredRole": "ROLE_ADMIN",
+          "headers": {
+            "Authorization": "Bearer <ROLE_ADMIN_JWT>"
+          },
+          "pathParams": {
+            "userId": "Target user ID (e.g., 1)"
+          },
+          "queryParams": {
+            "role": "Target role: ROLE_USER or ROLE_ADMIN"
+          },
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "User credential updated with new role",
+              "body": {
+                "credentialId": 1,
+                "userId": 1,
+                "email": "asha.khan@example.com",
+                "role": "ROLE_ADMIN",
+                "createdAt": "2026-09-14T10:00:00",
+                "updatedAt": "2026-09-14T20:35:00"
+              }
+            },
+            "400": {
+              "description": "Invalid role specified",
+              "body": {
+                "timestamp": "2026-09-14T20:30:00",
+                "status": 400,
+                "error": "Bad Request",
+                "message": "Invalid role: ROLE_TEST. Allowed roles: ROLE_USER, ROLE_ADMIN"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "serviceId": "user-service",
+      "serviceName": "User Profile Management Service",
+      "port": 8084,
+      "directBaseUrl": "http://localhost:8084",
+      "gatewayRoute": "/api/v1/users/**",
+      "description": "Manages persistent customer personal data (names, nationality, phone, dates of birth) in aerobook_user_db.",
+      "endpoints": [
+        {
+          "id": "USER-001",
+          "name": "User Service Health Check",
+          "category": "Diagnostics",
+          "method": "GET",
+          "path": "/api/v1/users/health",
+          "gatewayUrl": "http://localhost:8083/api/v1/users/health",
+          "directUrl": "http://localhost:8084/api/v1/users/health",
+          "accessControl": "PUBLIC",
+          "requiredRole": null,
+          "headers": {},
+          "pathParams": null,
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "User service is healthy",
+              "body": "User Service is up and running!"
+            }
+          }
+        },
+        {
+          "id": "USER-002",
+          "name": "Create User Profile (Admin Direct Creation)",
+          "category": "User Profile",
+          "method": "POST",
+          "path": "/api/v1/users",
+          "gatewayUrl": "http://localhost:8083/api/v1/users",
+          "directUrl": "http://localhost:8084/api/v1/users",
+          "accessControl": "ROLE_ADMIN",
+          "requiredRole": "ROLE_ADMIN",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer <ROLE_ADMIN_JWT>"
+          },
+          "pathParams": null,
+          "queryParams": null,
+          "requestBody": {
+            "firstName": "Ravi",
+            "lastName": "Patel",
+            "email": "ravi.patel@example.com",
+            "phoneNumber": "9876543212",
+            "dateOfBirth": "1995-09-20",
+            "nationality": "Indian",
+            "role": "ROLE_USER"
+          },
+          "responses": {
+            "201": {
+              "description": "User profile created successfully",
+              "body": {
+                "userId": 3,
+                "firstName": "Ravi",
+                "lastName": "Patel",
+                "email": "ravi.patel@example.com",
+                "phoneNumber": "9876543212",
+                "dateOfBirth": "1995-09-20",
+                "nationality": "Indian",
+                "role": "ROLE_USER",
+                "createdAt": "2026-09-14T20:30:00",
+                "updatedAt": "2026-09-14T20:30:00"
+              }
+            },
+            "409": {
+              "description": "User with email already exists",
+              "body": {
+                "timestamp": "2026-09-14T20:30:00",
+                "status": 409,
+                "error": "Conflict",
+                "message": "User with email ravi.patel@example.com already exists"
+              }
+            }
+          }
+        },
+        {
+          "id": "USER-003",
+          "name": "List All Users (Admin Audit)",
+          "category": "Administration",
+          "method": "GET",
+          "path": "/api/v1/users",
+          "gatewayUrl": "http://localhost:8083/api/v1/users",
+          "directUrl": "http://localhost:8084/api/v1/users",
+          "accessControl": "ROLE_ADMIN",
+          "requiredRole": "ROLE_ADMIN",
+          "headers": {
+            "Authorization": "Bearer <ROLE_ADMIN_JWT>"
+          },
+          "pathParams": null,
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "List of all registered customer profiles",
+              "body": [
+                {
+                  "userId": 1,
+                  "firstName": "Asha",
+                  "lastName": "Khan",
+                  "email": "asha.khan@example.com",
+                  "phoneNumber": "9876543210",
+                  "dateOfBirth": "1998-05-12",
+                  "nationality": "Indian",
+                  "role": "ROLE_USER",
+                  "createdAt": "2026-09-14T10:00:00",
+                  "updatedAt": "2026-09-14T10:00:00"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "USER-004",
+          "name": "Get User Profile by Database ID",
+          "category": "User Profile",
+          "method": "GET",
+          "path": "/api/v1/users/{id}",
+          "gatewayUrl": "http://localhost:8083/api/v1/users/1",
+          "directUrl": "http://localhost:8084/api/v1/users/1",
+          "accessControl": "ROLE_USER",
+          "requiredRole": "ROLE_USER",
+          "headers": {
+            "Authorization": "Bearer <JWT_TOKEN>"
+          },
+          "pathParams": {
+            "id": "User database primary key (e.g., 1)"
+          },
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "User profile found",
+              "body": {
+                "userId": 1,
+                "firstName": "Asha",
+                "lastName": "Khan",
+                "email": "asha.khan@example.com",
+                "phoneNumber": "9876543210",
+                "dateOfBirth": "1998-05-12",
+                "nationality": "Indian",
+                "role": "ROLE_USER",
+                "createdAt": "2026-09-14T10:00:00",
+                "updatedAt": "2026-09-14T10:00:00"
+              }
+            },
+            "404": {
+              "description": "User not found",
+              "body": {
+                "timestamp": "2026-09-14T20:30:00",
+                "status": 404,
+                "error": "Not Found",
+                "message": "User not found with ID: 999"
+              }
+            }
+          }
+        },
+        {
+          "id": "USER-005",
+          "name": "Get User Profile by Email",
+          "category": "User Profile",
+          "method": "GET",
+          "path": "/api/v1/users/email/{email}",
+          "gatewayUrl": "http://localhost:8083/api/v1/users/email/asha.khan@example.com",
+          "directUrl": "http://localhost:8084/api/v1/users/email/asha.khan@example.com",
+          "accessControl": "ROLE_USER",
+          "requiredRole": "ROLE_USER",
+          "headers": {
+            "Authorization": "Bearer <JWT_TOKEN>"
+          },
+          "pathParams": {
+            "email": "Customer email address"
+          },
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "User profile found by email",
+              "body": {
+                "userId": 1,
+                "firstName": "Asha",
+                "lastName": "Khan",
+                "email": "asha.khan@example.com",
+                "phoneNumber": "9876543210",
+                "dateOfBirth": "1998-05-12",
+                "nationality": "Indian",
+                "role": "ROLE_USER",
+                "createdAt": "2026-09-14T10:00:00",
+                "updatedAt": "2026-09-14T10:00:00"
+              }
+            }
+          }
+        },
+        {
+          "id": "USER-006",
+          "name": "Update User Profile",
+          "category": "User Profile",
+          "method": "PUT",
+          "path": "/api/v1/users/{id}",
+          "gatewayUrl": "http://localhost:8083/api/v1/users/1",
+          "directUrl": "http://localhost:8084/api/v1/users/1",
+          "accessControl": "ROLE_USER",
+          "requiredRole": "ROLE_USER",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer <JWT_TOKEN>"
+          },
+          "pathParams": {
+            "id": "User database ID to modify"
+          },
+          "queryParams": null,
+          "requestBody": {
+            "firstName": "Asha",
+            "lastName": "Sharma",
+            "email": "asha.sharma@example.com",
+            "phoneNumber": "9876543299",
+            "dateOfBirth": "1998-05-12",
+            "nationality": "Indian",
+            "role": "ROLE_USER"
+          },
+          "responses": {
+            "200": {
+              "description": "User profile updated successfully",
+              "body": {
+                "userId": 1,
+                "firstName": "Asha",
+                "lastName": "Sharma",
+                "email": "asha.sharma@example.com",
+                "phoneNumber": "9876543299",
+                "dateOfBirth": "1998-05-12",
+                "nationality": "Indian",
+                "role": "ROLE_USER",
+                "createdAt": "2026-09-14T10:00:00",
+                "updatedAt": "2026-09-14T20:32:00"
+              }
+            }
+          }
+        },
+        {
+          "id": "USER-007",
+          "name": "Delete User Account",
+          "category": "Administration",
+          "method": "DELETE",
+          "path": "/api/v1/users/{id}",
+          "gatewayUrl": "http://localhost:8083/api/v1/users/1",
+          "directUrl": "http://localhost:8084/api/v1/users/1",
+          "accessControl": "ROLE_ADMIN",
+          "requiredRole": "ROLE_ADMIN",
+          "headers": {
+            "Authorization": "Bearer <ROLE_ADMIN_JWT>"
+          },
+          "pathParams": {
+            "id": "User database ID to remove"
+          },
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "User profile removed successfully",
+              "body": "User account deleted successfully with ID: 1"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "serviceId": "flight-service",
+      "serviceName": "Flight Scheduling & Aircraft Inventory Service",
+      "port": 8087,
+      "directBaseUrl": "http://localhost:8087",
+      "gatewayRoute": "/api/flights/**, /api/admin/**",
+      "description": "Flight route scheduling, aircraft fleet capacity models, departure/arrival schedules, seat availability, and atomic seat inventory management.",
+      "endpoints": [
+        {
+          "id": "FLIGHT-001",
+          "name": "Flight Service Health Check",
+          "category": "Diagnostics",
+          "method": "GET",
+          "path": "/api/flights/health",
+          "gatewayUrl": "http://localhost:8083/api/flights/health",
+          "directUrl": "http://localhost:8087/api/flights/health",
+          "accessControl": "PUBLIC",
+          "requiredRole": null,
+          "headers": {},
+          "pathParams": null,
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "Flight service is operational",
+              "body": "Flight Service is up and running!"
+            }
+          }
+        },
+        {
+          "id": "FLIGHT-002",
+          "name": "Search Scheduled Flights by Route",
+          "category": "Flight Discovery",
+          "method": "GET",
+          "path": "/api/flights/search",
+          "gatewayUrl": "http://localhost:8083/api/flights/search?source=Mumbai&destination=Delhi",
+          "directUrl": "http://localhost:8087/api/flights/search?source=Mumbai&destination=Delhi",
+          "accessControl": "ROLE_USER",
+          "requiredRole": "ROLE_USER",
+          "headers": {
+            "Authorization": "Bearer <JWT_TOKEN>"
+          },
+          "pathParams": null,
+          "queryParams": {
+            "source": "Departure city name or airport (e.g., Mumbai)",
+            "destination": "Arrival city name or airport (e.g., Delhi)"
+          },
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "Matching flights returned",
+              "body": [
+                {
+                  "id": 1,
+                  "flightNumber": "AI101",
+                  "airlineName": "Air India",
+                  "source": "Mumbai",
+                  "destination": "Delhi",
+                  "departureTime": "2026-10-01T09:30:00",
+                  "arrivalTime": "2026-10-01T11:45:00",
+                  "totalSeats": 180,
+                  "availableSeats": 178,
+                  "baseFare": 5500,
+                  "status": "SCHEDULED"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "FLIGHT-003",
+          "name": "Browse All Active Scheduled Flights",
+          "category": "Flight Discovery",
+          "method": "GET",
+          "path": "/api/flights",
+          "gatewayUrl": "http://localhost:8083/api/flights",
+          "directUrl": "http://localhost:8087/api/flights",
+          "accessControl": "ROLE_USER",
+          "requiredRole": "ROLE_USER",
+          "headers": {
+            "Authorization": "Bearer <JWT_TOKEN>"
+          },
+          "pathParams": null,
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "All scheduled flights in system",
+              "body": [
+                {
+                  "id": 1,
+                  "flightNumber": "AI101",
+                  "airlineName": "Air India",
+                  "source": "Mumbai",
+                  "destination": "Delhi",
+                  "departureTime": "2026-10-01T09:30:00",
+                  "arrivalTime": "2026-10-01T11:45:00",
+                  "totalSeats": 180,
+                  "availableSeats": 178,
+                  "baseFare": 5500,
+                  "status": "SCHEDULED"
+                },
+                {
+                  "id": 2,
+                  "flightNumber": "6E204",
+                  "airlineName": "IndiGo",
+                  "source": "Bengaluru",
+                  "destination": "Mumbai",
+                  "departureTime": "2026-10-01T14:00:00",
+                  "arrivalTime": "2026-10-01T15:40:00",
+                  "totalSeats": 186,
+                  "availableSeats": 186,
+                  "baseFare": 4200,
+                  "status": "SCHEDULED"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "FLIGHT-004",
+          "name": "Get Flight Schedule Details by ID",
+          "category": "Flight Discovery",
+          "method": "GET",
+          "path": "/api/flights/{id}",
+          "gatewayUrl": "http://localhost:8083/api/flights/1",
+          "directUrl": "http://localhost:8087/api/flights/1",
+          "accessControl": "ROLE_USER",
+          "requiredRole": "ROLE_USER",
+          "headers": {
+            "Authorization": "Bearer <JWT_TOKEN>"
+          },
+          "pathParams": {
+            "id": "Flight primary database key (e.g., 1)"
+          },
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "Flight schedule details",
+              "body": {
+                "id": 1,
+                "flightNumber": "AI101",
+                "airlineName": "Air India",
+                "source": "Mumbai",
+                "destination": "Delhi",
+                "departureTime": "2026-10-01T09:30:00",
+                "arrivalTime": "2026-10-01T11:45:00",
+                "totalSeats": 180,
+                "availableSeats": 178,
+                "baseFare": 5500,
+                "status": "SCHEDULED"
+              }
+            }
+          }
+        },
+        {
+          "id": "FLIGHT-005",
+          "name": "Schedule New Commercial Flight",
+          "category": "Administration",
+          "method": "POST",
+          "path": "/api/admin/flights",
+          "gatewayUrl": "http://localhost:8083/api/admin/flights",
+          "directUrl": "http://localhost:8087/api/admin/flights",
+          "accessControl": "ROLE_ADMIN",
+          "requiredRole": "ROLE_ADMIN",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer <ROLE_ADMIN_JWT>"
+          },
+          "pathParams": null,
+          "queryParams": null,
+          "requestBody": {
+            "flightNumber": "AI101",
+            "airlineName": "Air India",
+            "source": "Mumbai",
+            "destination": "Delhi",
+            "departureTime": "2026-10-01T09:30:00",
+            "arrivalTime": "2026-10-01T11:45:00",
+            "totalSeats": 180,
+            "baseFare": 5500,
+            "aircraftId": 1
+          },
+          "responses": {
+            "201": {
+              "description": "Flight scheduled successfully",
+              "body": {
+                "id": 1,
+                "flightNumber": "AI101",
+                "airlineName": "Air India",
+                "source": "Mumbai",
+                "destination": "Delhi",
+                "departureTime": "2026-10-01T09:30:00",
+                "arrivalTime": "2026-10-01T11:45:00",
+                "totalSeats": 180,
+                "availableSeats": 180,
+                "baseFare": 5500,
+                "status": "SCHEDULED"
+              }
+            }
+          }
+        },
+        {
+          "id": "FLIGHT-006",
+          "name": "Update Flight Schedule / Timings",
+          "category": "Administration",
+          "method": "PUT",
+          "path": "/api/admin/flights/{id}",
+          "gatewayUrl": "http://localhost:8083/api/admin/flights/1",
+          "directUrl": "http://localhost:8087/api/admin/flights/1",
+          "accessControl": "ROLE_ADMIN",
+          "requiredRole": "ROLE_ADMIN",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer <ROLE_ADMIN_JWT>"
+          },
+          "pathParams": {
+            "id": "Flight database ID to modify"
+          },
+          "queryParams": null,
+          "requestBody": {
+            "airlineName": "Air India",
+            "source": "Mumbai",
+            "destination": "Delhi",
+            "departureTime": "2026-10-01T10:00:00",
+            "arrivalTime": "2026-10-01T12:15:00",
+            "totalSeats": 180,
+            "baseFare": 5800
+          },
+          "responses": {
+            "200": {
+              "description": "Flight schedule updated",
+              "body": {
+                "id": 1,
+                "flightNumber": "AI101",
+                "airlineName": "Air India",
+                "source": "Mumbai",
+                "destination": "Delhi",
+                "departureTime": "2026-10-01T10:00:00",
+                "arrivalTime": "2026-10-01T12:15:00",
+                "totalSeats": 180,
+                "availableSeats": 180,
+                "baseFare": 5800,
+                "status": "SCHEDULED"
+              }
+            }
+          }
+        },
+        {
+          "id": "FLIGHT-007",
+          "name": "Delete Flight Schedule",
+          "category": "Administration",
+          "method": "DELETE",
+          "path": "/api/admin/flights/{id}",
+          "gatewayUrl": "http://localhost:8083/api/admin/flights/1",
+          "directUrl": "http://localhost:8087/api/admin/flights/1",
+          "accessControl": "ROLE_ADMIN",
+          "requiredRole": "ROLE_ADMIN",
+          "headers": {
+            "Authorization": "Bearer <ROLE_ADMIN_JWT>"
+          },
+          "pathParams": {
+            "id": "Flight database ID to remove"
+          },
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "Flight removed",
+              "body": "Flight schedule deleted successfully with ID: 1"
+            }
+          }
+        },
+        {
+          "id": "FLIGHT-008",
+          "name": "Admin View Single Flight",
+          "category": "Administration",
+          "method": "GET",
+          "path": "/api/admin/flights/{id}",
+          "gatewayUrl": "http://localhost:8083/api/admin/flights/1",
+          "directUrl": "http://localhost:8087/api/admin/flights/1",
+          "accessControl": "ROLE_ADMIN",
+          "requiredRole": "ROLE_ADMIN",
+          "headers": {
+            "Authorization": "Bearer <ROLE_ADMIN_JWT>"
+          },
+          "pathParams": {
+            "id": "Flight ID"
+          },
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "Flight admin coordinates",
+              "body": {
+                "id": 1,
+                "flightNumber": "AI101",
+                "airlineName": "Air India",
+                "source": "Mumbai",
+                "destination": "Delhi",
+                "departureTime": "2026-10-01T09:30:00",
+                "arrivalTime": "2026-10-01T11:45:00",
+                "totalSeats": 180,
+                "availableSeats": 178,
+                "baseFare": 5500,
+                "status": "SCHEDULED"
+              }
+            }
+          }
+        },
+        {
+          "id": "FLIGHT-009",
+          "name": "Admin View All Flights Catalog",
+          "category": "Administration",
+          "method": "GET",
+          "path": "/api/admin/flights",
+          "gatewayUrl": "http://localhost:8083/api/admin/flights",
+          "directUrl": "http://localhost:8087/api/admin/flights",
+          "accessControl": "ROLE_ADMIN",
+          "requiredRole": "ROLE_ADMIN",
+          "headers": {
+            "Authorization": "Bearer <ROLE_ADMIN_JWT>"
+          },
+          "pathParams": null,
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "All flights across the airline",
+              "body": [
+                {
+                  "id": 1,
+                  "flightNumber": "AI101",
+                  "airlineName": "Air India",
+                  "source": "Mumbai",
+                  "destination": "Delhi",
+                  "departureTime": "2026-10-01T09:30:00",
+                  "arrivalTime": "2026-10-01T11:45:00",
+                  "totalSeats": 180,
+                  "availableSeats": 178,
+                  "baseFare": 5500,
+                  "status": "SCHEDULED"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "FLIGHT-010",
+          "name": "Register New Aircraft in Fleet",
+          "category": "Fleet Management",
+          "method": "POST",
+          "path": "/api/admin/aircrafts",
+          "gatewayUrl": "http://localhost:8083/api/admin/aircrafts",
+          "directUrl": "http://localhost:8087/api/admin/aircrafts",
+          "accessControl": "ROLE_ADMIN",
+          "requiredRole": "ROLE_ADMIN",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer <ROLE_ADMIN_JWT>"
+          },
+          "pathParams": null,
+          "queryParams": null,
+          "requestBody": {
+            "aircraftCode": "A320-001",
+            "aircraftName": "Airbus A320",
+            "manufacturer": "Airbus",
+            "capacity": 180
+          },
+          "responses": {
+            "201": {
+              "description": "Aircraft model and registration persisted",
+              "body": {
+                "id": 1,
+                "aircraftCode": "A320-001",
+                "aircraftName": "Airbus A320",
+                "manufacturer": "Airbus",
+                "capacity": 180,
+                "status": "ACTIVE"
+              }
+            }
+          }
+        },
+        {
+          "id": "FLIGHT-011",
+          "name": "Get Aircraft Specifications by ID",
+          "category": "Fleet Management",
+          "method": "GET",
+          "path": "/api/admin/aircrafts/{id}",
+          "gatewayUrl": "http://localhost:8083/api/admin/aircrafts/1",
+          "directUrl": "http://localhost:8087/api/admin/aircrafts/1",
+          "accessControl": "ROLE_ADMIN",
+          "requiredRole": "ROLE_ADMIN",
+          "headers": {
+            "Authorization": "Bearer <ROLE_ADMIN_JWT>"
+          },
+          "pathParams": {
+            "id": "Aircraft database primary key"
+          },
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "Aircraft record",
+              "body": {
+                "id": 1,
+                "aircraftCode": "A320-001",
+                "aircraftName": "Airbus A320",
+                "manufacturer": "Airbus",
+                "capacity": 180,
+                "status": "ACTIVE"
+              }
+            }
+          }
+        },
+        {
+          "id": "FLIGHT-012",
+          "name": "List Complete Aircraft Fleet",
+          "category": "Fleet Management",
+          "method": "GET",
+          "path": "/api/admin/aircrafts",
+          "gatewayUrl": "http://localhost:8083/api/admin/aircrafts",
+          "directUrl": "http://localhost:8087/api/admin/aircrafts",
+          "accessControl": "ROLE_ADMIN",
+          "requiredRole": "ROLE_ADMIN",
+          "headers": {
+            "Authorization": "Bearer <ROLE_ADMIN_JWT>"
+          },
+          "pathParams": null,
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "List of all aircraft in active fleet",
+              "body": [
+                {
+                  "id": 1,
+                  "aircraftCode": "A320-001",
+                  "aircraftName": "Airbus A320",
+                  "manufacturer": "Airbus",
+                  "capacity": 180,
+                  "status": "ACTIVE"
+                },
+                {
+                  "id": 2,
+                  "aircraftCode": "B737-002",
+                  "aircraftName": "Boeing 737-800",
+                  "manufacturer": "Boeing",
+                  "capacity": 186,
+                  "status": "ACTIVE"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "FLIGHT-013",
+          "name": "Delete Aircraft from Fleet",
+          "category": "Fleet Management",
+          "method": "DELETE",
+          "path": "/api/admin/aircrafts/{id}",
+          "gatewayUrl": "http://localhost:8083/api/admin/aircrafts/1",
+          "directUrl": "http://localhost:8087/api/admin/aircrafts/1",
+          "accessControl": "ROLE_ADMIN",
+          "requiredRole": "ROLE_ADMIN",
+          "headers": {
+            "Authorization": "Bearer <ROLE_ADMIN_JWT>"
+          },
+          "pathParams": {
+            "id": "Aircraft database primary key to remove"
+          },
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "Aircraft removed",
+              "body": "Aircraft deleted successfully with ID: 1"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "serviceId": "fare-service",
+      "serviceName": "Fare & Revenue Management Service",
+      "port": 8089,
+      "directBaseUrl": "http://localhost:8089",
+      "gatewayRoute": "/api/fares/**",
+      "description": "Tiered seat pricing breakdown (Economy, Business, First Class), seasonal dynamic fare adjustments, tax percentages, and discount rates in aerobook_fare_db.",
+      "endpoints": [
+        {
+          "id": "FARE-001",
+          "name": "Fare Service Health Probe",
+          "category": "Diagnostics",
+          "method": "GET",
+          "path": "/api/fares/health",
+          "gatewayUrl": "http://localhost:8083/api/fares/health",
+          "directUrl": "http://localhost:8089/api/fares/health",
+          "accessControl": "PUBLIC",
+          "requiredRole": null,
+          "headers": {},
+          "pathParams": null,
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "Fare service operational status",
+              "body": {
+                "service": "fare-service",
+                "status": "UP",
+                "port": 8089,
+                "timestamp": "2026-09-14T20:30:00"
+              }
+            }
+          }
+        },
+        {
+          "id": "FARE-002",
+          "name": "Create Flight Fare Pricing Structure",
+          "category": "Fare Management",
+          "method": "POST",
+          "path": "/api/fares",
+          "gatewayUrl": "http://localhost:8083/api/fares",
+          "directUrl": "http://localhost:8089/api/fares",
+          "accessControl": "ROLE_ADMIN",
+          "requiredRole": "ROLE_ADMIN",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer <ROLE_ADMIN_JWT>"
+          },
+          "pathParams": null,
+          "queryParams": null,
+          "requestBody": {
+            "flightId": 1,
+            "economyFare": 4500,
+            "businessFare": 8500,
+            "firstClassFare": 14000,
+            "taxPercentage": 18,
+            "discountPercentage": 5,
+            "effectiveDate": "2026-10-01"
+          },
+          "responses": {
+            "201": {
+              "description": "Fare pricing structure created",
+              "body": {
+                "id": 1,
+                "flightId": 1,
+                "economyFare": 4500,
+                "businessFare": 8500,
+                "firstClassFare": 14000,
+                "taxPercentage": 18,
+                "discountPercentage": 5,
+                "effectiveDate": "2026-10-01",
+                "active": true
+              }
+            },
+            "400": {
+              "description": "Invalid pricing or percentage outside valid range [0, 100]",
+              "body": {
+                "timestamp": "2026-09-14T20:30:00",
+                "status": 400,
+                "error": "Bad Request",
+                "message": "Tax percentage must be between 0.0% and 100.0%."
+              }
+            }
+          }
+        },
+        {
+          "id": "FARE-003",
+          "name": "Get Fare Details by Record ID",
+          "category": "Fare Inquiry",
+          "method": "GET",
+          "path": "/api/fares/{id}",
+          "gatewayUrl": "http://localhost:8083/api/fares/1",
+          "directUrl": "http://localhost:8089/api/fares/1",
+          "accessControl": "ROLE_USER",
+          "requiredRole": "ROLE_USER",
+          "headers": {
+            "Authorization": "Bearer <JWT_TOKEN>"
+          },
+          "pathParams": {
+            "id": "Fare primary record ID (e.g., 1)"
+          },
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "Fare record retrieved",
+              "body": {
+                "id": 1,
+                "flightId": 1,
+                "economyFare": 4500,
+                "businessFare": 8500,
+                "firstClassFare": 14000,
+                "taxPercentage": 18,
+                "discountPercentage": 5,
+                "effectiveDate": "2026-10-01",
+                "active": true
+              }
+            }
+          }
+        },
+        {
+          "id": "FARE-004",
+          "name": "Get Fare Pricing by Flight ID",
+          "category": "Fare Inquiry",
+          "method": "GET",
+          "path": "/api/fares/flight/{flightId}",
+          "gatewayUrl": "http://localhost:8083/api/fares/flight/1",
+          "directUrl": "http://localhost:8089/api/fares/flight/1",
+          "accessControl": "ROLE_USER",
+          "requiredRole": "ROLE_USER",
+          "headers": {
+            "Authorization": "Bearer <JWT_TOKEN>"
+          },
+          "pathParams": {
+            "flightId": "Target flight schedule ID (e.g., 1)"
+          },
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "Active fare pricing for scheduled flight",
+              "body": {
+                "id": 1,
+                "flightId": 1,
+                "economyFare": 4500,
+                "businessFare": 8500,
+                "firstClassFare": 14000,
+                "taxPercentage": 18,
+                "discountPercentage": 5,
+                "effectiveDate": "2026-10-01",
+                "active": true
+              }
+            }
+          }
+        },
+        {
+          "id": "FARE-005",
+          "name": "List All Configured Fares",
+          "category": "Fare Inquiry",
+          "method": "GET",
+          "path": "/api/fares",
+          "gatewayUrl": "http://localhost:8083/api/fares",
+          "directUrl": "http://localhost:8089/api/fares",
+          "accessControl": "ROLE_USER",
+          "requiredRole": "ROLE_USER",
+          "headers": {
+            "Authorization": "Bearer <JWT_TOKEN>"
+          },
+          "pathParams": null,
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "List of all fare structures",
+              "body": [
+                {
+                  "id": 1,
+                  "flightId": 1,
+                  "economyFare": 4500,
+                  "businessFare": 8500,
+                  "firstClassFare": 14000,
+                  "taxPercentage": 18,
+                  "discountPercentage": 5,
+                  "effectiveDate": "2026-10-01",
+                  "active": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "FARE-006",
+          "name": "Update Fare Structure",
+          "category": "Fare Management",
+          "method": "PUT",
+          "path": "/api/fares/{id}",
+          "gatewayUrl": "http://localhost:8083/api/fares/1",
+          "directUrl": "http://localhost:8089/api/fares/1",
+          "accessControl": "ROLE_ADMIN",
+          "requiredRole": "ROLE_ADMIN",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer <ROLE_ADMIN_JWT>"
+          },
+          "pathParams": {
+            "id": "Fare record ID to modify"
+          },
+          "queryParams": null,
+          "requestBody": {
+            "flightId": 1,
+            "economyFare": 4800,
+            "businessFare": 9000,
+            "firstClassFare": 15000,
+            "taxPercentage": 18,
+            "discountPercentage": 10,
+            "effectiveDate": "2026-10-01"
+          },
+          "responses": {
+            "200": {
+              "description": "Fare structure updated",
+              "body": {
+                "id": 1,
+                "flightId": 1,
+                "economyFare": 4800,
+                "businessFare": 9000,
+                "firstClassFare": 15000,
+                "taxPercentage": 18,
+                "discountPercentage": 10,
+                "effectiveDate": "2026-10-01",
+                "active": true
+              }
+            }
+          }
+        },
+        {
+          "id": "FARE-007",
+          "name": "Delete Fare Structure",
+          "category": "Fare Management",
+          "method": "DELETE",
+          "path": "/api/fares/{id}",
+          "gatewayUrl": "http://localhost:8083/api/fares/1",
+          "directUrl": "http://localhost:8089/api/fares/1",
+          "accessControl": "ROLE_ADMIN",
+          "requiredRole": "ROLE_ADMIN",
+          "headers": {
+            "Authorization": "Bearer <ROLE_ADMIN_JWT>"
+          },
+          "pathParams": {
+            "id": "Fare record ID to remove"
+          },
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "Fare deleted",
+              "body": "Fare deleted successfully with ID: 1"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "serviceId": "booking-service",
+      "serviceName": "Flight Reservation & Messaging Service",
+      "port": 8088,
+      "directBaseUrl": "http://localhost:8088",
+      "gatewayRoute": "/api/bookings/**",
+      "description": "Orchestrates seat reservation workflows, validates schedules via OpenFeign, generates cryptographically secure PNRs, and dispatches RabbitMQ events.",
+      "endpoints": [
+        {
+          "id": "BOOK-001",
+          "name": "Booking Service Health Probe",
+          "category": "Diagnostics",
+          "method": "GET",
+          "path": "/api/bookings/health",
+          "gatewayUrl": "http://localhost:8083/api/bookings/health",
+          "directUrl": "http://localhost:8088/api/bookings/health",
+          "accessControl": "PUBLIC",
+          "requiredRole": null,
+          "headers": {},
+          "pathParams": null,
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "Booking service status",
+              "body": {
+                "service": "booking-service",
+                "status": "UP",
+                "port": 8088,
+                "timestamp": "2026-09-14T20:30:00"
+              }
+            }
+          }
+        },
+        {
+          "id": "BOOK-002",
+          "name": "Create & Confirm Flight Reservation",
+          "category": "Reservations",
+          "method": "POST",
+          "path": "/api/bookings",
+          "gatewayUrl": "http://localhost:8083/api/bookings",
+          "directUrl": "http://localhost:8088/api/bookings",
+          "accessControl": "ROLE_USER",
+          "requiredRole": "ROLE_USER",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer <JWT_TOKEN>"
+          },
+          "pathParams": null,
+          "queryParams": null,
+          "requestBody": {
+            "userId": 1,
+            "flightId": 1,
+            "passengers": [
+              {
+                "firstName": "Asha",
+                "lastName": "Khan",
+                "age": 29,
+                "gender": "F"
+              }
+            ]
+          },
+          "responses": {
+            "200": {
+              "description": "Flight booking confirmed, PNR generated, event emitted",
+              "body": {
+                "bookingId": 1,
+                "pnr": "PNR-A3A01E3E",
+                "userId": 1,
+                "flightId": 1,
+                "flightNumber": "AI101",
+                "airlineName": "Air India",
+                "source": "Mumbai",
+                "destination": "Delhi",
+                "departureTime": "2026-10-01T09:30:00",
+                "arrivalTime": "2026-10-01T11:45:00",
+                "bookingDate": "2026-09-14T20:30:00",
+                "totalFare": 5500,
+                "status": "BOOKED",
+                "passengers": [
+                  {
+                    "passengerId": 1,
+                    "firstName": "Asha",
+                    "lastName": "Khan",
+                    "age": 29,
+                    "gender": "F"
+                  }
+                ]
+              }
+            },
+            "400": {
+              "description": "Flight departure time has already passed or seat capacity exhausted",
+              "body": {
+                "timestamp": "2026-09-14T20:30:00",
+                "status": 400,
+                "error": "Bad Request",
+                "message": "Insufficient seats available on flight AI101. Requested: 1, Available: 0."
+              }
+            }
+          }
+        },
+        {
+          "id": "BOOK-003",
+          "name": "List All Airline Bookings (Admin Audit)",
+          "category": "Administration",
+          "method": "GET",
+          "path": "/api/bookings",
+          "gatewayUrl": "http://localhost:8083/api/bookings",
+          "directUrl": "http://localhost:8088/api/bookings",
+          "accessControl": "ROLE_ADMIN",
+          "requiredRole": "ROLE_ADMIN",
+          "headers": {
+            "Authorization": "Bearer <ROLE_ADMIN_JWT>"
+          },
+          "pathParams": null,
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "Master passenger reservation directory across airline",
+              "body": [
+                {
+                  "bookingId": 1,
+                  "pnr": "PNR-A3A01E3E",
+                  "userId": 1,
+                  "flightId": 1,
+                  "bookingDate": "2026-09-14T20:30:00",
+                  "totalFare": 5500,
+                  "status": "BOOKED",
+                  "passengers": [
+                    {
+                      "passengerId": 1,
+                      "firstName": "Asha",
+                      "lastName": "Khan",
+                      "age": 29,
+                      "gender": "F"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "BOOK-004",
+          "name": "Lookup Booking by Database ID",
+          "category": "Reservations",
+          "method": "GET",
+          "path": "/api/bookings/{bookingId}",
+          "gatewayUrl": "http://localhost:8083/api/bookings/1",
+          "directUrl": "http://localhost:8088/api/bookings/1",
+          "accessControl": "ROLE_USER",
+          "requiredRole": "ROLE_USER",
+          "headers": {
+            "Authorization": "Bearer <JWT_TOKEN>"
+          },
+          "pathParams": {
+            "bookingId": "Booking primary database ID"
+          },
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "Booking confirmation details",
+              "body": {
+                "bookingId": 1,
+                "pnr": "PNR-A3A01E3E",
+                "userId": 1,
+                "flightId": 1,
+                "flightNumber": "AI101",
+                "airlineName": "Air India",
+                "source": "Mumbai",
+                "destination": "Delhi",
+                "departureTime": "2026-10-01T09:30:00",
+                "arrivalTime": "2026-10-01T11:45:00",
+                "bookingDate": "2026-09-14T20:30:00",
+                "totalFare": 5500,
+                "status": "BOOKED",
+                "passengers": [
+                  {
+                    "passengerId": 1,
+                    "firstName": "Asha",
+                    "lastName": "Khan",
+                    "age": 29,
+                    "gender": "F"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "BOOK-005",
+          "name": "Lookup Booking by PNR Reference",
+          "category": "Reservations",
+          "method": "GET",
+          "path": "/api/bookings/pnr/{pnr}",
+          "gatewayUrl": "http://localhost:8083/api/bookings/pnr/PNR-A3A01E3E",
+          "directUrl": "http://localhost:8088/api/bookings/pnr/PNR-A3A01E3E",
+          "accessControl": "ROLE_USER",
+          "requiredRole": "ROLE_USER",
+          "headers": {
+            "Authorization": "Bearer <JWT_TOKEN>"
+          },
+          "pathParams": {
+            "pnr": "Passenger Name Record (e.g., PNR-A3A01E3E)"
+          },
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "Booking found by PNR",
+              "body": {
+                "bookingId": 1,
+                "pnr": "PNR-A3A01E3E",
+                "userId": 1,
+                "flightId": 1,
+                "flightNumber": "AI101",
+                "airlineName": "Air India",
+                "source": "Mumbai",
+                "destination": "Delhi",
+                "departureTime": "2026-10-01T09:30:00",
+                "arrivalTime": "2026-10-01T11:45:00",
+                "bookingDate": "2026-09-14T20:30:00",
+                "totalFare": 5500,
+                "status": "BOOKED",
+                "passengers": [
+                  {
+                    "passengerId": 1,
+                    "firstName": "Asha",
+                    "lastName": "Khan",
+                    "age": 29,
+                    "gender": "F"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "BOOK-006",
+          "name": "Get All Bookings for User Account",
+          "category": "Reservations",
+          "method": "GET",
+          "path": "/api/bookings/user/{userId}",
+          "gatewayUrl": "http://localhost:8083/api/bookings/user/1",
+          "directUrl": "http://localhost:8088/api/bookings/user/1",
+          "accessControl": "ROLE_USER",
+          "requiredRole": "ROLE_USER",
+          "headers": {
+            "Authorization": "Bearer <JWT_TOKEN>"
+          },
+          "pathParams": {
+            "userId": "Customer account database ID (e.g., 1)"
+          },
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "User flight reservation history",
+              "body": [
+                {
+                  "bookingId": 1,
+                  "pnr": "PNR-A3A01E3E",
+                  "userId": 1,
+                  "flightId": 1,
+                  "bookingDate": "2026-09-14T20:30:00",
+                  "totalFare": 5500,
+                  "status": "BOOKED",
+                  "passengers": [
+                    {
+                      "passengerId": 1,
+                      "firstName": "Asha",
+                      "lastName": "Khan",
+                      "age": 29,
+                      "gender": "F"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "BOOK-007",
+          "name": "Cancel Flight Booking",
+          "category": "Reservations",
+          "method": "DELETE",
+          "path": "/api/bookings/{bookingId}",
+          "gatewayUrl": "http://localhost:8083/api/bookings/1",
+          "directUrl": "http://localhost:8088/api/bookings/1",
+          "accessControl": "ROLE_USER",
+          "requiredRole": "ROLE_USER",
+          "headers": {
+            "Authorization": "Bearer <JWT_TOKEN>"
+          },
+          "pathParams": {
+            "bookingId": "Booking ID to cancel"
+          },
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "Booking cancelled",
+              "body": "Booking Cancelled Successfully"
+            },
+            "400": {
+              "description": "Already cancelled",
+              "body": {
+                "timestamp": "2026-09-14T20:30:00",
+                "status": 400,
+                "error": "Bad Request",
+                "message": "Booking with ID 1 is already cancelled."
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "serviceId": "check-in-service",
+      "serviceName": "Airport Check-In & Boarding Pass Service",
+      "port": 8090,
+      "directBaseUrl": "http://localhost:8090",
+      "gatewayRoute": "/api/check-ins/**",
+      "description": "Digital boarding pass issuance, seat allocation, gate verification, and passenger check-in auditing in aerobook_checkin_db.",
+      "endpoints": [
+        {
+          "id": "CHECKIN-001",
+          "name": "Check-In Service Health Probe",
+          "category": "Diagnostics",
+          "method": "GET",
+          "path": "/api/check-ins/health",
+          "gatewayUrl": "http://localhost:8083/api/check-ins/health",
+          "directUrl": "http://localhost:8090/api/check-ins/health",
+          "accessControl": "PUBLIC",
+          "requiredRole": null,
+          "headers": {},
+          "pathParams": null,
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "Check-in service is operational",
+              "body": {
+                "service": "check-in-service",
+                "status": "UP",
+                "port": 8090,
+                "timestamp": "2026-09-14T20:30:00"
+              }
+            }
+          }
+        },
+        {
+          "id": "CHECKIN-002",
+          "name": "Passenger Check-In & Boarding Pass Issuance",
+          "category": "Airport Operations",
+          "method": "POST",
+          "path": "/api/check-ins",
+          "gatewayUrl": "http://localhost:8083/api/check-ins",
+          "directUrl": "http://localhost:8090/api/check-ins",
+          "accessControl": "ROLE_USER",
+          "requiredRole": "ROLE_USER",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer <JWT_TOKEN>"
+          },
+          "pathParams": null,
+          "queryParams": null,
+          "requestBody": {
+            "bookingId": 1,
+            "passengerName": "Asha Khan",
+            "seatNumber": "12A"
+          },
+          "responses": {
+            "200": {
+              "description": "Passenger checked in, seat confirmed, boarding pass generated",
+              "body": {
+                "id": 1,
+                "bookingId": 1,
+                "passengerName": "Asha Khan",
+                "seatNumber": "12A",
+                "boardingPassNumber": "BP-1-12A",
+                "status": "CHECKED_IN",
+                "checkedInAt": "2026-09-14T20:30:00"
+              }
+            },
+            "400": {
+              "description": "Invalid booking or passenger parameters",
+              "body": {
+                "timestamp": "2026-09-14T20:30:00",
+                "status": 400,
+                "error": "Bad Request",
+                "message": "Passenger name cannot be blank"
+              }
+            }
+          }
+        },
+        {
+          "id": "CHECKIN-003",
+          "name": "Get Check-In Record by Booking ID",
+          "category": "Airport Operations",
+          "method": "GET",
+          "path": "/api/check-ins/booking/{bookingId}",
+          "gatewayUrl": "http://localhost:8083/api/check-ins/booking/1",
+          "directUrl": "http://localhost:8090/api/check-ins/booking/1",
+          "accessControl": "ROLE_USER",
+          "requiredRole": "ROLE_USER",
+          "headers": {
+            "Authorization": "Bearer <JWT_TOKEN>"
+          },
+          "pathParams": {
+            "bookingId": "Booking database ID"
+          },
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "Check-in confirmation details found",
+              "body": {
+                "id": 1,
+                "bookingId": 1,
+                "passengerName": "Asha Khan",
+                "seatNumber": "12A",
+                "boardingPassNumber": "BP-1-12A",
+                "status": "CHECKED_IN",
+                "checkedInAt": "2026-09-14T20:30:00"
+              }
+            },
+            "404": {
+              "description": "Check-in not found for booking",
+              "body": {
+                "timestamp": "2026-09-14T20:30:00",
+                "status": 404,
+                "error": "Not Found",
+                "message": "Check-in not found for booking ID: 99"
+              }
+            }
+          }
+        },
+        {
+          "id": "CHECKIN-004",
+          "name": "Get Check-In Record by Primary ID",
+          "category": "Airport Operations",
+          "method": "GET",
+          "path": "/api/check-ins/{id}",
+          "gatewayUrl": "http://localhost:8083/api/check-ins/1",
+          "directUrl": "http://localhost:8090/api/check-ins/1",
+          "accessControl": "ROLE_USER",
+          "requiredRole": "ROLE_USER",
+          "headers": {
+            "Authorization": "Bearer <JWT_TOKEN>"
+          },
+          "pathParams": {
+            "id": "Primary check-in database ID"
+          },
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "Check-in record details",
+              "body": {
+                "id": 1,
+                "bookingId": 1,
+                "passengerName": "Asha Khan",
+                "seatNumber": "12A",
+                "boardingPassNumber": "BP-1-12A",
+                "status": "CHECKED_IN",
+                "checkedInAt": "2026-09-14T20:30:00"
+              }
+            }
+          }
+        },
+        {
+          "id": "CHECKIN-005",
+          "name": "List All Check-Ins Across Airline (Admin Audit)",
+          "category": "Administration",
+          "method": "GET",
+          "path": "/api/check-ins",
+          "gatewayUrl": "http://localhost:8083/api/check-ins",
+          "directUrl": "http://localhost:8090/api/check-ins",
+          "accessControl": "ROLE_ADMIN",
+          "requiredRole": "ROLE_ADMIN",
+          "headers": {
+            "Authorization": "Bearer <ROLE_ADMIN_JWT>"
+          },
+          "pathParams": null,
+          "queryParams": null,
+          "requestBody": null,
+          "responses": {
+            "200": {
+              "description": "Master list of all passenger check-ins across airline",
+              "body": [
+                {
+                  "id": 1,
+                  "bookingId": 1,
+                  "passengerName": "Asha Khan",
+                  "seatNumber": "12A",
+                  "boardingPassNumber": "BP-1-12A",
+                  "status": "CHECKED_IN",
+                  "checkedInAt": "2026-09-14T20:30:00"
+                }
+              ]
+            },
+            "403": {
+              "description": "Forbidden: Requires ROLE_ADMIN",
+              "body": {
+                "timestamp": "2026-09-14T20:30:00",
+                "status": 403,
+                "error": "Forbidden",
+                "message": "Access denied: Listing all passenger check-ins requires ROLE_ADMIN authority."
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
