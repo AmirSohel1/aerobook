@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AeroBook - Entity-Relationship (ER) Diagram Specification</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    body {
+      background-color: #000000;
+      color: #ffffff;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      overflow-x: hidden;
+    }
+    .table-group {
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+    }
+    .table-group:hover rect {
+      fill: #1a1a24 !important;
+      stroke-width: 2.5px !important;
+      filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.8));
+    }
+    .highlight-table {
+      filter: drop-shadow(0 0 16px #38bdf8) !important;
+      stroke-width: 3px !important;
+    }
+    .dimmed {
+      opacity: 0.15 !important;
+      transition: opacity 0.3s ease;
+    }
+    .blueprint-grid {
+      background-size: 30px 30px;
+      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+    }
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #09090b;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #27272a;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #3f3f46;
+    }
+  </style>
+</head>
+<body class="bg-black text-white min-h-screen p-4 blueprint-grid flex flex-col items-center">
+
+  <!-- Header & Control Bar -->
+  <header class="w-full max-w-[1760px] flex flex-col md:flex-row items-center justify-between border-b-2 border-white pb-4 mb-4 gap-4">
+    <div>
+      <div class="flex items-center gap-3">
+        <span class="text-xs tracking-widest uppercase border border-white px-2 py-0.5 rounded font-mono">Relational ER Model</span>
+        <span class="text-xs tracking-widest uppercase bg-white text-black px-2 py-0.5 rounded font-bold font-mono">Black Canvas • White Marker</span>
+        <span class="text-xs tracking-widest uppercase bg-blue-600 text-white px-2 py-0.5 rounded font-bold font-mono">Database-Per-Service</span>
+      </div>
+      <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight mt-1 text-white">
+        AeroBook Platform — System Entity-Relationship (ER) Diagram
+      </h1>
+      <p class="text-xs md:text-sm text-zinc-400 font-mono">
+        6 Isolated Microservice Databases • 9 JPA Tables • Crow's Foot Cardinality • 3NF Normalization
+      </p>
+    </div>
+
+    <!-- Quick Action Controls -->
+    <div class="flex flex-wrap items-center gap-2">
+      <!-- Database Filter -->
+      <div class="flex items-center bg-zinc-900 border border-zinc-700 rounded-lg p-1 text-xs">
+        <span class="text-zinc-400 px-2 font-mono">Database:</span>
+        <button onclick="filterDatabase('all')" id="btn-all" class="px-2 py-1 rounded bg-white text-black font-bold transition">All</button>
+        <button onclick="filterDatabase('auth')" id="btn-auth" class="px-2 py-1 rounded text-zinc-300 hover:text-white transition">Auth</button>
+        <button onclick="filterDatabase('user')" id="btn-user" class="px-2 py-1 rounded text-zinc-300 hover:text-white transition">User</button>
+        <button onclick="filterDatabase('flight')" id="btn-flight" class="px-2 py-1 rounded text-zinc-300 hover:text-white transition">Flight</button>
+        <button onclick="filterDatabase('fare')" id="btn-fare" class="px-2 py-1 rounded text-zinc-300 hover:text-white transition">Fare</button>
+        <button onclick="filterDatabase('booking')" id="btn-booking" class="px-2 py-1 rounded text-zinc-300 hover:text-white transition">Booking</button>
+        <button onclick="filterDatabase('checkin')" id="btn-checkin" class="px-2 py-1 rounded text-zinc-300 hover:text-white transition">CheckIn</button>
+      </div>
+
+      <!-- Zoom / View Controls -->
+      <div class="flex items-center bg-zinc-900 border border-zinc-700 rounded-lg p-1 text-xs">
+        <button onclick="zoom(1.15)" class="px-2.5 py-1 hover:bg-zinc-800 rounded font-bold" title="Zoom In">+</button>
+        <button onclick="zoom(0.85)" class="px-2.5 py-1 hover:bg-zinc-800 rounded font-bold" title="Zoom Out">-</button>
+        <button onclick="resetZoom()" class="px-2.5 py-1 hover:bg-zinc-800 rounded font-mono" title="Reset View">100%</button>
+      </div>
+
+      <!-- Export Buttons -->
+      <div class="flex items-center gap-1.5">
+        <a href="AeroBook_ER_Diagram.svg" download class="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 rounded text-xs font-mono font-bold flex items-center gap-1">
+          SVG
+        </a>
+        <a href="AeroBook_ER_Diagram.png" download class="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 rounded text-xs font-mono font-bold flex items-center gap-1">
+          PNG
+        </a>
+        <a href="AeroBook_ER_Diagram_Guide.pdf" target="_blank" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs font-bold flex items-center gap-1">
+          PDF Guide
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Canvas & Inspector Layout -->
+  <div class="w-full max-w-[1760px] grid grid-cols-1 xl:grid-cols-4 gap-4">
+    
+    <!-- Left: SVG Viewer (3 Columns) -->
+    <div class="xl:col-span-3 border-2 border-white rounded-xl bg-black overflow-hidden shadow-2xl relative">
+      <div id="svg-wrapper" class="w-full overflow-auto cursor-grab active:cursor-grabbing p-2" style="min-height: 820px; max-height: 85vh;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 1260" width="1800" height="1260" style="background-color: #000000; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;">
+  <defs>
+    <!-- Filter for soft glow -->
+    <filter id="glow-white" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+
+    <!-- Crow's Foot: One and Only One (||) -->
+    <marker id="one-and-only-one" viewBox="0 0 20 20" refX="10" refY="10" markerWidth="14" markerHeight="14" orient="auto-start-reverse">
+      <line x1="5" y1="2" x2="5" y2="18" stroke="#ffffff" stroke-width="2.2" />
+      <line x1="12" y1="2" x2="12" y2="18" stroke="#ffffff" stroke-width="2.2" />
+    </marker>
+
+    <!-- Crow's Foot: Zero or Many (o<) -->
+    <marker id="zero-or-many" viewBox="0 0 24 20" refX="22" refY="10" markerWidth="18" markerHeight="15" orient="auto-start-reverse">
+      <circle cx="6" cy="10" r="4" fill="#000000" stroke="#ffffff" stroke-width="2" />
+      <line x1="12" y1="10" x2="22" y2="2" stroke="#ffffff" stroke-width="2.2" />
+      <line x1="12" y1="10" x2="22" y2="10" stroke="#ffffff" stroke-width="2.2" />
+      <line x1="12" y1="10" x2="22" y2="18" stroke="#ffffff" stroke-width="2.2" />
+    </marker>
+
+    <!-- Crow's Foot: One or Many (|<) -->
+    <marker id="one-or-many" viewBox="0 0 24 20" refX="22" refY="10" markerWidth="18" markerHeight="15" orient="auto-start-reverse">
+      <line x1="5" y1="2" x2="5" y2="18" stroke="#ffffff" stroke-width="2.2" />
+      <line x1="12" y1="10" x2="22" y2="2" stroke="#ffffff" stroke-width="2.2" />
+      <line x1="12" y1="10" x2="22" y2="10" stroke="#ffffff" stroke-width="2.2" />
+      <line x1="12" y1="10" x2="22" y2="18" stroke="#ffffff" stroke-width="2.2" />
+    </marker>
+
+    <!-- Crow's Foot: Zero or One (o|) -->
+    <marker id="zero-or-one" viewBox="0 0 20 20" refX="15" refY="10" markerWidth="15" markerHeight="15" orient="auto-start-reverse">
+      <circle cx="6" cy="10" r="4" fill="#000000" stroke="#ffffff" stroke-width="2" />
+      <line x1="15" y1="2" x2="15" y2="18" stroke="#ffffff" stroke-width="2.2" />
+    </marker>
+
+    <!-- Logical Link Start Dot -->
+    <marker id="dot-start" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <circle cx="5" cy="5" r="3.5" fill="#38bdf8" stroke="#ffffff" stroke-width="1.5" />
+    </marker>
+
+    <!-- Logical Link End Arrow -->
+    <marker id="logical-arrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto">
+      <path d="M 2 2 L 10 6 L 2 10 z" fill="#38bdf8" stroke="#38bdf8" />
+    </marker>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect width="1800" height="1260" fill="#000000" />
+
+  <!-- Subtle Blueprint Grid Pattern -->
+  <g opacity="0.07">
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ffffff" stroke-width="0.8" />
+    </pattern>
+    <rect width="1800" height="1260" fill="url(#grid)" />
+  </g>
+
+  <!-- ==================================================================== -->
+  <!-- HEADER & TITLE -->
+  <!-- ==================================================================== -->
+  <text x="900" y="38" fill="#ffffff" font-size="24" font-weight="bold" letter-spacing="2.5" text-anchor="middle">
+    AEROBOOK PLATFORM - SYSTEM ENTITY-RELATIONSHIP (ER) DIAGRAM
+  </text>
+  <text x="900" y="62" fill="#a1a1aa" font-size="12.5" font-family="monospace" letter-spacing="1" text-anchor="middle">
+    Microservices Database-per-Service Architecture • Relational Schemas &amp; Crow's Foot Cardinality • Black Canvas &amp; White Marker Theme
+  </text>
+  <line x1="60" y1="76" x2="1740" y2="76" stroke="#27272a" stroke-width="1.5" />
+
+  <!-- ==================================================================== -->
+  <!-- 1. aerobook_auth_db (MySQL 8.0) -->
+  <!-- ==================================================================== -->
+  <g id="db-auth">
+    <rect x="50" y="95" width="430" height="470" rx="8" fill="#08080a" stroke="#ffffff" stroke-width="1.2" stroke-dasharray="6,4" />
+    <!-- DB Header Badge -->
+    <rect x="65" y="85" width="240" height="22" rx="4" fill="#18181b" stroke="#ffffff" stroke-width="1" />
+    <text x="75" y="100" fill="#38bdf8" font-size="11" font-weight="bold" font-family="monospace">DATABASE: aerobook_auth_db</text>
+    <text x="390" y="112" fill="#71717a" font-size="10" font-family="monospace">auth-service (Port 8082)</text>
+
+    <!-- Table: credentials -->
+    <g id="table-credentials">
+      <rect x="70" y="125" width="390" height="210" rx="6" fill="#0f0f12" stroke="#ffffff" stroke-width="1.8" />
+      <rect x="70" y="125" width="390" height="34" rx="6" fill="#1c1c22" stroke="#ffffff" stroke-width="1" />
+      <text x="85" y="147" fill="#ffffff" font-size="13" font-weight="bold" font-family="monospace">TABLE: credentials</text>
+      <text x="430" y="147" fill="#a1a1aa" font-size="10" font-family="monospace" text-anchor="end">JPA: Credential</text>
+      <line x1="70" y1="159" x2="460" y2="159" stroke="#3f3f46" stroke-width="1" />
+
+      <!-- Columns -->
+      <!-- credential_id (PK) -->
+      <rect x="80" y="167" width="26" height="15" rx="3" fill="#facc15" />
+      <text x="93" y="178" fill="#000000" font-size="9" font-weight="bold" text-anchor="middle">PK</text>
+      <text x="114" y="179" fill="#ffffff" font-size="11.5" font-weight="bold" font-family="monospace">credential_id</text>
+      <text x="255" y="179" fill="#a1a1aa" font-size="10.5" font-family="monospace">BIGINT AUTO_INCREMENT</text>
+      <text x="445" y="179" fill="#facc15" font-size="9.5" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- user_id (LFK) -->
+      <rect x="80" y="190" width="26" height="15" rx="3" fill="#38bdf8" />
+      <text x="93" y="201" fill="#000000" font-size="9" font-weight="bold" text-anchor="middle">LFK</text>
+      <text x="114" y="202" fill="#ffffff" font-size="11.5" font-family="monospace">user_id</text>
+      <text x="255" y="202" fill="#a1a1aa" font-size="10.5" font-family="monospace">BIGINT</text>
+      <text x="445" y="202" fill="#e4e4e7" font-size="9.5" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- email (UQ) -->
+      <rect x="80" y="213" width="26" height="15" rx="3" fill="#4ade80" />
+      <text x="93" y="224" fill="#000000" font-size="9" font-weight="bold" text-anchor="middle">UQ</text>
+      <text x="114" y="225" fill="#ffffff" font-size="11.5" font-family="monospace">email</text>
+      <text x="255" y="225" fill="#a1a1aa" font-size="10.5" font-family="monospace">VARCHAR(100)</text>
+      <text x="445" y="225" fill="#4ade80" font-size="9.5" font-family="monospace" text-anchor="end">UNIQUE, NN</text>
+
+      <!-- password -->
+      <text x="114" y="248" fill="#ffffff" font-size="11.5" font-family="monospace">password</text>
+      <text x="255" y="248" fill="#a1a1aa" font-size="10.5" font-family="monospace">VARCHAR(255) [BCrypt]</text>
+      <text x="445" y="248" fill="#e4e4e7" font-size="9.5" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- role -->
+      <text x="114" y="271" fill="#ffffff" font-size="11.5" font-family="monospace">role</text>
+      <text x="255" y="271" fill="#a1a1aa" font-size="10.5" font-family="monospace">VARCHAR(50) [ENUM]</text>
+      <text x="445" y="271" fill="#e4e4e7" font-size="9.5" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- created_at -->
+      <text x="114" y="294" fill="#ffffff" font-size="11.5" font-family="monospace">created_at</text>
+      <text x="255" y="294" fill="#a1a1aa" font-size="10.5" font-family="monospace">DATETIME</text>
+      <text x="445" y="294" fill="#e4e4e7" font-size="9.5" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- updated_at -->
+      <text x="114" y="317" fill="#ffffff" font-size="11.5" font-family="monospace">updated_at</text>
+      <text x="255" y="317" fill="#a1a1aa" font-size="10.5" font-family="monospace">DATETIME</text>
+      <text x="445" y="317" fill="#e4e4e7" font-size="9.5" font-family="monospace" text-anchor="end">NOT NULL</text>
+    </g>
+
+    <!-- Table: refresh_tokens -->
+    <g id="table-refresh_tokens">
+      <rect x="70" y="380" width="390" height="155" rx="6" fill="#0f0f12" stroke="#ffffff" stroke-width="1.8" />
+      <rect x="70" y="380" width="390" height="34" rx="6" fill="#1c1c22" stroke="#ffffff" stroke-width="1" />
+      <text x="85" y="402" fill="#ffffff" font-size="13" font-weight="bold" font-family="monospace">TABLE: refresh_tokens</text>
+      <text x="430" y="402" fill="#a1a1aa" font-size="10" font-family="monospace" text-anchor="end">JPA: RefreshToken</text>
+      <line x1="70" y1="414" x2="460" y2="414" stroke="#3f3f46" stroke-width="1" />
+
+      <!-- id (PK) -->
+      <rect x="80" y="422" width="26" height="15" rx="3" fill="#facc15" />
+      <text x="93" y="433" fill="#000000" font-size="9" font-weight="bold" text-anchor="middle">PK</text>
+      <text x="114" y="434" fill="#ffffff" font-size="11.5" font-weight="bold" font-family="monospace">id</text>
+      <text x="255" y="434" fill="#a1a1aa" font-size="10.5" font-family="monospace">BIGINT AUTO_INCREMENT</text>
+      <text x="445" y="434" fill="#facc15" font-size="9.5" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- token (UQ) -->
+      <rect x="80" y="445" width="26" height="15" rx="3" fill="#4ade80" />
+      <text x="93" y="456" fill="#000000" font-size="9" font-weight="bold" text-anchor="middle">UQ</text>
+      <text x="114" y="457" fill="#ffffff" font-size="11.5" font-family="monospace">token</text>
+      <text x="255" y="457" fill="#a1a1aa" font-size="10.5" font-family="monospace">VARCHAR(255)</text>
+      <text x="445" y="457" fill="#4ade80" font-size="9.5" font-family="monospace" text-anchor="end">UNIQUE, NN</text>
+
+      <!-- expiry_date -->
+      <text x="114" y="480" fill="#ffffff" font-size="11.5" font-family="monospace">expiry_date</text>
+      <text x="255" y="480" fill="#a1a1aa" font-size="10.5" font-family="monospace">DATETIME</text>
+      <text x="445" y="480" fill="#e4e4e7" font-size="9.5" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- credential_id (FK) -->
+      <rect x="80" y="493" width="26" height="15" rx="3" fill="#ffffff" />
+      <text x="93" y="504" fill="#000000" font-size="9" font-weight="bold" text-anchor="middle">FK</text>
+      <text x="114" y="505" fill="#ffffff" font-size="11.5" font-family="monospace">credential_id</text>
+      <text x="255" y="505" fill="#a1a1aa" font-size="10.5" font-family="monospace">BIGINT</text>
+      <text x="445" y="505" fill="#ffffff" font-size="9.5" font-family="monospace" text-anchor="end">FK (CRED)</text>
+    </g>
+  </g>
+
+  <!-- ==================================================================== -->
+  <!-- 2. aerobook_user_db (MySQL 8.0) -->
+  <!-- ==================================================================== -->
+  <g id="db-user">
+    <rect x="520" y="95" width="430" height="430" rx="8" fill="#08080a" stroke="#ffffff" stroke-width="1.2" stroke-dasharray="6,4" />
+    <rect x="535" y="85" width="240" height="22" rx="4" fill="#18181b" stroke="#ffffff" stroke-width="1" />
+    <text x="545" y="100" fill="#38bdf8" font-size="11" font-weight="bold" font-family="monospace">DATABASE: aerobook_user_db</text>
+    <text x="860" y="112" fill="#71717a" font-size="10" font-family="monospace">user-service (Port 8084)</text>
+
+    <!-- Table: users -->
+    <g id="table-users">
+      <rect x="540" y="125" width="390" height="375" rx="6" fill="#0f0f12" stroke="#ffffff" stroke-width="1.8" />
+      <rect x="540" y="125" width="390" height="34" rx="6" fill="#1c1c22" stroke="#ffffff" stroke-width="1" />
+      <text x="555" y="147" fill="#ffffff" font-size="13" font-weight="bold" font-family="monospace">TABLE: users</text>
+      <text x="900" y="147" fill="#a1a1aa" font-size="10" font-family="monospace" text-anchor="end">JPA: UserEntity</text>
+      <line x1="540" y1="159" x2="930" y2="159" stroke="#3f3f46" stroke-width="1" />
+
+      <!-- user_id (PK) -->
+      <rect x="550" y="167" width="26" height="15" rx="3" fill="#facc15" />
+      <text x="563" y="178" fill="#000000" font-size="9" font-weight="bold" text-anchor="middle">PK</text>
+      <text x="584" y="179" fill="#ffffff" font-size="11.5" font-weight="bold" font-family="monospace">user_id</text>
+      <text x="715" y="179" fill="#a1a1aa" font-size="10.5" font-family="monospace">BIGINT AUTO_INCREMENT</text>
+      <text x="915" y="179" fill="#facc15" font-size="9.5" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- first_name -->
+      <text x="584" y="202" fill="#ffffff" font-size="11.5" font-family="monospace">first_name</text>
+      <text x="715" y="202" fill="#a1a1aa" font-size="10.5" font-family="monospace">VARCHAR(50)</text>
+      <text x="915" y="202" fill="#e4e4e7" font-size="9.5" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- last_name -->
+      <text x="584" y="225" fill="#ffffff" font-size="11.5" font-family="monospace">last_name</text>
+      <text x="715" y="225" fill="#a1a1aa" font-size="10.5" font-family="monospace">VARCHAR(50)</text>
+      <text x="915" y="225" fill="#e4e4e7" font-size="9.5" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- email (UQ) -->
+      <rect x="550" y="236" width="26" height="15" rx="3" fill="#4ade80" />
+      <text x="563" y="247" fill="#000000" font-size="9" font-weight="bold" text-anchor="middle">UQ</text>
+      <text x="584" y="248" fill="#ffffff" font-size="11.5" font-family="monospace">email</text>
+      <text x="715" y="248" fill="#a1a1aa" font-size="10.5" font-family="monospace">VARCHAR(100)</text>
+      <text x="915" y="248" fill="#4ade80" font-size="9.5" font-family="monospace" text-anchor="end">UNIQUE, NN</text>
+
+      <!-- phone_number (UQ) -->
+      <rect x="550" y="259" width="26" height="15" rx="3" fill="#4ade80" />
+      <text x="563" y="270" fill="#000000" font-size="9" font-weight="bold" text-anchor="middle">UQ</text>
+      <text x="584" y="271" fill="#ffffff" font-size="11.5" font-family="monospace">phone_number</text>
+      <text x="715" y="271" fill="#a1a1aa" font-size="10.5" font-family="monospace">VARCHAR(15)</text>
+      <text x="915" y="271" fill="#4ade80" font-size="9.5" font-family="monospace" text-anchor="end">UNIQUE, NN</text>
+
+      <!-- date_of_birth -->
+      <text x="584" y="294" fill="#ffffff" font-size="11.5" font-family="monospace">date_of_birth</text>
+      <text x="715" y="294" fill="#a1a1aa" font-size="10.5" font-family="monospace">DATE</text>
+      <text x="915" y="294" fill="#71717a" font-size="9.5" font-family="monospace" text-anchor="end">NULLABLE</text>
+
+      <!-- nationality -->
+      <text x="584" y="317" fill="#ffffff" font-size="11.5" font-family="monospace">nationality</text>
+      <text x="715" y="317" fill="#a1a1aa" font-size="10.5" font-family="monospace">VARCHAR(50)</text>
+      <text x="915" y="317" fill="#71717a" font-size="9.5" font-family="monospace" text-anchor="end">NULLABLE</text>
+
+      <!-- role -->
+      <text x="584" y="340" fill="#ffffff" font-size="11.5" font-family="monospace">role</text>
+      <text x="715" y="340" fill="#a1a1aa" font-size="10.5" font-family="monospace">VARCHAR(50) [ENUM]</text>
+      <text x="915" y="340" fill="#e4e4e7" font-size="9.5" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- created_at -->
+      <text x="584" y="363" fill="#ffffff" font-size="11.5" font-family="monospace">created_at</text>
+      <text x="715" y="363" fill="#a1a1aa" font-size="10.5" font-family="monospace">DATETIME</text>
+      <text x="915" y="363" fill="#e4e4e7" font-size="9.5" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- updated_at -->
+      <text x="584" y="386" fill="#ffffff" font-size="11.5" font-family="monospace">updated_at</text>
+      <text x="715" y="386" fill="#a1a1aa" font-size="10.5" font-family="monospace">DATETIME</text>
+      <text x="915" y="386" fill="#e4e4e7" font-size="9.5" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <line x1="540" y1="402" x2="930" y2="402" stroke="#27272a" stroke-width="1" />
+      <text x="735" y="420" fill="#a1a1aa" font-size="9.5" font-family="monospace" text-anchor="middle">Demographic Profile &amp; Contact Registry</text>
+      <text x="735" y="435" fill="#71717a" font-size="9" font-family="monospace" text-anchor="middle">Decoupled from Passwords for Security Isolation</text>
+    </g>
+  </g>
+
+  <!-- ==================================================================== -->
+  <!-- 3. fare_db (MySQL 8.0) -->
+  <!-- ==================================================================== -->
+  <g id="db-fare">
+    <rect x="990" y="95" width="370" height="380" rx="8" fill="#08080a" stroke="#ffffff" stroke-width="1.2" stroke-dasharray="6,4" />
+    <rect x="1005" y="85" width="200" height="22" rx="4" fill="#18181b" stroke="#ffffff" stroke-width="1" />
+    <text x="1015" y="100" fill="#38bdf8" font-size="11" font-weight="bold" font-family="monospace">DATABASE: fare_db</text>
+    <text x="1275" y="112" fill="#71717a" font-size="10" font-family="monospace">fare-service (Port 8089)</text>
+
+    <!-- Table: fares -->
+    <g id="table-fares">
+      <rect x="1010" y="125" width="330" height="330" rx="6" fill="#0f0f12" stroke="#ffffff" stroke-width="1.8" />
+      <rect x="1010" y="125" width="330" height="34" rx="6" fill="#1c1c22" stroke="#ffffff" stroke-width="1" />
+      <text x="1025" y="147" fill="#ffffff" font-size="13" font-weight="bold" font-family="monospace">TABLE: fares</text>
+      <text x="1325" y="147" fill="#a1a1aa" font-size="10" font-family="monospace" text-anchor="end">JPA: Fare</text>
+      <line x1="1010" y1="159" x2="1340" y2="159" stroke="#3f3f46" stroke-width="1" />
+
+      <!-- id (PK) -->
+      <rect x="1020" y="167" width="26" height="15" rx="3" fill="#facc15" />
+      <text x="1033" y="178" fill="#000000" font-size="9" font-weight="bold" text-anchor="middle">PK</text>
+      <text x="1054" y="179" fill="#ffffff" font-size="11.5" font-weight="bold" font-family="monospace">id</text>
+      <text x="1170" y="179" fill="#a1a1aa" font-size="10" font-family="monospace">BIGINT AUTO_INC</text>
+      <text x="1325" y="179" fill="#facc15" font-size="9" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- flight_id (UQ, LFK) -->
+      <rect x="1020" y="190" width="26" height="15" rx="3" fill="#38bdf8" />
+      <text x="1033" y="201" fill="#000000" font-size="9" font-weight="bold" text-anchor="middle">LFK</text>
+      <text x="1054" y="202" fill="#ffffff" font-size="11.5" font-family="monospace">flight_id</text>
+      <text x="1170" y="202" fill="#a1a1aa" font-size="10" font-family="monospace">BIGINT</text>
+      <text x="1325" y="202" fill="#4ade80" font-size="9" font-family="monospace" text-anchor="end">UQ, NOT NULL</text>
+
+      <!-- economy_fare -->
+      <text x="1054" y="225" fill="#ffffff" font-size="11.5" font-family="monospace">economy_fare</text>
+      <text x="1170" y="225" fill="#a1a1aa" font-size="10" font-family="monospace">DECIMAL(10,2)</text>
+      <text x="1325" y="225" fill="#e4e4e7" font-size="9" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- business_fare -->
+      <text x="1054" y="248" fill="#ffffff" font-size="11.5" font-family="monospace">business_fare</text>
+      <text x="1170" y="248" fill="#a1a1aa" font-size="10" font-family="monospace">DECIMAL(10,2)</text>
+      <text x="1325" y="248" fill="#71717a" font-size="9" font-family="monospace" text-anchor="end">NULLABLE</text>
+
+      <!-- first_class_fare -->
+      <text x="1054" y="271" fill="#ffffff" font-size="11.5" font-family="monospace">first_class_fare</text>
+      <text x="1170" y="271" fill="#a1a1aa" font-size="10" font-family="monospace">DECIMAL(10,2)</text>
+      <text x="1325" y="271" fill="#71717a" font-size="9" font-family="monospace" text-anchor="end">NULLABLE</text>
+
+      <!-- tax_percentage -->
+      <text x="1054" y="294" fill="#ffffff" font-size="11.5" font-family="monospace">tax_percentage</text>
+      <text x="1170" y="294" fill="#a1a1aa" font-size="10" font-family="monospace">DECIMAL(5,2)</text>
+      <text x="1325" y="294" fill="#71717a" font-size="9" font-family="monospace" text-anchor="end">DEF: 18.00</text>
+
+      <!-- discount_percentage -->
+      <text x="1054" y="317" fill="#ffffff" font-size="11.5" font-family="monospace">discount_percentage</text>
+      <text x="1170" y="317" fill="#a1a1aa" font-size="10" font-family="monospace">DECIMAL(5,2)</text>
+      <text x="1325" y="317" fill="#71717a" font-size="9" font-family="monospace" text-anchor="end">DEF: 0.00</text>
+
+      <!-- effective_date -->
+      <text x="1054" y="340" fill="#ffffff" font-size="11.5" font-family="monospace">effective_date</text>
+      <text x="1170" y="340" fill="#a1a1aa" font-size="10" font-family="monospace">DATE</text>
+      <text x="1325" y="340" fill="#71717a" font-size="9" font-family="monospace" text-anchor="end">NULLABLE</text>
+
+      <!-- active -->
+      <text x="1054" y="363" fill="#ffffff" font-size="11.5" font-family="monospace">active</text>
+      <text x="1170" y="363" fill="#a1a1aa" font-size="10" font-family="monospace">BOOLEAN</text>
+      <text x="1325" y="363" fill="#e4e4e7" font-size="9" font-family="monospace" text-anchor="end">DEF: TRUE</text>
+
+      <line x1="1010" y1="378" x2="1340" y2="378" stroke="#27272a" stroke-width="1" />
+      <text x="1175" y="396" fill="#a1a1aa" font-size="9" font-family="monospace" text-anchor="middle">Dynamic Multi-Tier Pricing Engine</text>
+      <text x="1175" y="411" fill="#71717a" font-size="8.5" font-family="monospace" text-anchor="middle">1:1 Logical Link to Flight ID</text>
+    </g>
+  </g>
+
+  <!-- ==================================================================== -->
+  <!-- 4. checkin_db (MySQL 8.0) -->
+  <!-- ==================================================================== -->
+  <g id="db-checkin">
+    <rect x="1390" y="95" width="360" height="340" rx="8" fill="#08080a" stroke="#ffffff" stroke-width="1.2" stroke-dasharray="6,4" />
+    <rect x="1405" y="85" width="220" height="22" rx="4" fill="#18181b" stroke="#ffffff" stroke-width="1" />
+    <text x="1415" y="100" fill="#38bdf8" font-size="11" font-weight="bold" font-family="monospace">DATABASE: checkin_db</text>
+    <text x="1660" y="112" fill="#71717a" font-size="10" font-family="monospace">check-in-service (8090)</text>
+
+    <!-- Table: check_in -->
+    <g id="table-check_in">
+      <rect x="1410" y="125" width="320" height="290" rx="6" fill="#0f0f12" stroke="#ffffff" stroke-width="1.8" />
+      <rect x="1410" y="125" width="320" height="34" rx="6" fill="#1c1c22" stroke="#ffffff" stroke-width="1" />
+      <text x="1425" y="147" fill="#ffffff" font-size="13" font-weight="bold" font-family="monospace">TABLE: check_in</text>
+      <text x="1715" y="147" fill="#a1a1aa" font-size="10" font-family="monospace" text-anchor="end">JPA: CheckIn</text>
+      <line x1="1410" y1="159" x2="1730" y2="159" stroke="#3f3f46" stroke-width="1" />
+
+      <!-- id (PK) -->
+      <rect x="1420" y="167" width="26" height="15" rx="3" fill="#facc15" />
+      <text x="1433" y="178" fill="#000000" font-size="9" font-weight="bold" text-anchor="middle">PK</text>
+      <text x="1454" y="179" fill="#ffffff" font-size="11.5" font-weight="bold" font-family="monospace">id</text>
+      <text x="1565" y="179" fill="#a1a1aa" font-size="10" font-family="monospace">BIGINT AUTO_INC</text>
+      <text x="1715" y="179" fill="#facc15" font-size="9" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- booking_id (LFK) -->
+      <rect x="1420" y="190" width="26" height="15" rx="3" fill="#38bdf8" />
+      <text x="1433" y="201" fill="#000000" font-size="9" font-weight="bold" text-anchor="middle">LFK</text>
+      <text x="1454" y="202" fill="#ffffff" font-size="11.5" font-family="monospace">booking_id</text>
+      <text x="1565" y="202" fill="#a1a1aa" font-size="10" font-family="monospace">BIGINT</text>
+      <text x="1715" y="202" fill="#e4e4e7" font-size="9" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- passenger_name -->
+      <text x="1454" y="225" fill="#ffffff" font-size="11.5" font-family="monospace">passenger_name</text>
+      <text x="1565" y="225" fill="#a1a1aa" font-size="10" font-family="monospace">VARCHAR(100)</text>
+      <text x="1715" y="225" fill="#e4e4e7" font-size="9" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- seat_number -->
+      <text x="1454" y="248" fill="#ffffff" font-size="11.5" font-family="monospace">seat_number</text>
+      <text x="1565" y="248" fill="#a1a1aa" font-size="10" font-family="monospace">VARCHAR(10)</text>
+      <text x="1715" y="248" fill="#e4e4e7" font-size="9" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- boarding_pass_number (UQ) -->
+      <rect x="1420" y="259" width="26" height="15" rx="3" fill="#4ade80" />
+      <text x="1433" y="270" fill="#000000" font-size="9" font-weight="bold" text-anchor="middle">UQ</text>
+      <text x="1454" y="271" fill="#ffffff" font-size="11.5" font-family="monospace">boarding_pass_number</text>
+      <text x="1565" y="271" fill="#a1a1aa" font-size="10" font-family="monospace">VARCHAR(50)</text>
+      <text x="1715" y="271" fill="#4ade80" font-size="9" font-family="monospace" text-anchor="end">UNIQUE, NN</text>
+
+      <!-- status -->
+      <text x="1454" y="294" fill="#ffffff" font-size="11.5" font-family="monospace">status</text>
+      <text x="1565" y="294" fill="#a1a1aa" font-size="10" font-family="monospace">VARCHAR(30)</text>
+      <text x="1715" y="294" fill="#e4e4e7" font-size="9" font-family="monospace" text-anchor="end">DEF: CHECKED_IN</text>
+
+      <!-- checked_in_at -->
+      <text x="1454" y="317" fill="#ffffff" font-size="11.5" font-family="monospace">checked_in_at</text>
+      <text x="1565" y="317" fill="#a1a1aa" font-size="10" font-family="monospace">DATETIME</text>
+      <text x="1715" y="317" fill="#e4e4e7" font-size="9" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <line x1="1410" y1="332" x2="1730" y2="332" stroke="#27272a" stroke-width="1" />
+      <text x="1570" y="350" fill="#a1a1aa" font-size="9" font-family="monospace" text-anchor="middle">Airport Check-In &amp; Digital Boarding</text>
+      <text x="1570" y="365" fill="#71717a" font-size="8.5" font-family="monospace" text-anchor="middle">Logical Link via Booking ID</text>
+    </g>
+  </g>
+
+  <!-- ==================================================================== -->
+  <!-- 5. flight_db (MySQL 8.0) -->
+  <!-- ==================================================================== -->
+  <g id="db-flight">
+    <rect x="50" y="585" width="870" height="420" rx="8" fill="#08080a" stroke="#ffffff" stroke-width="1.2" stroke-dasharray="6,4" />
+    <rect x="65" y="575" width="220" height="22" rx="4" fill="#18181b" stroke="#ffffff" stroke-width="1" />
+    <text x="75" y="590" fill="#38bdf8" font-size="11" font-weight="bold" font-family="monospace">DATABASE: flight_db</text>
+    <text x="810" y="602" fill="#71717a" font-size="10" font-family="monospace">flight-service (Port 8087)</text>
+
+    <!-- Table: aircrafts -->
+    <g id="table-aircrafts">
+      <rect x="70" y="615" width="370" height="270" rx="6" fill="#0f0f12" stroke="#ffffff" stroke-width="1.8" />
+      <rect x="70" y="615" width="370" height="34" rx="6" fill="#1c1c22" stroke="#ffffff" stroke-width="1" />
+      <text x="85" y="637" fill="#ffffff" font-size="13" font-weight="bold" font-family="monospace">TABLE: aircrafts</text>
+      <text x="425" y="637" fill="#a1a1aa" font-size="10" font-family="monospace" text-anchor="end">JPA: Aircraft</text>
+      <line x1="70" y1="649" x2="440" y2="649" stroke="#3f3f46" stroke-width="1" />
+
+      <!-- id (PK) -->
+      <rect x="80" y="657" width="26" height="15" rx="3" fill="#facc15" />
+      <text x="93" y="668" fill="#000000" font-size="9" font-weight="bold" text-anchor="middle">PK</text>
+      <text x="114" y="669" fill="#ffffff" font-size="11.5" font-weight="bold" font-family="monospace">id</text>
+      <text x="245" y="669" fill="#a1a1aa" font-size="10" font-family="monospace">BIGINT AUTO_INC</text>
+      <text x="425" y="669" fill="#facc15" font-size="9" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- aircraft_code (UQ) -->
+      <rect x="80" y="680" width="26" height="15" rx="3" fill="#4ade80" />
+      <text x="93" y="691" fill="#000000" font-size="9" font-weight="bold" text-anchor="middle">UQ</text>
+      <text x="114" y="692" fill="#ffffff" font-size="11.5" font-family="monospace">aircraft_code</text>
+      <text x="245" y="692" fill="#a1a1aa" font-size="10" font-family="monospace">VARCHAR(50)</text>
+      <text x="425" y="692" fill="#4ade80" font-size="9" font-family="monospace" text-anchor="end">UNIQUE, NN</text>
+
+      <!-- aircraft_name -->
+      <text x="114" y="715" fill="#ffffff" font-size="11.5" font-family="monospace">aircraft_name</text>
+      <text x="245" y="715" fill="#a1a1aa" font-size="10" font-family="monospace">VARCHAR(100)</text>
+      <text x="425" y="715" fill="#e4e4e7" font-size="9" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- manufacturer -->
+      <text x="114" y="738" fill="#ffffff" font-size="11.5" font-family="monospace">manufacturer</text>
+      <text x="245" y="738" fill="#a1a1aa" font-size="10" font-family="monospace">VARCHAR(100)</text>
+      <text x="425" y="738" fill="#e4e4e7" font-size="9" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- capacity -->
+      <text x="114" y="761" fill="#ffffff" font-size="11.5" font-family="monospace">capacity</text>
+      <text x="245" y="761" fill="#a1a1aa" font-size="10" font-family="monospace">INT</text>
+      <text x="425" y="761" fill="#e4e4e7" font-size="9" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- status -->
+      <text x="114" y="784" fill="#ffffff" font-size="11.5" font-family="monospace">status</text>
+      <text x="245" y="784" fill="#a1a1aa" font-size="10" font-family="monospace">VARCHAR(20) [ENUM]</text>
+      <text x="425" y="784" fill="#e4e4e7" font-size="9" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- total_rows -->
+      <text x="114" y="807" fill="#ffffff" font-size="11.5" font-family="monospace">total_rows</text>
+      <text x="245" y="807" fill="#a1a1aa" font-size="10" font-family="monospace">INT</text>
+      <text x="425" y="807" fill="#71717a" font-size="9" font-family="monospace" text-anchor="end">NULLABLE</text>
+
+      <!-- seats_per_row -->
+      <text x="114" y="830" fill="#ffffff" font-size="11.5" font-family="monospace">seats_per_row</text>
+      <text x="245" y="830" fill="#a1a1aa" font-size="10" font-family="monospace">INT</text>
+      <text x="425" y="830" fill="#71717a" font-size="9" font-family="monospace" text-anchor="end">NULLABLE</text>
+    </g>
+
+    <!-- Table: flights -->
+    <g id="table-flights">
+      <rect x="475" y="615" width="425" height="375" rx="6" fill="#0f0f12" stroke="#ffffff" stroke-width="1.8" />
+      <rect x="475" y="615" width="425" height="34" rx="6" fill="#1c1c22" stroke="#ffffff" stroke-width="1" />
+      <text x="490" y="637" fill="#ffffff" font-size="13" font-weight="bold" font-family="monospace">TABLE: flights</text>
+      <text x="885" y="637" fill="#a1a1aa" font-size="10" font-family="monospace" text-anchor="end">JPA: Flight</text>
+      <line x1="475" y1="649" x2="900" y2="649" stroke="#3f3f46" stroke-width="1" />
+
+      <!-- id (PK) -->
+      <rect x="485" y="657" width="26" height="15" rx="3" fill="#facc15" />
+      <text x="498" y="668" fill="#000000" font-size="9" font-weight="bold" text-anchor="middle">PK</text>
+      <text x="519" y="669" fill="#ffffff" font-size="11.5" font-weight="bold" font-family="monospace">id</text>
+      <text x="660" y="669" fill="#a1a1aa" font-size="10" font-family="monospace">BIGINT AUTO_INC</text>
+      <text x="885" y="669" fill="#facc15" font-size="9" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- flight_number (UQ) -->
+      <rect x="485" y="680" width="26" height="15" rx="3" fill="#4ade80" />
+      <text x="498" y="691" fill="#000000" font-size="9" font-weight="bold" text-anchor="middle">UQ</text>
+      <text x="519" y="692" fill="#ffffff" font-size="11.5" font-family="monospace">flight_number</text>
+      <text x="660" y="692" fill="#a1a1aa" font-size="10" font-family="monospace">VARCHAR(50)</text>
+      <text x="885" y="692" fill="#4ade80" font-size="9" font-family="monospace" text-anchor="end">UNIQUE, NN</text>
+
+      <!-- airline_name -->
+      <text x="519" y="715" fill="#ffffff" font-size="11.5" font-family="monospace">airline_name</text>
+      <text x="660" y="715" fill="#a1a1aa" font-size="10" font-family="monospace">VARCHAR(100)</text>
+      <text x="885" y="715" fill="#e4e4e7" font-size="9" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- source -->
+      <text x="519" y="738" fill="#ffffff" font-size="11.5" font-family="monospace">source [IATA / City]</text>
+      <text x="660" y="738" fill="#a1a1aa" font-size="10" font-family="monospace">VARCHAR(50)</text>
+      <text x="885" y="738" fill="#e4e4e7" font-size="9" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- destination -->
+      <text x="519" y="761" fill="#ffffff" font-size="11.5" font-family="monospace">destination [IATA]</text>
+      <text x="660" y="761" fill="#a1a1aa" font-size="10" font-family="monospace">VARCHAR(50)</text>
+      <text x="885" y="761" fill="#e4e4e7" font-size="9" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- departure_time -->
+      <text x="519" y="784" fill="#ffffff" font-size="11.5" font-family="monospace">departure_time</text>
+      <text x="660" y="784" fill="#a1a1aa" font-size="10" font-family="monospace">DATETIME</text>
+      <text x="885" y="784" fill="#e4e4e7" font-size="9" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- arrival_time -->
+      <text x="519" y="807" fill="#ffffff" font-size="11.5" font-family="monospace">arrival_time</text>
+      <text x="660" y="807" fill="#a1a1aa" font-size="10" font-family="monospace">DATETIME</text>
+      <text x="885" y="807" fill="#e4e4e7" font-size="9" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- total_seats -->
+      <text x="519" y="830" fill="#ffffff" font-size="11.5" font-family="monospace">total_seats</text>
+      <text x="660" y="830" fill="#a1a1aa" font-size="10" font-family="monospace">INT</text>
+      <text x="885" y="830" fill="#e4e4e7" font-size="9" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- available_seats -->
+      <text x="519" y="853" fill="#ffffff" font-size="11.5" font-family="monospace">available_seats</text>
+      <text x="660" y="853" fill="#a1a1aa" font-size="10" font-family="monospace">INT</text>
+      <text x="885" y="853" fill="#e4e4e7" font-size="9" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- base_fare -->
+      <text x="519" y="876" fill="#ffffff" font-size="11.5" font-family="monospace">base_fare</text>
+      <text x="660" y="876" fill="#a1a1aa" font-size="10" font-family="monospace">DECIMAL(12,2)</text>
+      <text x="885" y="876" fill="#e4e4e7" font-size="9" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- status -->
+      <text x="519" y="899" fill="#ffffff" font-size="11.5" font-family="monospace">status</text>
+      <text x="660" y="899" fill="#a1a1aa" font-size="10" font-family="monospace">VARCHAR(20) [ENUM]</text>
+      <text x="885" y="899" fill="#e4e4e7" font-size="9" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- aircraft_id (FK) -->
+      <rect x="485" y="910" width="26" height="15" rx="3" fill="#ffffff" />
+      <text x="498" y="921" fill="#000000" font-size="9" font-weight="bold" text-anchor="middle">FK</text>
+      <text x="519" y="922" fill="#ffffff" font-size="11.5" font-family="monospace">aircraft_id</text>
+      <text x="660" y="922" fill="#a1a1aa" font-size="10" font-family="monospace">BIGINT</text>
+      <text x="885" y="922" fill="#ffffff" font-size="9" font-family="monospace" text-anchor="end">FK (AIRCRAFT)</text>
+    </g>
+  </g>
+
+  <!-- ==================================================================== -->
+  <!-- 6. booking_db (MySQL 8.0) -->
+  <!-- ==================================================================== -->
+  <g id="db-booking">
+    <rect x="960" y="585" width="790" height="420" rx="8" fill="#08080a" stroke="#ffffff" stroke-width="1.2" stroke-dasharray="6,4" />
+    <rect x="975" y="575" width="220" height="22" rx="4" fill="#18181b" stroke="#ffffff" stroke-width="1" />
+    <text x="985" y="590" fill="#38bdf8" font-size="11" font-weight="bold" font-family="monospace">DATABASE: booking_db</text>
+    <text x="1660" y="602" fill="#71717a" font-size="10" font-family="monospace">booking-service (8088)</text>
+
+    <!-- Table: bookings -->
+    <g id="table-bookings">
+      <rect x="980" y="615" width="375" height="295" rx="6" fill="#0f0f12" stroke="#ffffff" stroke-width="1.8" />
+      <rect x="980" y="615" width="375" height="34" rx="6" fill="#1c1c22" stroke="#ffffff" stroke-width="1" />
+      <text x="995" y="637" fill="#ffffff" font-size="13" font-weight="bold" font-family="monospace">TABLE: bookings</text>
+      <text x="1340" y="637" fill="#a1a1aa" font-size="10" font-family="monospace" text-anchor="end">JPA: Booking</text>
+      <line x1="980" y1="649" x2="1355" y2="649" stroke="#3f3f46" stroke-width="1" />
+
+      <!-- booking_id (PK) -->
+      <rect x="990" y="657" width="26" height="15" rx="3" fill="#facc15" />
+      <text x="1003" y="668" fill="#000000" font-size="9" font-weight="bold" text-anchor="middle">PK</text>
+      <text x="1024" y="669" fill="#ffffff" font-size="11.5" font-weight="bold" font-family="monospace">booking_id</text>
+      <text x="1150" y="669" fill="#a1a1aa" font-size="10" font-family="monospace">BIGINT AUTO_INC</text>
+      <text x="1340" y="669" fill="#facc15" font-size="9" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- pnr (UQ) -->
+      <rect x="990" y="680" width="26" height="15" rx="3" fill="#4ade80" />
+      <text x="1003" y="691" fill="#000000" font-size="9" font-weight="bold" text-anchor="middle">UQ</text>
+      <text x="1024" y="692" fill="#ffffff" font-size="11.5" font-family="monospace">pnr</text>
+      <text x="1150" y="692" fill="#a1a1aa" font-size="10" font-family="monospace">VARCHAR(20)</text>
+      <text x="1340" y="692" fill="#4ade80" font-size="9" font-family="monospace" text-anchor="end">UNIQUE, NN</text>
+
+      <!-- user_id (LFK) -->
+      <rect x="990" y="703" width="26" height="15" rx="3" fill="#38bdf8" />
+      <text x="1003" y="714" fill="#000000" font-size="9" font-weight="bold" text-anchor="middle">LFK</text>
+      <text x="1024" y="715" fill="#ffffff" font-size="11.5" font-family="monospace">user_id</text>
+      <text x="1150" y="715" fill="#a1a1aa" font-size="10" font-family="monospace">BIGINT</text>
+      <text x="1340" y="715" fill="#e4e4e7" font-size="9" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- flight_id (LFK) -->
+      <rect x="990" y="726" width="26" height="15" rx="3" fill="#38bdf8" />
+      <text x="1003" y="737" fill="#000000" font-size="9" font-weight="bold" text-anchor="middle">LFK</text>
+      <text x="1024" y="738" fill="#ffffff" font-size="11.5" font-family="monospace">flight_id</text>
+      <text x="1150" y="738" fill="#a1a1aa" font-size="10" font-family="monospace">BIGINT</text>
+      <text x="1340" y="738" fill="#e4e4e7" font-size="9" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- booking_date -->
+      <text x="1024" y="761" fill="#ffffff" font-size="11.5" font-family="monospace">booking_date</text>
+      <text x="1150" y="761" fill="#a1a1aa" font-size="10" font-family="monospace">DATETIME</text>
+      <text x="1340" y="761" fill="#e4e4e7" font-size="9" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- total_fare -->
+      <text x="1024" y="784" fill="#ffffff" font-size="11.5" font-family="monospace">total_fare</text>
+      <text x="1150" y="784" fill="#a1a1aa" font-size="10" font-family="monospace">DECIMAL(12,2)</text>
+      <text x="1340" y="784" fill="#e4e4e7" font-size="9" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- status -->
+      <text x="1024" y="807" fill="#ffffff" font-size="11.5" font-family="monospace">status</text>
+      <text x="1150" y="807" fill="#a1a1aa" font-size="10" font-family="monospace">VARCHAR(20) [ENUM]</text>
+      <text x="1340" y="807" fill="#e4e4e7" font-size="9" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <line x1="980" y1="822" x2="1355" y2="822" stroke="#27272a" stroke-width="1" />
+      <text x="1167" y="842" fill="#a1a1aa" font-size="9" font-family="monospace" text-anchor="middle">Passenger Name Record (PNR) Master</text>
+      <text x="1167" y="857" fill="#71717a" font-size="8.5" font-family="monospace" text-anchor="middle">CascadeType.ALL to Passenger Entity</text>
+    </g>
+
+    <!-- Table: passengers -->
+    <g id="table-passengers">
+      <rect x="1385" y="615" width="350" height="270" rx="6" fill="#0f0f12" stroke="#ffffff" stroke-width="1.8" />
+      <rect x="1385" y="615" width="350" height="34" rx="6" fill="#1c1c22" stroke="#ffffff" stroke-width="1" />
+      <text x="1400" y="637" fill="#ffffff" font-size="13" font-weight="bold" font-family="monospace">TABLE: passengers</text>
+      <text x="1720" y="637" fill="#a1a1aa" font-size="10" font-family="monospace" text-anchor="end">JPA: Passenger</text>
+      <line x1="1385" y1="649" x2="1735" y2="649" stroke="#3f3f46" stroke-width="1" />
+
+      <!-- passenger_id (PK) -->
+      <rect x="1395" y="657" width="26" height="15" rx="3" fill="#facc15" />
+      <text x="1408" y="668" fill="#000000" font-size="9" font-weight="bold" text-anchor="middle">PK</text>
+      <text x="1429" y="669" fill="#ffffff" font-size="11.5" font-weight="bold" font-family="monospace">passenger_id</text>
+      <text x="1560" y="669" fill="#a1a1aa" font-size="10" font-family="monospace">BIGINT AUTO_INC</text>
+      <text x="1720" y="669" fill="#facc15" font-size="9" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- booking_id (FK) -->
+      <rect x="1395" y="680" width="26" height="15" rx="3" fill="#ffffff" />
+      <text x="1408" y="691" fill="#000000" font-size="9" font-weight="bold" text-anchor="middle">FK</text>
+      <text x="1429" y="692" fill="#ffffff" font-size="11.5" font-family="monospace">booking_id</text>
+      <text x="1560" y="692" fill="#a1a1aa" font-size="10" font-family="monospace">BIGINT</text>
+      <text x="1720" y="692" fill="#ffffff" font-size="9" font-family="monospace" text-anchor="end">FK (BOOKING)</text>
+
+      <!-- first_name -->
+      <text x="1429" y="715" fill="#ffffff" font-size="11.5" font-family="monospace">first_name</text>
+      <text x="1560" y="715" fill="#a1a1aa" font-size="10" font-family="monospace">VARCHAR(50)</text>
+      <text x="1720" y="715" fill="#e4e4e7" font-size="9" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- last_name -->
+      <text x="1429" y="738" fill="#ffffff" font-size="11.5" font-family="monospace">last_name</text>
+      <text x="1560" y="738" fill="#a1a1aa" font-size="10" font-family="monospace">VARCHAR(50)</text>
+      <text x="1720" y="738" fill="#e4e4e7" font-size="9" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- age -->
+      <text x="1429" y="761" fill="#ffffff" font-size="11.5" font-family="monospace">age</text>
+      <text x="1560" y="761" fill="#a1a1aa" font-size="10" font-family="monospace">INT</text>
+      <text x="1720" y="761" fill="#e4e4e7" font-size="9" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- gender -->
+      <text x="1429" y="784" fill="#ffffff" font-size="11.5" font-family="monospace">gender</text>
+      <text x="1560" y="784" fill="#a1a1aa" font-size="10" font-family="monospace">VARCHAR(10)</text>
+      <text x="1720" y="784" fill="#e4e4e7" font-size="9" font-family="monospace" text-anchor="end">NOT NULL</text>
+
+      <!-- seat_number -->
+      <text x="1429" y="807" fill="#ffffff" font-size="11.5" font-family="monospace">seat_number</text>
+      <text x="1560" y="807" fill="#a1a1aa" font-size="10" font-family="monospace">VARCHAR(10)</text>
+      <text x="1720" y="807" fill="#71717a" font-size="9" font-family="monospace" text-anchor="end">NULLABLE</text>
+    </g>
+  </g>
+
+  <!-- ==================================================================== -->
+  <!-- RELATIONSHIP CONNECTORS & CROW'S FOOT LINES -->
+  <!-- ==================================================================== -->
+  <!-- 1. Physical FK: credentials (1) -> refresh_tokens (0..*) within aerobook_auth_db -->
+  <g id="rel-credentials-refreshtokens">
+    <path d="M 265 335 L 265 380" fill="none" stroke="#ffffff" stroke-width="2.2"
+          marker-start="url(#one-and-only-one)" marker-end="url(#zero-or-many)" />
+    <rect x="275" y="348" width="85" height="18" rx="3" fill="#18181b" stroke="#ffffff" stroke-width="0.8" />
+    <text x="317" y="361" fill="#ffffff" font-size="9" font-family="monospace" text-anchor="middle">1 : 0..* (FK)</text>
+  </g>
+
+  <!-- 2. Physical FK: aircrafts (1) -> flights (0..*) within flight_db -->
+  <g id="rel-aircrafts-flights">
+    <path d="M 440 720 L 475 720" fill="none" stroke="#ffffff" stroke-width="2.2"
+          marker-start="url(#one-and-only-one)" marker-end="url(#zero-or-many)" />
+    <rect x="443" y="695" width="28" height="16" rx="3" fill="#18181b" stroke="#ffffff" stroke-width="0.8" />
+    <text x="457" y="707" fill="#ffffff" font-size="9" font-family="monospace" text-anchor="middle">1:N</text>
+  </g>
+
+  <!-- 3. Physical FK: bookings (1) -> passengers (1..*) within booking_db (Composition) -->
+  <g id="rel-bookings-passengers">
+    <path d="M 1355 720 L 1385 720" fill="none" stroke="#ffffff" stroke-width="2.2"
+          marker-start="url(#one-and-only-one)" marker-end="url(#one-or-many)" />
+    <rect x="1357" y="695" width="28" height="16" rx="3" fill="#18181b" stroke="#ffffff" stroke-width="0.8" />
+    <text x="1371" y="707" fill="#ffffff" font-size="9" font-family="monospace" text-anchor="middle">1:M</text>
+  </g>
+
+  <!-- 4. Logical Cross-Service: users (1) <..> (1) credentials (auth <-> user) -->
+  <g id="rel-logical-user-credential">
+    <path d="M 540 180 L 460 180" fill="none" stroke="#38bdf8" stroke-width="2" stroke-dasharray="6,4"
+          marker-start="url(#one-and-only-one)" marker-end="url(#one-and-only-one)" />
+    <rect x="473" y="165" width="54" height="18" rx="3" fill="#0c2d48" stroke="#38bdf8" stroke-width="1" />
+    <text x="500" y="178" fill="#38bdf8" font-size="9" font-weight="bold" font-family="monospace" text-anchor="middle">1:1 LFK</text>
+  </g>
+
+  <!-- 5. Logical Cross-Service: flights (1) <..> (1) fares (flight <-> fare) -->
+  <g id="rel-logical-flight-fare">
+    <!-- From flights top (X: 850, Y: 615) up to fare (X: 1050, Y: 455) -->
+    <path d="M 850 615 L 850 540 L 1100 540 L 1100 455" fill="none" stroke="#38bdf8" stroke-width="2" stroke-dasharray="6,4"
+          marker-start="url(#one-and-only-one)" marker-end="url(#one-and-only-one)" />
+    <rect x="940" y="530" width="80" height="20" rx="3" fill="#0c2d48" stroke="#38bdf8" stroke-width="1" />
+    <text x="980" y="544" fill="#38bdf8" font-size="9.5" font-weight="bold" font-family="monospace" text-anchor="middle">1:1 LFK (flightId)</text>
+  </g>
+
+  <!-- 6. Logical Cross-Service: flights (1) <..> (0..*) bookings (flight <-> booking) -->
+  <g id="rel-logical-flight-booking">
+    <path d="M 900 730 L 980 730" fill="none" stroke="#38bdf8" stroke-width="2" stroke-dasharray="6,4"
+          marker-start="url(#one-and-only-one)" marker-end="url(#zero-or-many)" />
+    <rect x="918" y="708" width="44" height="18" rx="3" fill="#0c2d48" stroke="#38bdf8" stroke-width="1" />
+    <text x="940" y="721" fill="#38bdf8" font-size="9" font-weight="bold" font-family="monospace" text-anchor="middle">1:N LFK</text>
+  </g>
+
+  <!-- 7. Logical Cross-Service: users (1) <..> (0..*) bookings (user <-> booking) -->
+  <g id="rel-logical-user-booking">
+    <!-- From users bottom-right (X: 930, Y: 300) to bookings top-left (X: 1040, Y: 615) -->
+    <path d="M 930 250 L 965 250 L 965 520 L 1020 520 L 1020 615" fill="none" stroke="#38bdf8" stroke-width="2" stroke-dasharray="6,4"
+          marker-start="url(#one-and-only-one)" marker-end="url(#zero-or-many)" />
+    <rect x="945" y="475" width="80" height="20" rx="3" fill="#0c2d48" stroke="#38bdf8" stroke-width="1" />
+    <text x="985" y="489" fill="#38bdf8" font-size="9.5" font-weight="bold" font-family="monospace" text-anchor="middle">1:N LFK (userId)</text>
+  </g>
+
+  <!-- 8. Logical Cross-Service: bookings (1) <..> (0..*) check_in (booking <-> check-in) -->
+  <g id="rel-logical-booking-checkin">
+    <!-- From bookings top-right (X: 1250, Y: 615) up to check_in bottom (X: 1470, Y: 415) -->
+    <path d="M 1250 615 L 1250 510 L 1470 510 L 1470 415" fill="none" stroke="#38bdf8" stroke-width="2" stroke-dasharray="6,4"
+          marker-start="url(#one-and-only-one)" marker-end="url(#zero-or-many)" />
+    <rect x="1320" y="500" width="95" height="20" rx="3" fill="#0c2d48" stroke="#38bdf8" stroke-width="1" />
+    <text x="1367" y="514" fill="#38bdf8" font-size="9.5" font-weight="bold" font-family="monospace" text-anchor="middle">1:N LFK (bookingId)</text>
+  </g>
+
+  <!-- ==================================================================== -->
+  <!-- LEGEND & ARCHITECTURAL ANNOTATION BAR -->
+  <!-- ==================================================================== -->
+  <g id="legend-container">
+    <rect x="50" y="1030" width="1700" height="205" rx="8" fill="#0a0a0d" stroke="#ffffff" stroke-width="1.2" />
+    
+    <!-- Legend Header -->
+    <rect x="50" y="1030" width="1700" height="30" rx="8" fill="#18181b" stroke="#ffffff" stroke-width="0.8" />
+    <text x="70" y="1051" fill="#ffffff" font-size="12.5" font-weight="bold" font-family="monospace">
+      ER DIAGRAM NOTATION LEGEND &amp; MICROSERVICES RELATIONAL INTEGRITY ARCHITECTURE
+    </text>
+    <text x="1730" y="1051" fill="#a1a1aa" font-size="11" font-family="monospace" text-anchor="end">
+      AeroBook Engineering Standard • ISO/IEC 9075 Relational Specification
+    </text>
+
+    <!-- Column 1: Crow's Foot Symbols -->
+    <g transform="translate(70, 1075)">
+      <text x="0" y="14" fill="#ffffff" font-size="11.5" font-weight="bold" font-family="monospace">CROW'S FOOT CARDINALITY NOTATION:</text>
+      
+      <!-- One and only one -->
+      <line x1="10" y1="36" x2="60" y2="36" stroke="#ffffff" stroke-width="2" />
+      <line x1="30" y1="28" x2="30" y2="44" stroke="#ffffff" stroke-width="2" />
+      <line x1="38" y1="28" x2="38" y2="44" stroke="#ffffff" stroke-width="2" />
+      <text x="75" y="40" fill="#e4e4e7" font-size="10.5" font-family="monospace">One and Only One (1:1 Exactly)</text>
+
+      <!-- Zero or Many -->
+      <line x1="10" y1="64" x2="60" y2="64" stroke="#ffffff" stroke-width="2" />
+      <circle cx="28" cy="64" r="4" fill="#000000" stroke="#ffffff" stroke-width="1.8" />
+      <line x1="42" y1="64" x2="58" y2="56" stroke="#ffffff" stroke-width="2" />
+      <line x1="42" y1="64" x2="58" y2="64" stroke="#ffffff" stroke-width="2" />
+      <line x1="42" y1="64" x2="58" y2="72" stroke="#ffffff" stroke-width="2" />
+      <text x="75" y="68" fill="#e4e4e7" font-size="10.5" font-family="monospace">Zero or Many (0..* Optional List)</text>
+
+      <!-- One or Many -->
+      <line x1="10" y1="92" x2="60" y2="92" stroke="#ffffff" stroke-width="2" />
+      <line x1="28" y1="84" x2="28" y2="100" stroke="#ffffff" stroke-width="2" />
+      <line x1="42" y1="92" x2="58" y2="84" stroke="#ffffff" stroke-width="2" />
+      <line x1="42" y1="92" x2="58" y2="92" stroke="#ffffff" stroke-width="2" />
+      <line x1="42" y1="92" x2="58" y2="100" stroke="#ffffff" stroke-width="2" />
+      <text x="75" y="96" fill="#e4e4e7" font-size="10.5" font-family="monospace">One or Many (1..* Required At Least 1)</text>
+
+      <!-- Zero or One -->
+      <line x1="10" y1="120" x2="60" y2="120" stroke="#ffffff" stroke-width="2" />
+      <circle cx="28" cy="120" r="4" fill="#000000" stroke="#ffffff" stroke-width="1.8" />
+      <line x1="45" y1="112" x2="45" y2="128" stroke="#ffffff" stroke-width="2" />
+      <text x="75" y="124" fill="#e4e4e7" font-size="10.5" font-family="monospace">Zero or One (0..1 Optional 1:1)</text>
+    </g>
+
+    <!-- Column 2: Key Badges -->
+    <g transform="translate(520, 1075)">
+      <text x="0" y="14" fill="#ffffff" font-size="11.5" font-weight="bold" font-family="monospace">ATTRIBUTE BADGE TAXONOMY:</text>
+
+      <rect x="0" y="28" width="32" height="16" rx="3" fill="#facc15" />
+      <text x="16" y="40" fill="#000000" font-size="9.5" font-weight="bold" text-anchor="middle">PK</text>
+      <text x="42" y="40" fill="#ffffff" font-size="10.5" font-family="monospace"><tspan font-weight="bold">Primary Key:</tspan> Unique identifier, indexed B-Tree, clustered index.</text>
+
+      <rect x="0" y="56" width="32" height="16" rx="3" fill="#ffffff" />
+      <text x="16" y="68" fill="#000000" font-size="9.5" font-weight="bold" text-anchor="middle">FK</text>
+      <text x="42" y="68" fill="#ffffff" font-size="10.5" font-family="monospace"><tspan font-weight="bold">Physical Foreign Key:</tspan> Intra-DB constraint, referential integrity.</text>
+
+      <rect x="0" y="84" width="32" height="16" rx="3" fill="#38bdf8" />
+      <text x="16" y="96" fill="#000000" font-size="9.5" font-weight="bold" text-anchor="middle">LFK</text>
+      <text x="42" y="96" fill="#38bdf8" font-size="10.5" font-family="monospace"><tspan font-weight="bold">Logical Foreign Key:</tspan> Inter-microservice reference across databases.</text>
+
+      <rect x="0" y="112" width="32" height="16" rx="3" fill="#4ade80" />
+      <text x="16" y="124" fill="#000000" font-size="9.5" font-weight="bold" text-anchor="middle">UQ</text>
+      <text x="42" y="124" fill="#ffffff" font-size="10.5" font-family="monospace"><tspan font-weight="bold">Unique Constraint:</tspan> No duplicate entries permitted (email, pnr, etc.).</text>
+    </g>
+
+    <!-- Column 3: Microservice Database Isolation Rules -->
+    <g transform="translate(1120, 1075)">
+      <text x="0" y="14" fill="#ffffff" font-size="11.5" font-weight="bold" font-family="monospace">DATABASE-PER-SERVICE ARCHITECTURAL RULES:</text>
+
+      <line x1="0" y1="36" x2="40" y2="36" stroke="#ffffff" stroke-width="2.5" />
+      <text x="50" y="40" fill="#ffffff" font-size="10.5" font-family="monospace"><tspan font-weight="bold">Solid White Line:</tspan> Intra-DB physical relationship enforced by MySQL InnoDB.</text>
+
+      <line x1="0" y1="64" x2="40" y2="64" stroke="#38bdf8" stroke-width="2" stroke-dasharray="6,3" />
+      <text x="50" y="68" fill="#38bdf8" font-size="10.5" font-family="monospace"><tspan font-weight="bold">Dashed Cyan Line:</tspan> Logical cross-service link maintained at API layer via Feign.</text>
+
+      <text x="0" y="98" fill="#a1a1aa" font-size="10" font-family="monospace">• No distributed 2-Phase-Commit (2PC) transactions across service schemas.</text>
+      <text x="0" y="116" fill="#a1a1aa" font-size="10" font-family="monospace">• Relational schemas normalized to 3NF; zero unmanaged data anomalies.</text>
+      <text x="0" y="134" fill="#a1a1aa" font-size="10" font-family="monospace">• Each database independently scalable, backup-capable, and failover-isolated.</text>
+    </g>
+  </g>
+</svg>
+      </div>
+      <div class="absolute bottom-3 left-3 bg-zinc-950/80 backdrop-blur border border-zinc-700 px-3 py-1.5 rounded text-xs text-zinc-400 font-mono">
+        💡 Click on any table box to inspect complete MySQL DDL, indexes, and JPA entity code.
+      </div>
+    </div>
+
+    <!-- Right: Entity & Table Inspector Drawer (1 Column) -->
+    <div class="xl:col-span-1 border border-zinc-800 rounded-xl bg-zinc-950 p-4 flex flex-col gap-4 shadow-xl">
+      <div class="border-b border-zinc-800 pb-3 flex items-center justify-between">
+        <div>
+          <span id="inspector-badge" class="text-[10px] uppercase font-mono tracking-wider px-2 py-0.5 rounded bg-blue-900/60 text-blue-300 border border-blue-600">Database Table</span>
+          <h2 id="inspector-title" class="text-xl font-bold font-mono text-white mt-1">Select a Table</h2>
+        </div>
+        <span id="inspector-schema" class="text-xs text-zinc-500 font-mono"></span>
+      </div>
+
+      <!-- Detail Body -->
+      <div id="inspector-body" class="flex-1 overflow-y-auto flex flex-col gap-3 text-xs">
+        <p class="text-zinc-400 leading-relaxed">
+          Click any table in the diagram (such as <code class="text-sky-400">credentials</code>, <code class="text-sky-400">flights</code>, <code class="text-sky-400">bookings</code>, or <code class="text-sky-400">passengers</code>) to view its primary keys, foreign key constraints, column data types, relationships, and production DDL.
+        </p>
+
+        <div class="border border-zinc-800 rounded-lg p-3 bg-zinc-900/50">
+          <h3 class="font-bold text-zinc-200 mb-2 font-mono">System Database Inventory</h3>
+          <ul class="space-y-1 text-zinc-400 font-mono text-[11px]">
+            <li>• <strong class="text-white">aerobook_auth_db:</strong> 2 tables (credentials, refresh_tokens)</li>
+            <li>• <strong class="text-white">aerobook_user_db:</strong> 1 table (users)</li>
+            <li>• <strong class="text-white">flight_db:</strong> 2 tables (aircrafts, flights)</li>
+            <li>• <strong class="text-white">fare_db:</strong> 1 table (fares)</li>
+            <li>• <strong class="text-white">booking_db:</strong> 2 tables (bookings, passengers)</li>
+            <li>• <strong class="text-white">checkin_db:</strong> 1 table (check_in)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Zoom & Pan
+    let scale = 1.0;
+    const svgEl = document.querySelector('#svg-wrapper svg');
+    
+    function zoom(factor) {
+      scale *= factor;
+      scale = Math.min(Math.max(0.5, scale), 3.0);
+      svgEl.style.transform = `scale(${scale})`;
+      svgEl.style.transformOrigin = 'top left';
+    }
+
+    function resetZoom() {
+      scale = 1.0;
+      svgEl.style.transform = 'scale(1.0)';
+    }
+
+    // Database Filters
+    function filterDatabase(dbKey) {
+      // Update buttons
+      document.querySelectorAll('[id^="btn-"]').forEach(btn => {
+        btn.className = 'px-2 py-1 rounded text-zinc-300 hover:text-white transition';
+      });
+      document.getElementById('btn-' + dbKey).className = 'px-2 py-1 rounded bg-white text-black font-bold transition';
+
+      const groups = ['auth', 'user', 'flight', 'fare', 'booking', 'checkin'];
+      groups.forEach(g => {
+        const el = document.getElementById('db-' + g);
+        if (el) {
+          if (dbKey === 'all' || dbKey === g) {
+            el.classList.remove('dimmed');
+          } else {
+            el.classList.add('dimmed');
+          }
+        }
+      });
+    }
+
+    // Table Database Meta Dictionary
+    const tableMetadata = {
+      credentials: {
+        table: 'credentials',
+        schema: 'aerobook_auth_db',
+        service: 'auth-service (Port 8082)',
+        pk: 'credential_id (BIGINT AUTO_INCREMENT)',
+        relations: '1:N physical with refresh_tokens (FK: credential_id); 1:1 logical with users (LFK: user_id)',
+        description: 'Houses customer and administrator login credentials, security roles, and 60-character irreversible BCrypt password hashes. Decoupled from personal demographics for maximum security.',
+        columns: [
+          { name: 'credential_id', type: 'BIGINT', key: 'PK', nullable: 'NO', extra: 'AUTO_INCREMENT' },
+          { name: 'user_id', type: 'BIGINT', key: 'LFK', nullable: 'NO', extra: 'Points to users.user_id' },
+          { name: 'email', type: 'VARCHAR(100)', key: 'UQ', nullable: 'NO', extra: 'Unique login handle' },
+          { name: 'password', type: 'VARCHAR(255)', key: '-', nullable: 'NO', extra: 'BCrypt (12 salt rounds)' },
+          { name: 'role', type: 'VARCHAR(50)', key: '-', nullable: 'NO', extra: 'ENUM: ROLE_USER, ROLE_ADMIN' },
+          { name: 'created_at', type: 'DATETIME', key: '-', nullable: 'NO', extra: 'Audit timestamp' },
+          { name: 'updated_at', type: 'DATETIME', key: '-', nullable: 'NO', extra: 'Audit timestamp' }
+        ],
+        ddl: `CREATE TABLE credentials (
+  credential_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  user_id BIGINT NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  role VARCHAR(50) NOT NULL,
+  created_at DATETIME NOT NULL,
+  updated_at DATETIME NOT NULL,
+  INDEX idx_email (email)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`
+      },
+      refresh_tokens: {
+        table: 'refresh_tokens',
+        schema: 'aerobook_auth_db',
+        service: 'auth-service (Port 8082)',
+        pk: 'id (BIGINT AUTO_INCREMENT)',
+        relations: 'N:1 physical with credentials (FOREIGN KEY credential_id REFERENCES credentials(credential_id))',
+        description: 'Stores cryptographically secure UUID refresh tokens for persistent mobile and web authentication sessions with automatic token rotation.',
+        columns: [
+          { name: 'id', type: 'BIGINT', key: 'PK', nullable: 'NO', extra: 'AUTO_INCREMENT' },
+          { name: 'token', type: 'VARCHAR(255)', key: 'UQ', nullable: 'NO', extra: 'UUID v4 Token String' },
+          { name: 'expiry_date', type: 'DATETIME', key: '-', nullable: 'NO', extra: 'Token expiration instant' },
+          { name: 'credential_id', type: 'BIGINT', key: 'FK', nullable: 'NO', extra: 'REFERENCES credentials' }
+        ],
+        ddl: `CREATE TABLE refresh_tokens (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  token VARCHAR(255) NOT NULL UNIQUE,
+  expiry_date DATETIME NOT NULL,
+  credential_id BIGINT NOT NULL,
+  CONSTRAINT fk_token_credential 
+    FOREIGN KEY (credential_id) REFERENCES credentials(credential_id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`
+      },
+      users: {
+        table: 'users',
+        schema: 'aerobook_user_db',
+        service: 'user-service (Port 8084)',
+        pk: 'user_id (BIGINT AUTO_INCREMENT)',
+        relations: '1:1 logical with credentials (user_id); 1:N logical with bookings (user_id)',
+        description: 'Customer master demographic registry containing real customer names, verified contact coordinates, nationality, and birth dates.',
+        columns: [
+          { name: 'user_id', type: 'BIGINT', key: 'PK', nullable: 'NO', extra: 'AUTO_INCREMENT' },
+          { name: 'first_name', type: 'VARCHAR(50)', key: '-', nullable: 'NO', extra: 'Customer given name' },
+          { name: 'last_name', type: 'VARCHAR(50)', key: '-', nullable: 'NO', extra: 'Family surname' },
+          { name: 'email', type: 'VARCHAR(100)', key: 'UQ', nullable: 'NO', extra: 'Indexed email address' },
+          { name: 'phone_number', type: 'VARCHAR(15)', key: 'UQ', nullable: 'NO', extra: 'Mobile phone number' },
+          { name: 'date_of_birth', type: 'DATE', key: '-', nullable: 'YES', extra: 'Identity verification' },
+          { name: 'nationality', type: 'VARCHAR(50)', key: '-', nullable: 'YES', extra: 'Travel passport country' },
+          { name: 'role', type: 'VARCHAR(50)', key: '-', nullable: 'NO', extra: 'DEFAULT ROLE_USER' },
+          { name: 'created_at', type: 'DATETIME', key: '-', nullable: 'NO', extra: 'Creation instant' },
+          { name: 'updated_at', type: 'DATETIME', key: '-', nullable: 'NO', extra: 'Modification instant' }
+        ],
+        ddl: `CREATE TABLE users (
+  user_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  first_name VARCHAR(50) NOT NULL,
+  last_name VARCHAR(50) NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  phone_number VARCHAR(15) NOT NULL UNIQUE,
+  date_of_birth DATE NULL,
+  nationality VARCHAR(50) NULL,
+  role VARCHAR(50) NOT NULL DEFAULT 'ROLE_USER',
+  created_at DATETIME NOT NULL,
+  updated_at DATETIME NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`
+      },
+      aircrafts: {
+        table: 'aircrafts',
+        schema: 'flight_db',
+        service: 'flight-service (Port 8087)',
+        pk: 'id (BIGINT AUTO_INCREMENT)',
+        relations: '1:N physical with flights (FOREIGN KEY aircraft_id REFERENCES aircrafts(id))',
+        description: 'Commercial airline physical fleet catalog specifying aircraft models (Airbus A320, Boeing 737), seating capacity, cabin layout rows, and operational maintenance status.',
+        columns: [
+          { name: 'id', type: 'BIGINT', key: 'PK', nullable: 'NO', extra: 'AUTO_INCREMENT' },
+          { name: 'aircraft_code', type: 'VARCHAR(50)', key: 'UQ', nullable: 'NO', extra: 'Registration tail code' },
+          { name: 'aircraft_name', type: 'VARCHAR(100)', key: '-', nullable: 'NO', extra: 'Commercial model name' },
+          { name: 'manufacturer', type: 'VARCHAR(100)', key: '-', nullable: 'NO', extra: 'Airbus, Boeing' },
+          { name: 'capacity', type: 'INT', key: '-', nullable: 'NO', extra: 'Total passenger seats' },
+          { name: 'status', type: 'VARCHAR(20)', key: '-', nullable: 'NO', extra: 'ACTIVE, MAINTENANCE, RETIRED' },
+          { name: 'total_rows', type: 'INT', key: '-', nullable: 'YES', extra: 'Cabin row count' },
+          { name: 'seats_per_row', type: 'INT', key: '-', nullable: 'YES', extra: 'Seats per row (e.g. 6)' }
+        ],
+        ddl: `CREATE TABLE aircrafts (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  aircraft_code VARCHAR(50) NOT NULL UNIQUE,
+  aircraft_name VARCHAR(100) NOT NULL,
+  manufacturer VARCHAR(100) NOT NULL,
+  capacity INT NOT NULL,
+  status VARCHAR(20) NOT NULL,
+  total_rows INT NULL,
+  seats_per_row INT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`
+      },
+      flights: {
+        table: 'flights',
+        schema: 'flight_db',
+        service: 'flight-service (Port 8087)',
+        pk: 'id (BIGINT AUTO_INCREMENT)',
+        relations: 'N:1 physical with aircrafts (FK); 1:1 logical with fares (LFK: flight_id); 1:N logical with bookings (LFK: flight_id)',
+        description: 'Scheduled commercial flight timetable recording origin/destination IATA airport codes, departure and arrival datetimes, seat inventory, base ticket price, and real-time flight status.',
+        columns: [
+          { name: 'id', type: 'BIGINT', key: 'PK', nullable: 'NO', extra: 'AUTO_INCREMENT' },
+          { name: 'flight_number', type: 'VARCHAR(50)', key: 'UQ', nullable: 'NO', extra: 'Unique code (e.g. AI101)' },
+          { name: 'airline_name', type: 'VARCHAR(100)', key: '-', nullable: 'NO', extra: 'Operating carrier' },
+          { name: 'source', type: 'VARCHAR(50)', key: '-', nullable: 'NO', extra: 'Departure airport' },
+          { name: 'destination', type: 'VARCHAR(50)', key: '-', nullable: 'NO', extra: 'Arrival airport' },
+          { name: 'departure_time', type: 'DATETIME', key: '-', nullable: 'NO', extra: 'Scheduled takeoff' },
+          { name: 'arrival_time', type: 'DATETIME', key: '-', nullable: 'NO', extra: 'Scheduled landing' },
+          { name: 'total_seats', type: 'INT', key: '-', nullable: 'NO', extra: 'Aircraft capacity' },
+          { name: 'available_seats', type: 'INT', key: '-', nullable: 'NO', extra: 'Live remaining seats' },
+          { name: 'base_fare', type: 'DECIMAL(12,2)', key: '-', nullable: 'NO', extra: 'Starting ticket price' },
+          { name: 'status', type: 'VARCHAR(20)', key: '-', nullable: 'NO', extra: 'SCHEDULED, DELAYED, etc.' },
+          { name: 'aircraft_id', type: 'BIGINT', key: 'FK', nullable: 'NO', extra: 'REFERENCES aircrafts' }
+        ],
+        ddl: `CREATE TABLE flights (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  flight_number VARCHAR(50) NOT NULL UNIQUE,
+  airline_name VARCHAR(100) NOT NULL,
+  source VARCHAR(50) NOT NULL,
+  destination VARCHAR(50) NOT NULL,
+  departure_time DATETIME NOT NULL,
+  arrival_time DATETIME NOT NULL,
+  total_seats INT NOT NULL,
+  available_seats INT NOT NULL,
+  base_fare DECIMAL(12,2) NOT NULL,
+  status VARCHAR(20) NOT NULL,
+  aircraft_id BIGINT NOT NULL,
+  CONSTRAINT fk_flight_aircraft 
+    FOREIGN KEY (aircraft_id) REFERENCES aircrafts(id),
+  INDEX idx_route_date (source, destination, departure_time)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`
+      },
+      fares: {
+        table: 'fares',
+        schema: 'fare_db',
+        service: 'fare-service (Port 8089)',
+        pk: 'id (BIGINT AUTO_INCREMENT)',
+        relations: '1:1 logical with flights (LFK: flight_id UNIQUE in fare_db)',
+        description: 'Yield management and dynamic multi-tier pricing engine maintaining Economy, Business, and First Class fare breakdowns, statutory taxes, and promotional discount percentages.',
+        columns: [
+          { name: 'id', type: 'BIGINT', key: 'PK', nullable: 'NO', extra: 'AUTO_INCREMENT' },
+          { name: 'flight_id', type: 'BIGINT', key: 'LFK/UQ', nullable: 'NO', extra: 'Points to flights.id' },
+          { name: 'economy_fare', type: 'DECIMAL(10,2)', key: '-', nullable: 'NO', extra: 'Economy class base' },
+          { name: 'business_fare', type: 'DECIMAL(10,2)', key: '-', nullable: 'YES', extra: 'Business class base' },
+          { name: 'first_class_fare', type: 'DECIMAL(10,2)', key: '-', nullable: 'YES', extra: 'First class base' },
+          { name: 'tax_percentage', type: 'DECIMAL(5,2)', key: '-', nullable: 'YES', extra: 'Default 18.00% GST' },
+          { name: 'discount_percentage', type: 'DECIMAL(5,2)', key: '-', nullable: 'YES', extra: 'Promotional discount' },
+          { name: 'effective_date', type: 'DATE', key: '-', nullable: 'YES', extra: 'Activation date' },
+          { name: 'active', type: 'BOOLEAN', key: '-', nullable: 'NO', extra: 'DEFAULT TRUE' }
+        ],
+        ddl: `CREATE TABLE fares (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  flight_id BIGINT NOT NULL UNIQUE,
+  economy_fare DECIMAL(10,2) NOT NULL,
+  business_fare DECIMAL(10,2) NULL,
+  first_class_fare DECIMAL(10,2) NULL,
+  tax_percentage DECIMAL(5,2) DEFAULT 18.00,
+  discount_percentage DECIMAL(5,2) DEFAULT 0.00,
+  effective_date DATE NULL,
+  active BOOLEAN NOT NULL DEFAULT TRUE,
+  INDEX idx_flight (flight_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`
+      },
+      bookings: {
+        table: 'bookings',
+        schema: 'booking_db',
+        service: 'booking-service (Port 8088)',
+        pk: 'booking_id (BIGINT AUTO_INCREMENT)',
+        relations: '1:N physical with passengers (Composition, Cascade ALL); 1:N logical from users (user_id); 1:N logical from flights (flight_id); 1:N logical to check_in (booking_id)',
+        description: 'Central booking reservation entity storing the unique Passenger Name Record (PNR) code, passenger list, aggregate ticket total, and booking lifecycle state.',
+        columns: [
+          { name: 'booking_id', type: 'BIGINT', key: 'PK', nullable: 'NO', extra: 'AUTO_INCREMENT' },
+          { name: 'pnr', type: 'VARCHAR(20)', key: 'UQ', nullable: 'NO', extra: 'Alphanumeric PNR code' },
+          { name: 'user_id', type: 'BIGINT', key: 'LFK', nullable: 'NO', extra: 'Customer user reference' },
+          { name: 'flight_id', type: 'BIGINT', key: 'LFK', nullable: 'NO', extra: 'Flight timetable reference' },
+          { name: 'booking_date', type: 'DATETIME', key: '-', nullable: 'NO', extra: 'Confirmation instant' },
+          { name: 'total_fare', type: 'DECIMAL(12,2)', key: '-', nullable: 'NO', extra: 'Total paid price' },
+          { name: 'status', type: 'VARCHAR(20)', key: '-', nullable: 'NO', extra: 'BOOKED, CANCELLED' }
+        ],
+        ddl: `CREATE TABLE bookings (
+  booking_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  pnr VARCHAR(20) NOT NULL UNIQUE,
+  user_id BIGINT NOT NULL,
+  flight_id BIGINT NOT NULL,
+  booking_date DATETIME NOT NULL,
+  total_fare DECIMAL(12,2) NOT NULL,
+  status VARCHAR(20) NOT NULL,
+  INDEX idx_pnr (pnr),
+  INDEX idx_user_bookings (user_id),
+  INDEX idx_flight_bookings (flight_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`
+      },
+      passengers: {
+        table: 'passengers',
+        schema: 'booking_db',
+        service: 'booking-service (Port 8088)',
+        pk: 'passenger_id (BIGINT AUTO_INCREMENT)',
+        relations: 'N:1 physical with bookings (FOREIGN KEY booking_id REFERENCES bookings(booking_id) ON DELETE CASCADE)',
+        description: 'Individual traveler records belonging to a parent booking reservation. Deleted automatically via CascadeType.ALL if the parent reservation is purged.',
+        columns: [
+          { name: 'passenger_id', type: 'BIGINT', key: 'PK', nullable: 'NO', extra: 'AUTO_INCREMENT' },
+          { name: 'booking_id', type: 'BIGINT', key: 'FK', nullable: 'NO', extra: 'REFERENCES bookings' },
+          { name: 'first_name', type: 'VARCHAR(50)', key: '-', nullable: 'NO', extra: 'Traveler given name' },
+          { name: 'last_name', type: 'VARCHAR(50)', key: '-', nullable: 'NO', extra: 'Traveler surname' },
+          { name: 'age', type: 'INT', key: '-', nullable: 'NO', extra: 'Traveler age' },
+          { name: 'gender', type: 'VARCHAR(10)', key: '-', nullable: 'NO', extra: 'Male, Female, Other' },
+          { name: 'seat_number', type: 'VARCHAR(10)', key: '-', nullable: 'YES', extra: 'Assigned seat (e.g. 12A)' }
+        ],
+        ddl: `CREATE TABLE passengers (
+  passenger_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  booking_id BIGINT NOT NULL,
+  first_name VARCHAR(50) NOT NULL,
+  last_name VARCHAR(50) NOT NULL,
+  age INT NOT NULL,
+  gender VARCHAR(10) NOT NULL,
+  seat_number VARCHAR(10) NULL,
+  CONSTRAINT fk_passenger_booking 
+    FOREIGN KEY (booking_id) REFERENCES bookings(booking_id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`
+      },
+      check_in: {
+        table: 'check_in',
+        schema: 'checkin_db',
+        service: 'check-in-service (Port 8090)',
+        pk: 'id (BIGINT AUTO_INCREMENT)',
+        relations: '1:N logical from bookings (LFK: booking_id)',
+        description: 'Records airport web check-in completions, seat assignment locks, and issued mobile QR boarding pass barcodes.',
+        columns: [
+          { name: 'id', type: 'BIGINT', key: 'PK', nullable: 'NO', extra: 'AUTO_INCREMENT' },
+          { name: 'booking_id', type: 'BIGINT', key: 'LFK', nullable: 'NO', extra: 'Points to bookings.booking_id' },
+          { name: 'passenger_name', type: 'VARCHAR(100)', key: '-', nullable: 'NO', extra: 'Passenger full name' },
+          { name: 'seat_number', type: 'VARCHAR(10)', key: '-', nullable: 'NO', extra: 'Allocated cabin seat' },
+          { name: 'boarding_pass_number', type: 'VARCHAR(50)', key: 'UQ', nullable: 'NO', extra: 'Unique BP-1001-12A' },
+          { name: 'status', type: 'VARCHAR(30)', key: '-', nullable: 'NO', extra: 'DEFAULT CHECKED_IN' },
+          { name: 'checked_in_at', type: 'DATETIME', key: '-', nullable: 'NO', extra: 'Check-in timestamp' }
+        ],
+        ddl: `CREATE TABLE check_in (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  booking_id BIGINT NOT NULL,
+  passenger_name VARCHAR(100) NOT NULL,
+  seat_number VARCHAR(10) NOT NULL,
+  boarding_pass_number VARCHAR(50) NOT NULL UNIQUE,
+  status VARCHAR(30) NOT NULL DEFAULT 'CHECKED_IN',
+  checked_in_at DATETIME NOT NULL,
+  INDEX idx_bp_number (boarding_pass_number),
+  INDEX idx_booking (booking_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`
+      }
+    };
+
+    function inspectTable(tableName) {
+      const meta = tableMetadata[tableName];
+      if (!meta) return;
+
+      document.getElementById('inspector-badge').innerText = meta.schema;
+      document.getElementById('inspector-title').innerText = 'TABLE: ' + meta.table;
+      document.getElementById('inspector-schema').innerText = meta.service;
+
+      let colsHtml = meta.columns.map(c => `
+        <tr class="border-b border-zinc-800">
+          <td class="py-1 px-1.5 font-mono font-bold text-white flex items-center gap-1">
+            ${c.key === 'PK' ? '<span class="bg-amber-400 text-black px-1 rounded text-[9px] font-bold">PK</span>' : ''}
+            ${c.key === 'FK' ? '<span class="bg-white text-black px-1 rounded text-[9px] font-bold">FK</span>' : ''}
+            ${c.key.includes('LFK') ? '<span class="bg-sky-400 text-black px-1 rounded text-[9px] font-bold">LFK</span>' : ''}
+            ${c.key.includes('UQ') ? '<span class="bg-emerald-400 text-black px-1 rounded text-[9px] font-bold">UQ</span>' : ''}
+            ${c.name}
+          </td>
+          <td class="py-1 px-1.5 font-mono text-zinc-400">${c.type}</td>
+          <td class="py-1 px-1.5 font-mono text-zinc-400">${c.extra}</td>
+        </tr>
+      `).join('');
+
+      document.getElementById('inspector-body').innerHTML = `
+        <div>
+          <p class="text-zinc-300 leading-relaxed mb-2">${meta.description}</p>
+          <div class="bg-zinc-900 border border-zinc-800 rounded p-2 text-zinc-400 font-mono text-[11px] mb-3">
+            <div><strong class="text-white">Primary Key:</strong> ${meta.pk}</div>
+            <div class="mt-1"><strong class="text-white">Relationships:</strong> ${meta.relations}</div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="font-bold text-zinc-200 mb-1 font-mono uppercase tracking-wider text-[11px]">Column Schema</h3>
+          <div class="border border-zinc-800 rounded-lg overflow-hidden">
+            <table class="w-full text-left text-[11px]">
+              <thead class="bg-zinc-900 text-zinc-400 font-mono text-[10px]">
+                <tr>
+                  <th class="py-1 px-1.5">Column</th>
+                  <th class="py-1 px-1.5">Type</th>
+                  <th class="py-1 px-1.5">Constraints</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-zinc-800">
+                ${colsHtml}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="mt-2">
+          <div class="flex items-center justify-between mb-1">
+            <h3 class="font-bold text-zinc-200 font-mono uppercase tracking-wider text-[11px]">MySQL 8.0 DDL</h3>
+            <button onclick="navigator.clipboard.writeText(this.nextElementSibling.innerText); alert('DDL copied to clipboard!')" class="text-[10px] text-sky-400 hover:underline font-mono">Copy SQL</button>
+          </div>
+          <pre class="bg-zinc-900 p-2 rounded text-[10px] font-mono text-zinc-300 overflow-x-auto border border-zinc-800">${meta.ddl}</pre>
+        </div>
+      `;
+    }
+
+    // Attach click handlers to table groups in SVG
+    window.addEventListener('DOMContentLoaded', () => {
+      Object.keys(tableMetadata).forEach(t => {
+        const el = document.getElementById('table-' + t);
+        if (el) {
+          el.classList.add('table-group');
+          el.addEventListener('click', () => {
+            document.querySelectorAll('[id^="table-"]').forEach(n => n.classList.remove('highlight-table'));
+            el.classList.add('highlight-table');
+            inspectTable(t);
+          });
+        }
+      });
+      // Default inspect bookings
+      inspectTable('bookings');
+    });
+  </script>
+</body>
+</html>

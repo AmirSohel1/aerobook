@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AeroBook - UML Activity Diagram Specification</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    body {
+      background-color: #000000;
+      color: #ffffff;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      overflow-x: hidden;
+    }
+    .act-node {
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+    }
+    .act-node:hover rect {
+      fill: #1a1a24 !important;
+      stroke-width: 2.5px !important;
+      filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.8));
+    }
+    .highlight-active {
+      filter: drop-shadow(0 0 16px #38bdf8) !important;
+      stroke-width: 3px !important;
+    }
+    .dimmed {
+      opacity: 0.15 !important;
+      transition: opacity 0.3s ease;
+    }
+    .blueprint-grid {
+      background-size: 30px 30px;
+      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+    }
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #09090b;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #27272a;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #3f3f46;
+    }
+  </style>
+</head>
+<body class="bg-black text-white min-h-screen p-4 blueprint-grid flex flex-col items-center">
+
+  <!-- Header -->
+  <header class="w-full max-w-[1760px] flex flex-col md:flex-row items-center justify-between border-b-2 border-white pb-4 mb-4 gap-4">
+    <div>
+      <div class="flex items-center gap-3">
+        <span class="text-xs tracking-widest uppercase border border-white px-2 py-0.5 rounded font-mono">UML 2.5 Activity Model</span>
+        <span class="text-xs tracking-widest uppercase bg-white text-black px-2 py-0.5 rounded font-bold font-mono">Black Canvas • White Marker</span>
+        <span class="text-xs tracking-widest uppercase bg-emerald-600 text-white px-2 py-0.5 rounded font-bold font-mono">6 Microservice Swimlanes</span>
+      </div>
+      <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight mt-1 text-white">
+        AeroBook Platform — System UML Activity Diagram
+      </h1>
+      <p class="text-xs md:text-sm text-zinc-400 font-mono">
+        End-to-End Flight Booking, Dynamic Pricing, Concurrency Control &amp; Airport Web Check-In
+      </p>
+    </div>
+
+    <!-- Quick Action Controls -->
+    <div class="flex flex-wrap items-center gap-2">
+      <!-- Zoom Controls -->
+      <div class="flex items-center bg-zinc-900 border border-zinc-700 rounded-lg p-1 text-xs">
+        <button onclick="zoom(1.15)" class="px-2.5 py-1 hover:bg-zinc-800 rounded font-bold" title="Zoom In">+</button>
+        <button onclick="zoom(0.85)" class="px-2.5 py-1 hover:bg-zinc-800 rounded font-bold" title="Zoom Out">-</button>
+        <button onclick="resetZoom()" class="px-2.5 py-1 hover:bg-zinc-800 rounded font-mono" title="Reset View">100%</button>
+      </div>
+
+      <!-- Export Buttons -->
+      <div class="flex items-center gap-1.5">
+        <a href="AeroBook_Activity_Diagram.svg" download class="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 rounded text-xs font-mono font-bold flex items-center gap-1">
+          SVG
+        </a>
+        <a href="AeroBook_Activity_Diagram.png" download class="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 rounded text-xs font-mono font-bold flex items-center gap-1">
+          PNG
+        </a>
+        <a href="AeroBook_Activity_Diagram_Guide.pdf" target="_blank" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs font-bold flex items-center gap-1">
+          PDF Guide
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Canvas & Inspector Layout -->
+  <div class="w-full max-w-[1760px] grid grid-cols-1 xl:grid-cols-4 gap-4">
+    <!-- SVG Canvas Container -->
+    <div class="xl:col-span-3 border-2 border-white rounded-xl bg-black overflow-hidden shadow-2xl relative">
+      <div id="svg-wrapper" class="w-full overflow-auto cursor-grab active:cursor-grabbing p-2" style="min-height: 840px; max-height: 85vh;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 1280" width="1800" height="1280" style="background-color: #000000; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;">
+  <defs>
+    <!-- Arrowhead Marker (White) -->
+    <marker id="arrow-white" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#ffffff" stroke="#ffffff" />
+    </marker>
+
+    <!-- Arrowhead Marker (Cyan / Logical) -->
+    <marker id="arrow-cyan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#38bdf8" stroke="#38bdf8" />
+    </marker>
+
+    <!-- Arrowhead Marker (Amber / Exception) -->
+    <marker id="arrow-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#facc15" stroke="#facc15" />
+    </marker>
+
+    <!-- Arrowhead Marker (Red / Rejection) -->
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#f87171" stroke="#f87171" />
+    </marker>
+
+    <!-- Soft glow filter -->
+    <filter id="glow-action" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1800" height="1280" fill="#000000" />
+
+  <!-- Subtle Blueprint Grid -->
+  <g opacity="0.06">
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ffffff" stroke-width="0.8" />
+    </pattern>
+    <rect width="1800" height="1280" fill="url(#grid)" />
+  </g>
+
+  <!-- ==================================================================== -->
+  <!-- HEADER -->
+  <!-- ==================================================================== -->
+  <text x="900" y="38" fill="#ffffff" font-size="24" font-weight="bold" letter-spacing="2.5" text-anchor="middle">
+    AEROBOOK PLATFORM - SYSTEM UML ACTIVITY DIAGRAM
+  </text>
+  <text x="900" y="62" fill="#a1a1aa" font-size="12.5" font-family="monospace" letter-spacing="1" text-anchor="middle">
+    End-to-End Flight Booking, Dynamic Pricing, Concurrency Control &amp; Airport Web Check-In • 6 Swimlanes • UML 2.5 Standard
+  </text>
+  <line x1="50" y1="76" x2="1750" y2="76" stroke="#27272a" stroke-width="1.5" />
+
+  <!-- ==================================================================== -->
+  <!-- 6 SWIMLANES / PARTITIONS (X: 50 to 1750, Width: 1700, 283.3px each) -->
+  <!-- ==================================================================== -->
+  <!-- Lane Boundaries -->
+  <g id="swimlanes">
+    <!-- Lane 1: Traveler -->
+    <rect x="50" y="88" width="283" height="985" fill="#08080a" stroke="#ffffff" stroke-width="1" />
+    <rect x="50" y="88" width="283" height="38" fill="#141418" stroke="#ffffff" stroke-width="1" />
+    <text x="191" y="105" fill="#38bdf8" font-size="11" font-weight="bold" font-family="monospace" text-anchor="middle">PARTITION 1</text>
+    <text x="191" y="120" fill="#ffffff" font-size="13" font-weight="bold" font-family="monospace" text-anchor="middle">Traveler / Client</text>
+
+    <!-- Lane 2: API Gateway -->
+    <rect x="333" y="88" width="283" height="985" fill="#050507" stroke="#ffffff" stroke-width="1" />
+    <rect x="333" y="88" width="283" height="38" fill="#141418" stroke="#ffffff" stroke-width="1" />
+    <text x="474" y="105" fill="#38bdf8" font-size="11" font-weight="bold" font-family="monospace" text-anchor="middle">PARTITION 2 (Port 8083)</text>
+    <text x="474" y="120" fill="#ffffff" font-size="13" font-weight="bold" font-family="monospace" text-anchor="middle">API Gateway (Netty)</text>
+
+    <!-- Lane 3: Flight Service -->
+    <rect x="616" y="88" width="284" height="985" fill="#08080a" stroke="#ffffff" stroke-width="1" />
+    <rect x="616" y="88" width="284" height="38" fill="#141418" stroke="#ffffff" stroke-width="1" />
+    <text x="758" y="105" fill="#38bdf8" font-size="11" font-weight="bold" font-family="monospace" text-anchor="middle">PARTITION 3 (Port 8087)</text>
+    <text x="758" y="120" fill="#ffffff" font-size="13" font-weight="bold" font-family="monospace" text-anchor="middle">Flight Service</text>
+
+    <!-- Lane 4: Fare Service -->
+    <rect x="900" y="88" width="283" height="985" fill="#050507" stroke="#ffffff" stroke-width="1" />
+    <rect x="900" y="88" width="283" height="38" fill="#141418" stroke="#ffffff" stroke-width="1" />
+    <text x="1041" y="105" fill="#38bdf8" font-size="11" font-weight="bold" font-family="monospace" text-anchor="middle">PARTITION 4 (Port 8089)</text>
+    <text x="1041" y="120" fill="#ffffff" font-size="13" font-weight="bold" font-family="monospace" text-anchor="middle">Fare Service</text>
+
+    <!-- Lane 5: Booking Service -->
+    <rect x="1183" y="88" width="284" height="985" fill="#08080a" stroke="#ffffff" stroke-width="1" />
+    <rect x="1183" y="88" width="284" height="38" fill="#141418" stroke="#ffffff" stroke-width="1" />
+    <text x="1325" y="105" fill="#38bdf8" font-size="11" font-weight="bold" font-family="monospace" text-anchor="middle">PARTITION 5 (Port 8088)</text>
+    <text x="1325" y="120" fill="#ffffff" font-size="13" font-weight="bold" font-family="monospace" text-anchor="middle">Booking Service</text>
+
+    <!-- Lane 6: Check-In Service -->
+    <rect x="1467" y="88" width="283" height="985" fill="#050507" stroke="#ffffff" stroke-width="1" />
+    <rect x="1467" y="88" width="283" height="38" fill="#141418" stroke="#ffffff" stroke-width="1" />
+    <text x="1608" y="105" fill="#38bdf8" font-size="11" font-weight="bold" font-family="monospace" text-anchor="middle">PARTITION 6 (Port 8090)</text>
+    <text x="1608" y="120" fill="#ffffff" font-size="13" font-weight="bold" font-family="monospace" text-anchor="middle">Check-In Service</text>
+  </g>
+
+  <!-- ==================================================================== -->
+  <!-- WORKFLOW ACTIONS, NODES & EDGES -->
+  <!-- ==================================================================== -->
+
+  <!-- 1. INITIAL NODE (Lane 1) -->
+  <g id="node-initial">
+    <circle cx="191" cy="155" r="14" fill="#ffffff" stroke="#38bdf8" stroke-width="3" />
+    <text x="191" y="182" fill="#a1a1aa" font-size="10" font-family="monospace" text-anchor="middle">START</text>
+  </g>
+
+  <!-- Edge: Initial -> Enter Search -->
+  <line x1="191" y1="170" x2="191" y2="200" stroke="#ffffff" stroke-width="2" marker-end="url(#arrow-white)" />
+
+  <!-- Action: Search Criteria (Lane 1) -->
+  <g id="act-search-criteria" class="act-node">
+    <rect x="75" y="200" width="232" height="48" rx="12" fill="#111116" stroke="#ffffff" stroke-width="1.8" />
+    <text x="191" y="220" fill="#ffffff" font-size="11.5" font-weight="bold" font-family="monospace" text-anchor="middle">Input Flight Search</text>
+    <text x="191" y="235" fill="#a1a1aa" font-size="9.5" font-family="monospace" text-anchor="middle">Origin, Destination, Date, Class</text>
+  </g>
+
+  <!-- Edge: Lane 1 -> Lane 2 (Gateway Ingress) -->
+  <path d="M 307 224 L 370 224" fill="none" stroke="#ffffff" stroke-width="2" marker-end="url(#arrow-white)" />
+
+  <!-- Action: Gateway Dispatch Flight Search (Lane 2) -->
+  <g id="act-gw-search" class="act-node">
+    <rect x="370" y="200" width="210" height="48" rx="12" fill="#111116" stroke="#ffffff" stroke-width="1.8" />
+    <text x="475" y="220" fill="#ffffff" font-size="11.5" font-weight="bold" font-family="monospace" text-anchor="middle">Route /api/flights/**</text>
+    <text x="475" y="235" fill="#38bdf8" font-size="9.5" font-family="monospace" text-anchor="middle">Forward to lb://FLIGHT-SERVICE</text>
+  </g>
+
+  <!-- Edge: Lane 2 -> Lane 3 (Flight Query) -->
+  <path d="M 580 224 L 650 224" fill="none" stroke="#ffffff" stroke-width="2" marker-end="url(#arrow-white)" />
+
+  <!-- Action: Query Flights (Lane 3) -->
+  <g id="act-query-flights" class="act-node">
+    <rect x="650" y="200" width="216" height="48" rx="12" fill="#111116" stroke="#ffffff" stroke-width="1.8" />
+    <text x="758" y="220" fill="#ffffff" font-size="11.5" font-weight="bold" font-family="monospace" text-anchor="middle">Query flight_db Timetable</text>
+    <text x="758" y="235" fill="#a1a1aa" font-size="9.5" font-family="monospace" text-anchor="middle">Filter status='SCHEDULED'</text>
+  </g>
+
+  <!-- Edge: Lane 3 down to Decision (Flights Found?) -->
+  <line x1="758" y1="248" x2="758" y2="280" stroke="#ffffff" stroke-width="2" marker-end="url(#arrow-white)" />
+
+  <!-- Decision 1: Flights Found? (Lane 3) -->
+  <g id="dec-flights-found">
+    <polygon points="758,280 795,305 758,330 721,305" fill="#18181b" stroke="#ffffff" stroke-width="1.8" />
+    <text x="758" y="309" fill="#ffffff" font-size="9.5" font-family="monospace" text-anchor="middle">Found?</text>
+  </g>
+
+  <!-- Branch [No]: Back to Traveler with Empty Result -->
+  <path d="M 721 305 L 285 305 L 285 270 L 220 270" fill="none" stroke="#f87171" stroke-width="1.8" stroke-dasharray="5,3" marker-end="url(#arrow-red)" />
+  <rect x="420" y="293" width="130" height="18" rx="3" fill="#2a0808" stroke="#f87171" stroke-width="0.8" />
+  <text x="485" y="306" fill="#f87171" font-size="9" font-family="monospace" text-anchor="middle">[No: 0 Flights] Return 404</text>
+
+  <!-- Action: Display Empty Notification (Lane 1) -->
+  <g id="act-no-flights">
+    <rect x="75" y="255" width="145" height="32" rx="8" fill="#181010" stroke="#f87171" stroke-width="1.2" />
+    <text x="147" y="275" fill="#f87171" font-size="10" font-family="monospace" text-anchor="middle">Display "No Flights"</text>
+  </g>
+
+  <!-- Branch [Yes]: Fetch Multi-Tier Pricing from Fare Service -->
+  <line x1="795" y1="305" x2="935" y2="305" stroke="#ffffff" stroke-width="2" marker-end="url(#arrow-white)" />
+  <rect x="815" y="293" width="95" height="18" rx="3" fill="#082010" stroke="#4ade80" stroke-width="0.8" />
+  <text x="862" y="306" fill="#4ade80" font-size="9" font-family="monospace" text-anchor="middle">[Yes: List Flights]</text>
+
+  <!-- Action: Calculate Fares (Lane 4) -->
+  <g id="act-calc-fare" class="act-node">
+    <rect x="935" y="280" width="215" height="50" rx="12" fill="#111116" stroke="#ffffff" stroke-width="1.8" />
+    <text x="1042" y="300" fill="#ffffff" font-size="11.5" font-weight="bold" font-family="monospace" text-anchor="middle">Compute Fare Breakdown</text>
+    <text x="1042" y="316" fill="#a1a1aa" font-size="9" font-family="monospace" text-anchor="middle">Class Multiplier + 18% GST - Disc</text>
+  </g>
+
+  <!-- Edge: Lane 4 -> Lane 1 (Display Search Results with Live Prices) -->
+  <path d="M 1042 330 L 1042 360 L 191 360 L 191 385" fill="none" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrow-cyan)" />
+  <rect x="520" y="348" width="170" height="20" rx="3" fill="#0c2d48" stroke="#38bdf8" stroke-width="0.8" />
+  <text x="605" y="362" fill="#38bdf8" font-size="9.5" font-family="monospace" text-anchor="middle">Aggregate Flights &amp; Fares DTO</text>
+
+  <!-- Action: Select Flight & Fill Passengers (Lane 1) -->
+  <g id="act-select-flight" class="act-node">
+    <rect x="75" y="385" width="232" height="50" rx="12" fill="#111116" stroke="#ffffff" stroke-width="1.8" />
+    <text x="191" y="405" fill="#ffffff" font-size="11.5" font-weight="bold" font-family="monospace" text-anchor="middle">Select Flight &amp; Add Passengers</text>
+    <text x="191" y="422" fill="#a1a1aa" font-size="9.5" font-family="monospace" text-anchor="middle">Name, Age, Gender, Cabin Class</text>
+  </g>
+
+  <!-- Edge: Lane 1 -> Gateway -> Booking Service (Initiate Reservation) -->
+  <line x1="191" y1="435" x2="191" y2="465" stroke="#ffffff" stroke-width="2" marker-end="url(#arrow-white)" />
+
+  <!-- Action: Gateway Auth & JWT Validation (Lane 2) -->
+  <g id="act-gw-auth" class="act-node">
+    <rect x="370" y="450" width="210" height="50" rx="12" fill="#111116" stroke="#ffffff" stroke-width="1.8" />
+    <text x="475" y="470" fill="#ffffff" font-size="11.5" font-weight="bold" font-family="monospace" text-anchor="middle">Verify Bearer JWT &amp; Role</text>
+    <text x="475" y="486" fill="#38bdf8" font-size="9" font-family="monospace" text-anchor="middle">Inject X-User-Id, X-User-Role</text>
+  </g>
+
+  <!-- Connection: Lane 1 (at 465) to Gateway -->
+  <path d="M 191 475 L 370 475" fill="none" stroke="#ffffff" stroke-width="2" marker-end="url(#arrow-white)" />
+
+  <!-- Edge: Gateway -> Booking Service -->
+  <path d="M 580 475 L 1220 475" fill="none" stroke="#ffffff" stroke-width="2" marker-end="url(#arrow-white)" />
+
+  <!-- Action: Booking Service Ingestion & Feign Verification (Lane 5) -->
+  <g id="act-booking-ingest" class="act-node">
+    <rect x="1220" y="450" width="215" height="50" rx="12" fill="#111116" stroke="#ffffff" stroke-width="1.8" />
+    <text x="1327" y="470" fill="#ffffff" font-size="11.5" font-weight="bold" font-family="monospace" text-anchor="middle">Receive POST /api/bookings</text>
+    <text x="1327" y="486" fill="#a1a1aa" font-size="9" font-family="monospace" text-anchor="middle">Validate Payload &amp; Pass Count</text>
+  </g>
+
+  <!-- Edge: Booking Service -> Flight Service (Seat Check & Decrement) -->
+  <path d="M 1327 500 L 1327 535 L 866 535" fill="none" stroke="#ffffff" stroke-width="2" marker-end="url(#arrow-white)" />
+  <rect x="1000" y="523" width="180" height="20" rx="3" fill="#18181b" stroke="#ffffff" stroke-width="0.8" />
+  <text x="1090" y="537" fill="#ffffff" font-size="9" font-family="monospace" text-anchor="middle">Feign: checkAndReserveSeats()</text>
+
+  <!-- Action: Atomic Seat Check & Lock (Lane 3) -->
+  <g id="act-seat-lock" class="act-node">
+    <rect x="650" y="520" width="216" height="52" rx="12" fill="#111116" stroke="#ffffff" stroke-width="1.8" />
+    <text x="758" y="541" fill="#ffffff" font-size="11.5" font-weight="bold" font-family="monospace" text-anchor="middle">Atomic Row-Level Seat Lock</text>
+    <text x="758" y="557" fill="#a1a1aa" font-size="9" font-family="monospace" text-anchor="middle">available_seats &gt;= requested?</text>
+  </g>
+
+  <!-- Edge: Lane 3 down to Decision 2 (Seats Available?) -->
+  <line x1="758" y1="572" x2="758" y2="600" stroke="#ffffff" stroke-width="2" marker-end="url(#arrow-white)" />
+
+  <!-- Decision 2: Seats Available? (Lane 3) -->
+  <g id="dec-seats-available">
+    <polygon points="758,600 795,625 758,650 721,625" fill="#18181b" stroke="#ffffff" stroke-width="1.8" />
+    <text x="758" y="629" fill="#ffffff" font-size="9" font-family="monospace" text-anchor="middle">Seats Ok?</text>
+  </g>
+
+  <!-- Branch [No]: Reject with 409 Conflict -->
+  <path d="M 721 625 L 307 625" fill="none" stroke="#f87171" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrow-red)" />
+  <rect x="420" y="613" width="160" height="20" rx="3" fill="#2a0808" stroke="#f87171" stroke-width="0.8" />
+  <text x="500" y="627" fill="#f87171" font-size="9" font-family="monospace" text-anchor="middle">[Sold Out: 409 Conflict]</text>
+
+  <!-- Action: Show Sold Out Error (Lane 1) -->
+  <g id="act-sold-out">
+    <rect x="75" y="605" width="232" height="40" rx="10" fill="#181010" stroke="#f87171" stroke-width="1.4" />
+    <text x="191" y="625" fill="#f87171" font-size="11" font-weight="bold" font-family="monospace" text-anchor="middle">Booking Rejected: Sold Out</text>
+    <text x="191" y="638" fill="#a1a1aa" font-size="8.5" font-family="monospace" text-anchor="middle">Prompt User to Choose Another Flight</text>
+  </g>
+
+  <!-- Flow Final 1 for Sold Out -->
+  <circle cx="191" cy="670" r="10" fill="#000000" stroke="#f87171" stroke-width="1.8" />
+  <line x1="184" y1="663" x2="198" y2="677" stroke="#f87171" stroke-width="1.8" />
+  <line x1="184" y1="677" x2="198" y2="663" stroke="#f87171" stroke-width="1.8" />
+  <line x1="191" y1="645" x2="191" y2="660" stroke="#f87171" stroke-width="1.5" />
+
+  <!-- Branch [Yes]: Decrement Available Seats in flight_db -->
+  <path d="M 795 625 L 866 625" fill="none" stroke="#4ade80" stroke-width="2" marker-end="url(#arrow-white)" />
+  <rect x="800" y="605" width="60" height="16" rx="3" fill="#082010" stroke="#4ade80" stroke-width="0.8" />
+  <text x="830" y="617" fill="#4ade80" font-size="8.5" font-family="monospace" text-anchor="middle">[Seats OK]</text>
+
+  <!-- Action: Update flight_db (Lane 3) -->
+  <g id="act-decrement-seats" class="act-node">
+    <rect x="650" y="670" width="216" height="48" rx="12" fill="#111116" stroke="#ffffff" stroke-width="1.8" />
+    <text x="758" y="690" fill="#ffffff" font-size="11.5" font-weight="bold" font-family="monospace" text-anchor="middle">Decrement available_seats</text>
+    <text x="758" y="705" fill="#4ade80" font-size="9" font-family="monospace" text-anchor="middle">UPDATE flights SET available_seats - N</text>
+  </g>
+  <line x1="758" y1="650" x2="758" y2="670" stroke="#4ade80" stroke-width="2" marker-end="url(#arrow-white)" />
+
+  <!-- Edge: Lane 3 (decrement success) -> Lane 5 (Booking Creation) -->
+  <path d="M 866 694 L 1220 694" fill="none" stroke="#4ade80" stroke-width="2" marker-end="url(#arrow-white)" />
+  <rect x="980" y="682" width="140" height="20" rx="3" fill="#082010" stroke="#4ade80" stroke-width="0.8" />
+  <text x="1050" y="696" fill="#4ade80" font-size="9" font-family="monospace" text-anchor="middle">Seats Allocated: Success</text>
+
+  <!-- FORK BAR: Booking Persistence & PNR Creation (Lane 5) -->
+  <rect x="1220" y="725" width="215" height="7" rx="3" fill="#ffffff" />
+  <text x="1327" y="720" fill="#38bdf8" font-size="9.5" font-weight="bold" font-family="monospace" text-anchor="middle">UML FORK: PARALLEL PERSISTENCE</text>
+  <line x1="1327" y1="705" x2="1327" y2="725" stroke="#ffffff" stroke-width="2" />
+
+  <!-- Action 1: Generate Cryptographic PNR & Total Fare (Lane 5) -->
+  <g id="act-gen-pnr" class="act-node">
+    <rect x="1220" y="745" width="215" height="42" rx="10" fill="#111116" stroke="#ffffff" stroke-width="1.8" />
+    <text x="1327" y="763" fill="#ffffff" font-size="11" font-weight="bold" font-family="monospace" text-anchor="middle">Generate Unique PNR</text>
+    <text x="1327" y="777" fill="#a1a1aa" font-size="9" font-family="monospace" text-anchor="middle">Secure Alphanumeric Hash</text>
+  </g>
+  <line x1="1275" y1="732" x2="1275" y2="745" stroke="#ffffff" stroke-width="1.8" marker-end="url(#arrow-white)" />
+
+  <!-- Action 2: Persist Booking & Passenger Entities (Lane 5) -->
+  <g id="act-save-booking" class="act-node">
+    <rect x="1220" y="800" width="215" height="44" rx="10" fill="#111116" stroke="#ffffff" stroke-width="1.8" />
+    <text x="1327" y="818" fill="#ffffff" font-size="11" font-weight="bold" font-family="monospace" text-anchor="middle">Persist in booking_db</text>
+    <text x="1327" y="833" fill="#a1a1aa" font-size="9" font-family="monospace" text-anchor="middle">CascadeType.ALL to Passengers</text>
+  </g>
+  <line x1="1327" y1="787" x2="1327" y2="800" stroke="#ffffff" stroke-width="1.8" marker-end="url(#arrow-white)" />
+
+  <!-- JOIN BAR: Synchronization after DB Write (Lane 5) -->
+  <rect x="1220" y="860" width="215" height="7" rx="3" fill="#ffffff" />
+  <line x1="1327" y1="844" x2="1327" y2="860" stroke="#ffffff" stroke-width="2" />
+  <line x1="1327" y1="867" x2="1327" y2="885" stroke="#ffffff" stroke-width="2" marker-end="url(#arrow-white)" />
+
+  <!-- Action: Return Booking Confirmation DTO (Lane 5) -->
+  <g id="act-booking-conf" class="act-node">
+    <rect x="1220" y="885" width="215" height="42" rx="10" fill="#111116" stroke="#ffffff" stroke-width="1.8" />
+    <text x="1327" y="903" fill="#ffffff" font-size="11" font-weight="bold" font-family="monospace" text-anchor="middle">Return 201 Created</text>
+    <text x="1327" y="917" fill="#4ade80" font-size="9" font-family="monospace" text-anchor="middle">PNR, Status=BOOKED, TotalFare</text>
+  </g>
+
+  <!-- Edge: Lane 5 -> Lane 1 (Receive Ticket Confirmation) -->
+  <path d="M 1220 906 L 307 906" fill="none" stroke="#4ade80" stroke-width="2" marker-end="url(#arrow-white)" />
+  <rect x="680" y="894" width="180" height="20" rx="3" fill="#082010" stroke="#4ade80" stroke-width="0.8" />
+  <text x="770" y="908" fill="#4ade80" font-size="9" font-family="monospace" text-anchor="middle">Ticket Confirmed with PNR</text>
+
+  <!-- Action: Receive & Store PNR (Lane 1) -->
+  <g id="act-ticket-stored" class="act-node">
+    <rect x="75" y="885" width="232" height="44" rx="10" fill="#111116" stroke="#ffffff" stroke-width="1.8" />
+    <text x="191" y="903" fill="#ffffff" font-size="11.5" font-weight="bold" font-family="monospace" text-anchor="middle">Reservation Confirmed</text>
+    <text x="191" y="918" fill="#4ade80" font-size="9" font-family="monospace" text-anchor="middle">Displays PNR &amp; E-Ticket</text>
+  </g>
+
+  <!-- ==================================================================== -->
+  <!-- AIRPORT WEB CHECK-IN SUB-WORKFLOW (Lane 1 & Lane 6) -->
+  <!-- ==================================================================== -->
+  <!-- Edge: Traveler decides to Check-in (T+24h) -->
+  <line x1="191" y1="929" x2="191" y2="960" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrow-cyan)" />
+
+  <!-- Action: Request Web Check-In (Lane 1) -->
+  <g id="act-req-checkin" class="act-node">
+    <rect x="75" y="960" width="232" height="44" rx="10" fill="#111116" stroke="#ffffff" stroke-width="1.8" />
+    <text x="191" y="978" fill="#ffffff" font-size="11.5" font-weight="bold" font-family="monospace" text-anchor="middle">Initiate Web Check-In</text>
+    <text x="191" y="993" fill="#38bdf8" font-size="9" font-family="monospace" text-anchor="middle">Submit PNR &amp; Preferred Seat (12A)</text>
+  </g>
+
+  <!-- Edge: Lane 1 -> Gateway -> Check-in Service (Lane 6) -->
+  <path d="M 307 982 L 1490 982" fill="none" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrow-cyan)" />
+  <rect x="850" y="970" width="180" height="20" rx="3" fill="#0c2d48" stroke="#38bdf8" stroke-width="0.8" />
+  <text x="940" y="984" fill="#38bdf8" font-size="9" font-family="monospace" text-anchor="middle">POST /api/check-ins (bookingId)</text>
+
+  <!-- Action: Validate Booking & Assign Seat (Lane 6) -->
+  <g id="act-assign-seat" class="act-node">
+    <rect x="1490" y="960" width="235" height="48" rx="12" fill="#111116" stroke="#ffffff" stroke-width="1.8" />
+    <text x="1607" y="980" fill="#ffffff" font-size="11.5" font-weight="bold" font-family="monospace" text-anchor="middle">Verify PNR &amp; Assign Seat</text>
+    <text x="1607" y="995" fill="#a1a1aa" font-size="9" font-family="monospace" text-anchor="middle">Check status='BOOKED', Seat Free</text>
+  </g>
+
+  <!-- Edge: Lane 6 down to Issue Boarding Pass -->
+  <line x1="1607" y1="1008" x2="1607" y2="1025" stroke="#ffffff" stroke-width="2" marker-end="url(#arrow-white)" />
+
+  <!-- Action: Issue Digital QR Boarding Pass (Lane 6) -->
+  <g id="act-issue-bp" class="act-node">
+    <rect x="1490" y="1025" width="235" height="44" rx="12" fill="#111116" stroke="#ffffff" stroke-width="1.8" />
+    <text x="1607" y="1043" fill="#ffffff" font-size="11.5" font-weight="bold" font-family="monospace" text-anchor="middle">Issue Mobile Boarding Pass</text>
+    <text x="1607" y="1058" fill="#4ade80" font-size="9" font-family="monospace" text-anchor="middle">Persist check_in (BP-1001-12A)</text>
+  </g>
+
+  <!-- Edge: Lane 6 -> Lane 1 (Deliver Boarding Pass) -->
+  <path d="M 1490 1047 L 307 1047" fill="none" stroke="#4ade80" stroke-width="2" marker-end="url(#arrow-white)" />
+  <rect x="850" y="1035" width="180" height="20" rx="3" fill="#082010" stroke="#4ade80" stroke-width="0.8" />
+  <text x="940" y="1049" fill="#4ade80" font-size="9" font-family="monospace" text-anchor="middle">Boarding Pass Issued (QR Code)</text>
+
+  <!-- Action: Display Digital Pass & Gate Ready (Lane 1) -->
+  <g id="act-display-pass" class="act-node">
+    <rect x="75" y="1025" width="165" height="44" rx="10" fill="#111116" stroke="#ffffff" stroke-width="1.8" />
+    <text x="157" y="1043" fill="#ffffff" font-size="11.5" font-weight="bold" font-family="monospace" text-anchor="middle">Ready for Boarding</text>
+    <text x="157" y="1058" fill="#4ade80" font-size="9" font-family="monospace" text-anchor="middle">Seat 12A • Gate Ready</text>
+  </g>
+
+  <!-- Activity Final Node (Bullseye Circle) -->
+  <g id="node-final">
+    <line x1="240" y1="1047" x2="280" y2="1047" stroke="#ffffff" stroke-width="2" marker-end="url(#arrow-white)" />
+    <circle cx="295" cy="1047" r="14" fill="#000000" stroke="#ffffff" stroke-width="2" />
+    <circle cx="295" cy="1047" r="8" fill="#4ade80" />
+    <text x="295" y="1075" fill="#4ade80" font-size="9.5" font-weight="bold" font-family="monospace" text-anchor="middle">SUCCESS</text>
+  </g>
+
+  <!-- ==================================================================== -->
+  <!-- LEGEND & UML 2.5 NOTATION BAR -->
+  <!-- ==================================================================== -->
+  <g id="legend-container">
+    <rect x="50" y="1090" width="1700" height="165" rx="8" fill="#0a0a0d" stroke="#ffffff" stroke-width="1.2" />
+    
+    <!-- Legend Header -->
+    <rect x="50" y="1090" width="1700" height="28" rx="8" fill="#18181b" stroke="#ffffff" stroke-width="0.8" />
+    <text x="70" y="1109" fill="#ffffff" font-size="12" font-weight="bold" font-family="monospace">
+      UML 2.5 ACTIVITY DIAGRAM NOTATION LEGEND &amp; CONCURRENCY PROTOCOLS
+    </text>
+    <text x="1730" y="1109" fill="#a1a1aa" font-size="10.5" font-family="monospace" text-anchor="end">
+      AeroBook Microservices Orchestration • ISO/IEC 19505 Standard
+    </text>
+
+    <!-- Col 1: UML Activity Elements -->
+    <g transform="translate(70, 1130)">
+      <text x="0" y="14" fill="#ffffff" font-size="11" font-weight="bold" font-family="monospace">UML 2.5 CONTROL NODES:</text>
+
+      <!-- Initial Node -->
+      <circle cx="15" cy="34" r="8" fill="#ffffff" stroke="#38bdf8" stroke-width="2" />
+      <text x="35" y="38" fill="#e4e4e7" font-size="10" font-family="monospace"><tspan font-weight="bold">Initial Node:</tspan> Workflow initiation trigger.</text>
+
+      <!-- Activity Final Node -->
+      <circle cx="15" cy="62" r="8" fill="#000000" stroke="#ffffff" stroke-width="1.5" />
+      <circle cx="15" cy="62" r="4.5" fill="#4ade80" />
+      <text x="35" y="66" fill="#e4e4e7" font-size="10" font-family="monospace"><tspan font-weight="bold">Activity Final Node:</tspan> Complete end of activity flow.</text>
+
+      <!-- Decision Diamond -->
+      <polygon points="15,82 23,90 15,98 7,90" fill="#18181b" stroke="#ffffff" stroke-width="1.5" />
+      <text x="35" y="94" fill="#e4e4e7" font-size="10" font-family="monospace"><tspan font-weight="bold">Decision / Merge:</tspan> Conditional branching [Guard conditions].</text>
+    </g>
+
+    <!-- Col 2: Synchronization & Action States -->
+    <g transform="translate(560, 1130)">
+      <text x="0" y="14" fill="#ffffff" font-size="11" font-weight="bold" font-family="monospace">SYNCHRONIZATION &amp; ACTIONS:</text>
+
+      <!-- Action State -->
+      <rect x="0" y="24" width="30" height="18" rx="6" fill="#111116" stroke="#ffffff" stroke-width="1.2" />
+      <text x="38" y="37" fill="#e4e4e7" font-size="10" font-family="monospace"><tspan font-weight="bold">Action State:</tspan> Unit of executable computation.</text>
+
+      <!-- Fork / Join Bar -->
+      <rect x="0" y="55" width="30" height="5" rx="2" fill="#ffffff" />
+      <text x="38" y="61" fill="#e4e4e7" font-size="10" font-family="monospace"><tspan font-weight="bold">Fork / Join Bar:</tspan> Concurrent execution &amp; synchronization.</text>
+
+      <!-- Flow Final Node -->
+      <circle cx="15" cy="88" r="7" fill="#000000" stroke="#f87171" stroke-width="1.5" />
+      <line x1="10" y1="83" x2="20" y2="93" stroke="#f87171" stroke-width="1.5" />
+      <line x1="10" y1="93" x2="20" y2="83" stroke="#f87171" stroke-width="1.5" />
+      <text x="38" y="92" fill="#e4e4e7" font-size="10" font-family="monospace"><tspan font-weight="bold">Flow Final Node:</tspan> Terminates single alternative branch.</text>
+    </g>
+
+    <!-- Col 3: Concurrency & Saga Isolation Rules -->
+    <g transform="translate(1080, 1130)">
+      <text x="0" y="14" fill="#ffffff" font-size="11" font-weight="bold" font-family="monospace">CONCURRENCY &amp; RESILIENCE RULES:</text>
+      <text x="0" y="35" fill="#a1a1aa" font-size="9.5" font-family="monospace">• <strong class="text-white">Seat Inventory Race Condition Prevention:</strong> Row-level lock on MySQL flights row.</text>
+      <text x="0" y="52" fill="#a1a1aa" font-size="9.5" font-family="monospace">• <strong class="text-white">Saga Orchestration:</strong> Feign client rollback increments seats if payment fails.</text>
+      <text x="0" y="69" fill="#a1a1aa" font-size="9.5" font-family="monospace">• <strong class="text-white">Idempotent Web Check-In:</strong> Unique boarding_pass_number constraint prevents double-booking.</text>
+      <text x="0" y="86" fill="#a1a1aa" font-size="9.5" font-family="monospace">• <strong class="text-white">Zero Distributed Locks:</strong> Synchronous Feign + Circuit Breaker fallback timeouts.</text>
+    </g>
+  </g>
+</svg>
+      </div>
+      <div class="absolute bottom-3 left-3 bg-zinc-950/80 backdrop-blur border border-zinc-700 px-3 py-1.5 rounded text-xs text-zinc-400 font-mono">
+        💡 Click on any action state box to inspect service details, payload DTOs, and exception handling logic.
+      </div>
+    </div>
+
+    <!-- Right: Step Inspector Drawer -->
+    <div class="xl:col-span-1 border border-zinc-800 rounded-xl bg-zinc-950 p-4 flex flex-col gap-4 shadow-xl">
+      <div class="border-b border-zinc-800 pb-3 flex items-center justify-between">
+        <div>
+          <span id="inspector-badge" class="text-[10px] uppercase font-mono tracking-wider px-2 py-0.5 rounded bg-blue-900/60 text-blue-300 border border-blue-600">Workflow Action</span>
+          <h2 id="inspector-title" class="text-xl font-bold font-mono text-white mt-1">Select an Action</h2>
+        </div>
+        <span id="inspector-lane" class="text-xs text-zinc-500 font-mono"></span>
+      </div>
+
+      <!-- Detail Body -->
+      <div id="inspector-body" class="flex-1 overflow-y-auto flex flex-col gap-3 text-xs">
+        <p class="text-zinc-400 leading-relaxed">
+          Click any action state box in the diagram to inspect its input/output DTO, HTTP endpoints, business rules, and error recovery policies.
+        </p>
+
+        <div class="border border-zinc-800 rounded-lg p-3 bg-zinc-900/50">
+          <h3 class="font-bold text-zinc-200 mb-2 font-mono">Swimlane Architecture Map</h3>
+          <ul class="space-y-1.5 text-zinc-400 font-mono text-[11px]">
+            <li>• <strong class="text-sky-400">1. Client / Traveler:</strong> Web/Mobile frontend UX</li>
+            <li>• <strong class="text-sky-400">2. API Gateway:</strong> Ingress routing &amp; JWT auth</li>
+            <li>• <strong class="text-sky-400">3. Flight Service:</strong> Timetables &amp; atomic seat decrement</li>
+            <li>• <strong class="text-sky-400">4. Fare Service:</strong> Dynamic class &amp; tax calculations</li>
+            <li>• <strong class="text-sky-400">5. Booking Service:</strong> PNR generation &amp; persistence</li>
+            <li>• <strong class="text-sky-400">6. Check-In Service:</strong> Seat allocation &amp; boarding pass</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let scale = 1.0;
+    const svgEl = document.querySelector('#svg-wrapper svg');
+    
+    function zoom(factor) {
+      scale *= factor;
+      scale = Math.min(Math.max(0.5, scale), 3.0);
+      svgEl.style.transform = `scale(${scale})`;
+      svgEl.style.transformOrigin = 'top left';
+    }
+
+    function resetZoom() {
+      scale = 1.0;
+      svgEl.style.transform = 'scale(1.0)';
+    }
+
+    const actionMetadata = {
+      'act-search-criteria': {
+        title: 'Input Flight Search Criteria',
+        lane: 'Traveler / Client UX',
+        endpoint: 'GET /api/flights/search',
+        desc: 'Customer specifies departure city (origin), arrival destination, departure date, and optional cabin class preference (ECONOMY, BUSINESS, FIRST).',
+        payload: '{ origin: "DEL", destination: "BOM", date: "2026-10-15", cabinClass: "ECONOMY" }',
+        rules: 'Date must be today or in the future. Origin and destination must be valid 3-letter IATA airport codes.'
+      },
+      'act-gw-search': {
+        title: 'Gateway Ingress Routing',
+        lane: 'API Gateway (Port 8083)',
+        endpoint: 'Route: /api/flights/**',
+        desc: 'Netty reactive gateway matches URL pattern, checks CORS headers, and routes via Eureka service discovery to lb://FLIGHT-SERVICE.',
+        payload: 'Downstream HTTP GET request with client IP and trace context headers.',
+        rules: 'Public endpoint; does not require Bearer JWT authorization.'
+      },
+      'act-query-flights': {
+        title: 'Query Flight Timetable',
+        lane: 'Flight Service (Port 8087)',
+        endpoint: 'FlightRepository.findBySourceAndDestinationAndDate()',
+        desc: 'Scans flight_db timetable table for active commercial flights matching the route and date with status=SCHEDULED.',
+        payload: 'SELECT * FROM flights WHERE source=? AND destination=? AND DATE(departure_time)=? AND status="SCHEDULED"',
+        rules: 'Indexes on (source, destination, departure_time) accelerate query performance.'
+      },
+      'act-calc-fare': {
+        title: 'Compute Dynamic Fare Breakdown',
+        lane: 'Fare Service (Port 8089)',
+        endpoint: 'GET /api/fares/flight/{flightId}',
+        desc: 'Calculates base seat price for the selected cabin class, applies statutory 18% GST government tax, and deducts promotional discount codes.',
+        payload: 'FareResponse: { baseFare: 5500.00, taxAmount: 990.00, discount: 0.00, totalPerPassenger: 6490.00 }',
+        rules: 'Tax is assessed at 18.00%. Corporate discounts or coupon codes are applied before tax calculation.'
+      },
+      'act-select-flight': {
+        title: 'Select Flight & Add Passengers',
+        lane: 'Traveler / Client UX',
+        endpoint: 'POST /api/bookings payload creation',
+        desc: 'Traveler reviews flight timetable options and pricing, selects a flight, and inputs passenger demographic details (legal name, age, gender).',
+        payload: '{ flightId: 101, cabinClass: "ECONOMY", passengers: [{ firstName: "Asha", lastName: "Khan", age: 28, gender: "FEMALE" }] }',
+        rules: 'Passenger age must be >= 0. Passenger names must match official travel passport.'
+      },
+      'act-gw-auth': {
+        title: 'Verify Bearer JWT Token',
+        lane: 'API Gateway (Port 8083)',
+        endpoint: 'JwtAuthenticationFilter',
+        desc: 'Inspects HTTP Authorization header for Bearer JWT token, validates HMAC-SHA256 signature, and extracts user identity and authorities.',
+        payload: 'Header: Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...',
+        rules: 'If token missing or expired, halts immediately with HTTP 401 Unauthorized.'
+      },
+      'act-booking-ingest': {
+        title: 'Ingest Reservation Request',
+        lane: 'Booking Service (Port 8088)',
+        endpoint: 'POST /api/bookings',
+        desc: 'BookingController receives booking command DTO, asserts authenticated user owns request, and invokes flight-service via OpenFeign.',
+        payload: 'BookingRequestDTO with list of PassengerDTO records.',
+        rules: 'Synchronous REST call to flight-service with 5000ms circuit breaker timeout.'
+      },
+      'act-seat-lock': {
+        title: 'Atomic Row-Level Seat Lock',
+        lane: 'Flight Service (Port 8087)',
+        endpoint: 'PUT /api/flights/{id}/reserve-seats',
+        desc: 'Executes atomic seat capacity verification using MySQL row-level lock (PESSIMISTIC_WRITE) to prevent race conditions.',
+        payload: 'UPDATE flights SET available_seats = available_seats - ? WHERE id = ? AND available_seats >= ?',
+        rules: 'Ensures zero overbooking even during massive concurrent flash sales.'
+      },
+      'act-decrement-seats': {
+        title: 'Decrement Available Seats',
+        lane: 'Flight Service (Port 8087)',
+        endpoint: 'Database Transaction Commit',
+        desc: 'Commits seat decrement in flight_db and returns updated seat inventory count to booking-service.',
+        payload: '{ success: true, remainingSeats: 42 }',
+        rules: 'Atomic ACID commit in InnoDB engine.'
+      },
+      'act-gen-pnr': {
+        title: 'Generate Cryptographic PNR',
+        lane: 'Booking Service (Port 8088)',
+        endpoint: 'PnrGenerator.generatePnr()',
+        desc: 'Constructs an alphanumeric Passenger Name Record string (e.g. PNR-AB789) formatted according to IATA standards.',
+        payload: 'pnr = "PNR-" + UUID.randomUUID().substring(0, 6).toUpperCase()',
+        rules: 'Guaranteed unique via database-level UNIQUE constraint on bookings.pnr.'
+      },
+      'act-save-booking': {
+        title: 'Persist Booking & Passenger Entities',
+        lane: 'Booking Service (Port 8088)',
+        endpoint: 'BookingRepository.save(booking)',
+        desc: 'Persists parent Booking row and cascades insert to child Passenger records in booking_db.',
+        payload: 'INSERT INTO bookings ...; INSERT INTO passengers ... (CascadeType.ALL)',
+        rules: 'OrphanRemoval ensures passenger lifecycle is strictly tied to parent booking reservation.'
+      },
+      'act-booking-conf': {
+        title: 'Return Booking Confirmation DTO',
+        lane: 'Booking Service (Port 8088)',
+        endpoint: 'HTTP 201 Created Response',
+        desc: 'Emits complete booking receipt including PNR number, total fare, confirmation timestamp, and status=BOOKED.',
+        payload: '{ bookingId: 1, pnr: "PNR-AB789", totalFare: 6490.00, status: "BOOKED" }',
+        rules: 'Customer receives instantaneous confirmation.'
+      },
+      'act-req-checkin': {
+        title: 'Initiate Airport Web Check-In',
+        lane: 'Traveler / Client UX',
+        endpoint: 'POST /api/check-ins',
+        desc: 'Traveler opens web/mobile check-in within 24 hours of takeoff, confirms passenger name, and selects physical cabin seat (e.g. 12A).',
+        payload: '{ bookingId: 1, passengerName: "Asha Khan", seatNumber: "12A" }',
+        rules: 'Check-in opens 24 hours prior to scheduled departure time.'
+      },
+      'act-assign-seat': {
+        title: 'Verify PNR & Assign Seat',
+        lane: 'Check-In Service (Port 8090)',
+        endpoint: 'CheckInService.checkInPassenger()',
+        desc: 'Invokes booking-service via OpenFeign to verify reservation is in status BOOKED, then checks seat matrix to confirm seat 12A is vacant.',
+        payload: 'Feign: bookingServiceClient.getBookingById(bookingId)',
+        rules: 'Rejects if reservation is CANCELLED or seat is already occupied.'
+      },
+      'act-issue-bp': {
+        title: 'Issue Mobile QR Boarding Pass',
+        lane: 'Check-In Service (Port 8090)',
+        endpoint: 'BoardingPassGenerator.generate()',
+        desc: 'Creates a unique boarding pass identifier (BP-1001-12A), saves check_in entity, and encodes digital QR barcode payload.',
+        payload: '{ boardingPassNumber: "BP-1001-12A", seatNumber: "12A", status: "CHECKED_IN", qrCode: "DATA:BASE64..." }',
+        rules: 'Unique constraint on boarding_pass_number prevents duplicate passes.'
+      }
+    };
+
+    function inspectAction(key) {
+      const meta = actionMetadata[key];
+      if (!meta) return;
+
+      document.getElementById('inspector-badge').innerText = meta.lane;
+      document.getElementById('inspector-title').innerText = meta.title;
+      document.getElementById('inspector-lane').innerText = meta.endpoint;
+
+      document.getElementById('inspector-body').innerHTML = `
+        <div>
+          <p class="text-zinc-300 leading-relaxed mb-3">${meta.desc}</p>
+        </div>
+
+        <div class="border border-zinc-800 rounded-lg p-3 bg-zinc-900/50 flex flex-col gap-2">
+          <div>
+            <span class="text-[10px] text-zinc-400 uppercase font-mono tracking-wider font-bold">API / Method Signature:</span>
+            <div class="text-sky-400 font-mono text-[11px] mt-0.5">${meta.endpoint}</div>
+          </div>
+          <div>
+            <span class="text-[10px] text-zinc-400 uppercase font-mono tracking-wider font-bold">Business / Validation Rules:</span>
+            <div class="text-zinc-300 font-mono text-[11px] mt-0.5">${meta.rules}</div>
+          </div>
+        </div>
+
+        <div class="mt-2">
+          <div class="flex items-center justify-between mb-1">
+            <h3 class="font-bold text-zinc-200 font-mono uppercase tracking-wider text-[11px]">Payload / Execution Data</h3>
+            <button onclick="navigator.clipboard.writeText(this.nextElementSibling.innerText); alert('Payload copied!')" class="text-[10px] text-sky-400 hover:underline font-mono">Copy</button>
+          </div>
+          <pre class="bg-zinc-900 p-2.5 rounded text-[10px] font-mono text-zinc-300 overflow-x-auto border border-zinc-800">${meta.payload}</pre>
+        </div>
+      `;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      Object.keys(actionMetadata).forEach(k => {
+        const el = document.getElementById(k);
+        if (el) {
+          el.addEventListener('click', () => {
+            document.querySelectorAll('.act-node').forEach(n => n.classList.remove('highlight-active'));
+            el.classList.add('highlight-active');
+            inspectAction(k);
+          });
+        }
+      });
+      inspectAction('act-seat-lock');
+    });
+  </script>
+</body>
+</html>
