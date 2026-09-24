@@ -263,6 +263,23 @@ class BookingServiceImplTest {
     }
 
     @Test
+    @DisplayName("Should retrieve bookings by Flight ID (Passenger Manifest)")
+    void getBookingsByFlightId_Success() {
+        Booking b1 = new Booking();
+        b1.setBookingId(1L);
+        b1.setPnr("AB1001");
+        b1.setFlightId(101L);
+        b1.setStatus(BookingStatus.BOOKED);
+
+        when(bookingRepository.findByFlightId(101L)).thenReturn(List.of(b1));
+
+        List<BookingResponse> responses = bookingService.getBookingsByFlightId(101L);
+
+        assertThat(responses).hasSize(1);
+        assertThat(responses.get(0).getPnr()).isEqualTo("AB1001");
+    }
+
+    @Test
     @DisplayName("Should retrieve all bookings across the airline (Admin operation)")
     void getAllBookings_Success() {
         Booking b1 = new Booking();

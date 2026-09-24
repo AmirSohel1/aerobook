@@ -24,10 +24,18 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * ============================================================================
+ * Flight Booking REST Controller
+ * ============================================================================
+ *
  * REST Controller exposing flight reservation, PNR lookups, user bookings,
- * admin booking oversight, and cancellation operations.
+ * flight passenger manifest retrieval, admin booking oversight, and
+ * cancellation operations.
+ *
+ * @author Aerobook Platform Engineering
+ * @version 1.0.0
  */
-@Tag(name = "Booking Operations", description = "Operations for flight ticket reservations, PNR inquiries, and cancellations")
+@Tag(name = "Booking Operations", description = "Operations for flight ticket reservations, PNR inquiries, manifests, and cancellations")
 @RestController
 @RequestMapping("/api/bookings")
 public class BookingController {
@@ -116,33 +124,33 @@ public class BookingController {
 
     /**
      * Retrieves all bookings across the entire airline system. Restricted to
-     * administrators via the X-User-Role header.
+     * administrators (ROLE_ADMIN) and staff (ROLE_STAFF).
      *
      * @param userRole optional role passed from API Gateway
      * @return 200 OK list of all bookings or 403 FORBIDDEN
      */
     @Operation(
-            summary = "List all bookings across airline (ROLE_ADMIN)",
-            description = "Administrative oversight endpoint to view all passenger bookings in the system. Requires ROLE_ADMIN privilege.",
+            summary = "List all bookings across airline (ROLE_ADMIN & ROLE_STAFF)",
+            description = "Administrative and ground operations oversight endpoint to view all passenger bookings in the system. Requires ROLE_ADMIN or ROLE_STAFF privilege.",
             security = @SecurityRequirement(name = "BearerAuth")
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Bookings retrieved successfully",
                 content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = BookingResponse.class)))),
         @ApiResponse(responseCode = "401", description = "Missing or invalid JWT token"),
-        @ApiResponse(responseCode = "403", description = "Forbidden - Requires ROLE_ADMIN access")
+        @ApiResponse(responseCode = "403", description = "Forbidden - Requires ROLE_ADMIN privileges")
     })
     @GetMapping
     public ResponseEntity<?> getAllBookings(
             @Parameter(hidden = true)
             @RequestHeader(value = "X-User-Role", required = false) String userRole) {
 
-        if (userRole != null && !userRole.isEmpty() && !"ROLE_ADMIN".equals(userRole)) {
+        if (userRole != null && !userRole.isEmpty() && !"ROLE_ADMIN".equals(userRole) && !"ROLE_STAFF".equals(userRole)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse(
                     LocalDateTime.now(),
                     HttpStatus.FORBIDDEN.value(),
                     "Forbidden",
-                    "Access denied: Listing all airline bookings requires ROLE_ADMIN privileges."
+                    "Access denied: Listing all airline bookings requires ROLE_ADMIN privileges or ROLE_STAFF privileges."
             ));
         }
 
@@ -224,6 +232,45 @@ public class BookingController {
             @PathVariable Long userId) {
 
         return ResponseEntity.ok(bookingService.getBookingsByUserId(userId));
+    }
+
+    /**
+     * Retrieves all bookings / passenger manifest for a specific flight
+     * schedule. Accessible by Airport Ground/Operations Staff (ROLE_STAFF) and
+     * Admins (ROLE_ADMIN).
+     *
+     * @param flightId flight database identifier
+     * @param userRole optional role header passed from gateway
+     * @return 200 OK list of {@link BookingResponse}
+     */
+    @Operation(
+            summary = "Get flight passenger manifest by flight ID (Staff & Admin)",
+            description = "Retrieves all booked reservations and passengers on a specific scheduled flight.",
+            security = @SecurityRequirement(name = "BearerAuth")
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Passenger manifest retrieved successfully",
+                content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = BookingResponse.class)))),
+        @ApiResponse(responseCode = "401", description = "Missing or invalid JWT token"),
+        @ApiResponse(responseCode = "403", description = "Forbidden - Requires ROLE_STAFF or ROLE_ADMIN")
+    })
+    @GetMapping("/flight/{flightId}")
+    public ResponseEntity<?> getBookingsByFlight(
+            @Parameter(name = "flightId", description = "Flight database ID", example = "1")
+            @PathVariable Long flightId,
+            @Parameter(hidden = true)
+            @RequestHeader(value = "X-User-Role", required = false) String userRole) {
+
+        if (userRole != null && !userRole.isEmpty() && !"ROLE_ADMIN".equals(userRole) && !"ROLE_STAFF".equals(userRole)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse(
+                    LocalDateTime.now(),
+                    HttpStatus.FORBIDDEN.value(),
+                    "Forbidden",
+                    "Access denied: Viewing flight passenger manifest requires ROLE_ADMIN or ROLE_STAFF privileges."
+            ));
+        }
+
+        return ResponseEntity.ok(bookingService.getBookingsByFlightId(flightId));
     }
 
     /**

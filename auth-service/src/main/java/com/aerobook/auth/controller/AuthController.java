@@ -72,6 +72,12 @@ public class AuthController {
     private String adminRegistrationKey;
 
     /**
+     * Master setup key required to register or elevate accounts to ROLE_STAFF.
+     */
+    @Value("${auth.staff.registration.key:AerobookStaffSetup2026}")
+    private String staffRegistrationKey;
+
+    /**
      * Constructs AuthController with required authentication service
      * dependency.
      *
@@ -220,6 +226,77 @@ public class AuthController {
         }
 
         AuthResponse response = authService.registerAdmin(request);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    /**
+     * Registers or promotes an account to staff authority (ROLE_STAFF).
+     * Strictly requires the secret X-Staff-Setup-Key header.
+     *
+     * @param setupKey secret header matching auth.staff.registration.key
+     * @param request staff account details
+     * @return {@link ResponseEntity} with HTTP 201 Created and staff
+     * {@link AuthResponse}
+     */
+    @Operation(
+            summary = "Register or promote staff account",
+            description = "Registers a new staff member or promotes an existing account to ROLE_STAFF for ground and flight operations. Requires the secret X-Staff-Setup-Key header.",
+            security = {}
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Staff member registered successfully",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = AuthResponse.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden: Invalid or missing X-Staff-Setup-Key",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "400", description = "Validation error",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @PostMapping("/register-staff")
+    public ResponseEntity<?> registerStaff(
+            @Parameter(
+                    name = "X-Staff-Setup-Key",
+                    description = "Secret key required for staff elevation",
+                    required = true,
+                    in = ParameterIn.HEADER,
+                    example = "AerobookStaffSetup2026"
+            )
+            @RequestHeader(value = "X-Staff-Setup-Key", required = false) String setupKey,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Staff account payload",
+                    required = true,
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = RegisterRequest.class),
+                            examples = @ExampleObject(
+                                    name = "Sample Staff Registration",
+                                    summary = "Register airport ground staff",
+                                    value = """
+                                            {
+                                              "firstName": "Ground",
+                                              "lastName": "Officer",
+                                              "email": "staff@aerobook.com",
+                                              "phoneNumber": "9876543201",
+                                              "dateOfBirth": "1994-04-15",
+                                              "nationality": "Indian",
+                                              "password": "Staff@12345"
+                                            }
+                                            """
+                            )
+                    )
+            )
+            @Valid @RequestBody RegisterRequest request
+    ) {
+        if (setupKey == null || !setupKey.equals(staffRegistrationKey)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new ErrorResponse(
+                            LocalDateTime.now(),
+                            HttpStatus.FORBIDDEN.value(),
+                            "Forbidden",
+                            "Invalid or missing staff registration setup key. Access denied."
+                    ));
+        }
+
+        AuthResponse response = authService.registerStaff(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 

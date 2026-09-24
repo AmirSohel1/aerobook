@@ -1,0 +1,15 @@
+com\aerobook\notification\entity\Notification.class
+com\aerobook\notification\enums\NotificationStatus.class
+com\aerobook\notification\exception\GlobalExceptionHandler.class
+com\aerobook\notification\dto\BroadcastRequest.class
+com\aerobook\notification\dto\NotificationResponse.class
+com\aerobook\notification\controller\NotificationController.class
+com\aerobook\notification\enums\NotificationType.class
+com\aerobook\notification\NotificationServiceApplication.class
+com\aerobook\notification\repository\NotificationRepository.class
+com\aerobook\notification\service\impl\NotificationServiceImpl.class
+com\aerobook\notification\service\NotificationService.class
+com\aerobook\notification\dto\NotificationRequest.class
+com\aerobook\notification\ServletInitializer.class
+com\aerobook\notification\dto\ErrorResponse.class
+com\aerobook\notification\config\SwaggerConfig.class

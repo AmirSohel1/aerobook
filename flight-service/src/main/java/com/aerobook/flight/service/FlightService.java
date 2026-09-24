@@ -9,44 +9,58 @@ import com.aerobook.flight.dto.response.FlightResponse;
 /**
  * Service interface for flight management operations.
  */
-public interface FlightService {
 
-    /**
-     * Creates a new flight.
-     *
-     * @param request flight creation request
-     * @return created flight details
-     */
-    FlightResponse createFlight(CreateFlightRequest request);
 
-    /**
-     * Updates an existing flight.
-     *
-     * @param id flight id
-     * @param request updated flight information
-     * @return updated flight details
-     */
-    FlightResponse updateFlight(Long id, UpdateFlightRequest request);
+      public interface FlightService {
 
-    /**
-     * Deletes a flight.
-     *
-     * @param id flight id
-     */
-    void deleteFlight(Long id);
+        /**
+         * Creates a new flight.
+         *
+         * @param request flight creation request
+         * @return created flight details
+         */
+        FlightResponse createFlight(CreateFlightRequest request);
 
-    /**
-     * Fetches flight by id.
-     *
-     * @param id flight id
-     * @return flight details
-     */
-    FlightResponse getFlightById(Long id);
+        /**
+         * Updates an existing flight.
+         *
+         * @param id flight id
+         * @param request updated flight information
+         * @return updated flight details
+         */
+        FlightResponse updateFlight(Long id, UpdateFlightRequest request);
 
-    /**
-     * Fetches all available flights.
-     *
-     * @return list of flights
-     */
-    List<FlightResponse> getAllFlights();
-}
+        /**
+         * Deletes a flight.
+         *
+         * @param id flight id
+         */
+        void deleteFlight(Long id);
+
+        /**
+         * Fetches flight by id.
+         *
+         * @param id flight id
+         * @return flight details
+         */
+        FlightResponse getFlightById(Long id);
+
+        /**
+         * Fetches all available flights.
+         *
+         * @return list of flights
+         */
+        List<FlightResponse> getAllFlights();
+
+        /**
+         * Updates the operational status of a scheduled flight (e.g. BOARDING,
+         * DELAYED, DEPARTED, COMPLETED).
+         *
+         * @param id flight id
+         * @param status target operational status
+         * @return updated flight details
+         */
+        FlightResponse updateFlightStatus(Long id, com.aerobook.flight.enums.FlightStatus status);
+    }
+
+    

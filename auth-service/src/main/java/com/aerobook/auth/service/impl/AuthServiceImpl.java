@@ -209,6 +209,48 @@ public class AuthServiceImpl implements AuthService {
     }
 
     /**
+     * {@inheritDoc}
+     *
+     * <p>
+     * Registers a staff account with {@code ROLE_STAFF} for airport check-in
+     * and flight operational duties.</p>
+     */
+    @Override
+    public AuthResponse registerStaff(RegisterRequest request) {
+        log.info("Processing staff registration for email: {}", request.getEmail());
+        java.util.Optional<Credential> existingCredential
+                = credentialRepository.findByEmail(request.getEmail());
+
+        // If user already exists, update their profile and upgrade their role to ROLE_STAFF
+        if (existingCredential.isPresent()) {
+            Credential credential = existingCredential.get();
+            userClient.updateUser(credential.getUserId(),
+                    new UserCreateRequest(request, Role.ROLE_STAFF.name()));
+            credential.setPassword(
+                    passwordEncoder.encode(request.getPassword()));
+            credential.setRole(Role.ROLE_STAFF);
+            Credential saved = credentialRepository.save(credential);
+            log.info("Existing user {} elevated to ROLE_STAFF", saved.getEmail());
+            return createAuthResponse(saved);
+        }
+
+        // Otherwise, provision a brand-new staff member in user-service and auth-service
+        com.aerobook.auth.dto.UserResponse user = userClient.createUser(
+                new UserCreateRequest(request, Role.ROLE_STAFF.name()));
+        Credential credential = new Credential();
+        credential.setUserId(user.getUserId());
+        credential.setEmail(request.getEmail());
+        credential.setPassword(
+                passwordEncoder.encode(request.getPassword()));
+        credential.setRole(Role.ROLE_STAFF);
+
+        Credential saved = credentialRepository.save(credential);
+        log.info("Staff account successfully provisioned for email: {}, user ID: {}", saved.getEmail(), saved.getUserId());
+
+        return createAuthResponse(saved);
+    }
+
+    /**
      * Helper method to generate both JWT access token and database-backed
      * refresh token.
      *
@@ -385,7 +427,7 @@ public class AuthServiceImpl implements AuthService {
             newRole = Role.valueOf(roleName.toUpperCase().trim());
         } catch (Exception ex) {
             log.warn("Invalid role upgrade attempt '{}' for user ID: {}", roleName, userId);
-            throw new IllegalArgumentException("Invalid role: " + roleName + ". Allowed roles: ROLE_USER, ROLE_ADMIN");
+            throw new IllegalArgumentException("Invalid role: " + roleName + ". Allowed roles: ROLE_USER, ROLE_ADMIN, ROLE_STAFF");
         }
 
         // Step 3: Update role and save changes

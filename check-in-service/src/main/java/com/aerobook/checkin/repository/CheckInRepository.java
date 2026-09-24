@@ -28,4 +28,29 @@ public interface CheckInRepository extends JpaRepository<CheckIn, Long> {
      * @return an {@link Optional} containing the matched {@link CheckIn} entity, or empty
      */
     Optional<CheckIn> findByBookingId(Long bookingId);
+
+    /**
+     * Looks up a check-in record by its unique boarding pass number (e.g. BP-1-12A).
+     * Used by airport gate staff during passenger boarding verification.
+     *
+     * @param boardingPassNumber barcode or boarding pass alphanumeric string
+     * @return an {@link Optional} containing the matched {@link CheckIn} entity, or empty
+     */
+    Optional<CheckIn> findByBoardingPassNumber(String boardingPassNumber);
+
+    /**
+     * Checks if check-in has already been performed for the specified booking identifier.
+     *
+     * @param bookingId unique booking identifier
+     * @return true if record exists, false otherwise
+     */
+    boolean existsByBookingId(Long bookingId);
+
+    /**
+     * Checks if a check-in record exists with the specified boarding pass number.
+     *
+     * @param boardingPassNumber boarding pass string
+     * @return true if record exists, false otherwise
+     */
+    boolean existsByBoardingPassNumber(String boardingPassNumber);
 }

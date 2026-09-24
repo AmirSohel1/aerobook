@@ -57,6 +57,15 @@ public interface BookingService {
     List<BookingResponse> getAllBookings();
 
     /**
+     * Lists all bookings scheduled on a specific flight (Flight Passenger
+     * Manifest).
+     *
+     * @param flightId flight database identifier
+     * @return list of bookings on this flight
+     */
+    List<BookingResponse> getBookingsByFlightId(Long flightId);
+
+    /**
      * Cancels an existing booking. Safeguards against double cancellation and
      * invalid IDs.
      *

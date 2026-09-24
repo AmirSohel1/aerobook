@@ -133,6 +133,7 @@ public class AuthenticationFilter
                 String userRole = jwtUtil.extractAllClaims(authHeader).get("role", String.class);
                 String userEmail = jwtUtil.extractUsername(authHeader);
                 boolean isAdmin = "ROLE_ADMIN".equals(userRole);
+                boolean isStaff = "ROLE_STAFF".equals(userRole);
 
                 // Step 6: Role-Based Access Control (RBAC) Enforcement Rules:
                 // Rule 1: Dedicated admin routes (/api/admin/**) strictly require ROLE_ADMIN
@@ -151,18 +152,25 @@ public class AuthenticationFilter
                 boolean isFareWrite = path.startsWith("/api/fares")
                         && (method != null && !HttpMethod.GET.equals(method));
 
-                // Rule 4: Booking Service: GET /api/bookings (list all bookings across airline) requires ROLE_ADMIN
+                // Rule 4: Booking Service: GET /api/bookings (list all bookings across airline) accessible by ROLE_ADMIN and ROLE_STAFF
                 boolean isBookingListAll = path.equals("/api/bookings") && HttpMethod.GET.equals(method);
 
-                // Rule 5: Check-In Service: GET /api/check-ins (audit all check-ins) requires ROLE_ADMIN
+                // Rule 5: Check-In Service: GET /api/check-ins (audit all check-ins) accessible by ROLE_ADMIN and ROLE_STAFF
                 boolean isCheckInListAll = path.equals("/api/check-ins") && HttpMethod.GET.equals(method);
 
                 // Rule 6: Auth Service: /api/auth/credentials/** (credential audit & role management) requires ROLE_ADMIN
                 boolean isAuthAdmin = path.startsWith("/api/auth/credentials");
 
-                // If any admin-restricted endpoint is targeted by a non-admin, reject with 403 Forbidden
-                if ((isAdminPath || isUserAdminOnly || isFareWrite || isBookingListAll || isCheckInListAll || isAuthAdmin) && !isAdmin) {
+                // Check Admin-only operations
+                if ((isAdminPath || isUserAdminOnly || isFareWrite || isAuthAdmin) && !isAdmin) {
                     log.warn("Forbidden access attempt to '{}' [{}] by user '{}' (Role: '{}')", path, method, userEmail, userRole);
+                    exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
+                    return exchange.getResponse().setComplete();
+                }
+
+                // Check Operations requiring Staff or Admin authority
+                if ((isBookingListAll || isCheckInListAll) && !(isAdmin || isStaff)) {
+                    log.warn("Forbidden access attempt to operational audit '{}' [{}] by user '{}' (Role: '{}')", path, method, userEmail, userRole);
                     exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
                     return exchange.getResponse().setComplete();
                 }

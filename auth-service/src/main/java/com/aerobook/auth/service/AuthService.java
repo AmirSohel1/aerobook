@@ -69,6 +69,17 @@ public interface AuthService {
     AuthResponse registerAdmin(RegisterRequest request);
 
     /**
+     * Registers or promotes an account to {@code ROLE_STAFF} for airport
+     * operations and flight operations management.
+     *
+     * @param request the staff registration request containing credentials and
+     * profile info
+     * @return {@link AuthResponse} containing signed tokens with
+     * {@code ROLE_STAFF} claims
+     */
+    AuthResponse registerStaff(RegisterRequest request);
+
+    /**
      * Authenticates user email and password credentials against BCrypt hashed
      * storage.
      *

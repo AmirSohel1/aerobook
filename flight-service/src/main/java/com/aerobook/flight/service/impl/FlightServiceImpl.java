@@ -180,6 +180,25 @@ public class FlightServiceImpl implements FlightService {
     }
 
     /**
+     * Updates operational status of an existing flight schedule.
+     *
+     * @param id flight database ID
+     * @param status target operational status
+     * @return updated flight response
+     */
+    @Override
+    public FlightResponse updateFlightStatus(Long id, FlightStatus status) {
+        Flight flight = flightRepository.findById(id)
+                .orElseThrow(() -> new FlightNotFoundException("Flight not found with id : " + id));
+
+        flight.setStatus(status);
+        Flight updated = flightRepository.save(flight);
+        log.info("Operational status for Flight ID {} ({}) updated to {}", id, updated.getFlightNumber(), status);
+
+        return mapToResponse(updated);
+    }
+
+    /**
      * Converts Flight Entity to FlightResponse DTO.
      *
      * @param flight Flight entity

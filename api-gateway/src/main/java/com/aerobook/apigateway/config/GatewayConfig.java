@@ -120,6 +120,16 @@ public class GatewayConfig {
                                 new AuthenticationFilter.Config())))
                                 .uri("lb://CHECK-IN-SERVICE"))
                 // ------------------------------------------------------------
+                // 7. Notification Service Route (Port 8091)
+                // ------------------------------------------------------------
+                // Dispatches real-time passenger notices, gate change updates,
+                // and operational flight delay broadcasts.
+                .route("notification-service",
+                        r -> r.path("/api/notifications", "/api/notifications/**")
+                                .filters(f -> f.filter(filter.apply(
+                                new AuthenticationFilter.Config())))
+                                .uri("lb://NOTIFICATION-SERVICE"))
+                // ------------------------------------------------------------
                 // Downstream Swagger / OpenAPI Documentation Proxy Routes
                 // ------------------------------------------------------------
                 // Allows direct retrieval of downstream microservice OpenAPI specs
@@ -148,6 +158,10 @@ public class GatewayConfig {
                         r -> r.path("/v3/api-docs/check-in-service", "/v3/api-docs/check-in-service/**")
                                 .filters(f -> f.rewritePath("/v3/api-docs/check-in-service(?<segment>.*)", "/v3/api-docs${segment}"))
                                 .uri("lb://CHECK-IN-SERVICE"))
+                .route("notification-service-docs",
+                        r -> r.path("/v3/api-docs/notification-service", "/v3/api-docs/notification-service/**")
+                                .filters(f -> f.rewritePath("/v3/api-docs/notification-service(?<segment>.*)", "/v3/api-docs${segment}"))
+                                .uri("lb://NOTIFICATION-SERVICE"))
                 .build();
     }
 }

@@ -1,0 +1,70 @@
+<div
+  class="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-brand-500 selection:text-white antialiased"
+>
+  <!-- Global Top Navigation Header -->
+  <app-navbar
+    (openLogin)="openLogin()"
+    (openRegister)="openRegister()"
+  ></app-navbar>
+
+  <!-- Dynamic Page Content Routed by Angular Router -->
+  <main class="flex-grow">
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- Global Airline Footer -->
+  <footer
+    class="glass-panel border-t border-slate-900/80 py-8 px-4 sm:px-6 lg:px-8 mt-16"
+  >
+    <div
+      class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500"
+    >
+      <div class="flex items-center space-x-3">
+        <div
+          class="w-8 h-8 rounded-xl bg-gradient-to-tr from-brand-600 to-cyan-400 flex items-center justify-center text-white font-bold text-xs shadow-md shadow-brand-500/20"
+        >
+          ✈️
+        </div>
+        <div>
+          <span class="font-bold text-slate-200"
+            >AeroBook Cloud Airline System</span
+          >
+          <span class="mx-2">•</span>
+          <span>Next-Generation Microservices & Angular Platform</span>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-4 text-[11px]">
+        <span
+          >Lead Architect & Engineer:
+          <strong class="text-slate-300">Amir Sohel</strong></span
+        >
+        <span class="text-slate-700">•</span>
+        <span>Spring Cloud 3.2 + Angular 18</span>
+        <span class="text-slate-700">•</span>
+        <span class="text-emerald-400 flex items-center gap-1.5 font-medium">
+          <span
+            class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"
+          ></span>
+          8 Microservices Operational
+        </span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Login Modal Dialog -->
+  @if (showLoginModal) {
+    <app-login-modal
+      (close)="closeModals()"
+      (openRegister)="openRegister()"
+    ></app-login-modal>
+  }
+
+  <!-- Registration Modal Dialog -->
+  @if (showRegisterModal) {
+    <app-register-modal
+      (close)="closeModals()"
+      (openLogin)="openLogin()"
+    ></app-register-modal>
+  }
+</div>

@@ -22,6 +22,14 @@ import java.util.Optional;
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     /**
+     * Resolves a booking reservation by its primary database ID.
+     *
+     * @param bookingId booking primary key ID
+     * @return an {@link Optional} containing the matched {@link Booking}, or empty
+     */
+    Optional<Booking> findByBookingId(Long bookingId);
+
+    /**
      * Resolves a booking reservation by its unique Passenger Name Record (PNR) code.
      *
      * @param pnr alphanumeric PNR string
@@ -36,4 +44,20 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
      * @return list of matching {@link Booking} records
      */
     List<Booking> findByUserId(Long userId);
+
+    /**
+     * Retrieves all reservations scheduled on a specific flight ID (Flight Passenger Manifest).
+     *
+     * @param flightId flight database identifier
+     * @return list of matching {@link Booking} records
+     */
+    List<Booking> findByFlightId(Long flightId);
+
+    /**
+     * Checks if a reservation exists with the given PNR code.
+     *
+     * @param pnr Passenger Name Record
+     * @return true if booking exists, false otherwise
+     */
+    boolean existsByPnr(String pnr);
 }

@@ -19,8 +19,15 @@ public enum FlightStatus {
      */
     CANCELLED,
     /**
+     * Flight is currently boarding passengers at airport gate.
+     */
+    BOARDING,
+    /**
+     * Flight has pushed back from gate and departed.
+     */
+    DEPARTED,
+    /**
      * Flight has completed its route and arrived at destination.
      */
     COMPLETED
-
 }

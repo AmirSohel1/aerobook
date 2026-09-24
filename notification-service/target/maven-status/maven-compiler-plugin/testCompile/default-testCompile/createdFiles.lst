@@ -1,0 +1,3 @@
+com\aerobook\notification\controller\NotificationControllerTest.class
+com\aerobook\notification\NotificationServiceApplicationTests.class
+com\aerobook\notification\service\NotificationServiceImplTest.class

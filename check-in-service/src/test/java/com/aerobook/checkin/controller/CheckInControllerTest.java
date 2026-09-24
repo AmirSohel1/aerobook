@@ -2,7 +2,7 @@ package com.aerobook.checkin.controller;
 
 import com.aerobook.checkin.dto.CheckInRequest;
 import com.aerobook.checkin.entity.CheckIn;
-import com.aerobook.checkin.repository.CheckInRepository;
+import com.aerobook.checkin.service.CheckInService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,18 +16,16 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CheckInControllerTest {
 
     @Mock
-    private CheckInRepository checkInRepository;
+    private CheckInService checkInService;
 
     @InjectMocks
     private CheckInController checkInController;
@@ -65,8 +63,7 @@ class CheckInControllerTest {
 
     @Test
     void checkIn_Success_AssignsSeatAndGeneratesBoardingPass() {
-        when(checkInRepository.findByBookingId(10L)).thenReturn(Optional.empty());
-        when(checkInRepository.save(any(CheckIn.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(checkInService.performCheckIn(checkInRequest)).thenReturn(testCheckIn);
 
         ResponseEntity<CheckIn> response = checkInController.checkIn(checkInRequest);
 
@@ -78,12 +75,12 @@ class CheckInControllerTest {
         assertThat(result.getSeatNumber()).isEqualTo("12A");
         assertThat(result.getBoardingPassNumber()).isEqualTo("BP-10-12A");
         assertThat(result.getStatus()).isEqualTo("CHECKED_IN");
-        verify(checkInRepository).save(any(CheckIn.class));
+        verify(checkInService).performCheckIn(checkInRequest);
     }
 
     @Test
     void getByBooking_Found_ReturnsCheckInRecord() {
-        when(checkInRepository.findByBookingId(10L)).thenReturn(Optional.of(testCheckIn));
+        when(checkInService.getCheckInByBookingId(10L)).thenReturn(testCheckIn);
 
         ResponseEntity<CheckIn> response = checkInController.getByBooking(10L);
 
@@ -94,7 +91,8 @@ class CheckInControllerTest {
 
     @Test
     void getByBooking_NotFound_ThrowsResponseStatusException() {
-        when(checkInRepository.findByBookingId(99L)).thenReturn(Optional.empty());
+        when(checkInService.getCheckInByBookingId(99L))
+                .thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Check-in not found for booking ID: 99"));
 
         assertThatThrownBy(() -> checkInController.getByBooking(99L))
                 .isInstanceOf(ResponseStatusException.class)
@@ -103,7 +101,7 @@ class CheckInControllerTest {
 
     @Test
     void getById_Found_ReturnsCheckInRecord() {
-        when(checkInRepository.findById(1L)).thenReturn(Optional.of(testCheckIn));
+        when(checkInService.getCheckInById(1L)).thenReturn(testCheckIn);
 
         ResponseEntity<CheckIn> response = checkInController.getById(1L);
 
@@ -114,7 +112,7 @@ class CheckInControllerTest {
 
     @Test
     void getAllCheckIns_AdminAllowed_ReturnsList() {
-        when(checkInRepository.findAll()).thenReturn(List.of(testCheckIn));
+        when(checkInService.getAllCheckIns()).thenReturn(List.of(testCheckIn));
 
         ResponseEntity<?> response = checkInController.getAllCheckIns("ROLE_ADMIN");
 
@@ -128,6 +126,31 @@ class CheckInControllerTest {
         ResponseEntity<?> response = checkInController.getAllCheckIns("ROLE_USER");
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
-        verify(checkInRepository, never()).findAll();
+        verify(checkInService, never()).getAllCheckIns();
+    }
+
+    @Test
+    void getAllCheckIns_StaffAllowed_ReturnsList() {
+        when(checkInService.getAllCheckIns()).thenReturn(List.of(testCheckIn));
+
+        ResponseEntity<?> response = checkInController.getAllCheckIns("ROLE_STAFF");
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        List<?> checkIns = (List<?>) response.getBody();
+        assertThat(checkIns).hasSize(1);
+    }
+
+    @Test
+    void verifyBoardingPass_Success_MarksBoarded() {
+        testCheckIn.setStatus("BOARDED");
+        when(checkInService.verifyBoardingPass("BP-10-12A")).thenReturn(testCheckIn);
+
+        ResponseEntity<?> response = checkInController.verifyBoardingPass("BP-10-12A", "ROLE_STAFF");
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        CheckIn result = (CheckIn) response.getBody();
+        assertThat(result).isNotNull();
+        assertThat(result.getStatus()).isEqualTo("BOARDED");
+        verify(checkInService).verifyBoardingPass("BP-10-12A");
     }
 }

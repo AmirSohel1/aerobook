@@ -3,7 +3,6 @@ package com.aerobook.booking.controller;
 import com.aerobook.booking.dto.BookingRequest;
 import com.aerobook.booking.dto.BookingResponse;
 import com.aerobook.booking.dto.PassengerRequest;
-import com.aerobook.booking.dto.PassengerResponse;
 import com.aerobook.booking.exception.GlobalExceptionHandler;
 import com.aerobook.booking.exception.ResourceNotFoundException;
 import com.aerobook.booking.service.BookingService;
@@ -25,12 +24,12 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayName("Booking Controller Unit Tests")
 class BookingControllerTest {
 
     private MockMvc mockMvc;
@@ -105,7 +104,6 @@ class BookingControllerTest {
         BookingRequest request = new BookingRequest();
         request.setUserId(1L);
         request.setFlightId(101L);
-        // Passengers list is empty
 
         mockMvc.perform(post("/api/bookings")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -172,6 +170,18 @@ class BookingControllerTest {
     }
 
     @Test
+    @DisplayName("GET /api/bookings with ROLE_STAFF header should allow listing all bookings")
+    void getAllBookings_StaffAllowed_ReturnsOk() throws Exception {
+        when(bookingService.getAllBookings()).thenReturn(List.of(sampleBookingResponse));
+
+        mockMvc.perform(get("/api/bookings")
+                .header("X-User-Role", "ROLE_STAFF"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].pnr").value("AB1001"));
+    }
+
+    @Test
     @DisplayName("GET /api/bookings with ROLE_USER header should return 403 Forbidden")
     void getAllBookings_UserForbidden_Returns403() throws Exception {
         mockMvc.perform(get("/api/bookings")
@@ -180,6 +190,29 @@ class BookingControllerTest {
                 .andExpect(jsonPath("$.status").value(403))
                 .andExpect(jsonPath("$.error").value("Forbidden"))
                 .andExpect(jsonPath("$.message", containsString("ROLE_ADMIN privileges")));
+    }
+
+    @Test
+    @DisplayName("GET /api/bookings/flight/{flightId} with ROLE_STAFF should return flight passenger manifest")
+    void getBookingsByFlight_StaffAllowed_ReturnsManifest() throws Exception {
+        when(bookingService.getBookingsByFlightId(101L)).thenReturn(List.of(sampleBookingResponse));
+
+        mockMvc.perform(get("/api/bookings/flight/101")
+                .header("X-User-Role", "ROLE_STAFF"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].pnr").value("AB1001"));
+    }
+
+    @Test
+    @DisplayName("GET /api/bookings/flight/{flightId} with ROLE_USER should return 403 Forbidden")
+    void getBookingsByFlight_UserForbidden_Returns403() throws Exception {
+        mockMvc.perform(get("/api/bookings/flight/101")
+                .header("X-User-Role", "ROLE_USER"))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.status").value(403))
+                .andExpect(jsonPath("$.error").value("Forbidden"))
+                .andExpect(jsonPath("$.message", containsString("ROLE_ADMIN or ROLE_STAFF")));
     }
 
     @Test

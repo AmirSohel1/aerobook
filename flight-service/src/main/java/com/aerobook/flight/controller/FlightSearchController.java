@@ -142,4 +142,51 @@ public class FlightSearchController {
         FlightResponse flight = flightService.getFlightById(id);
         return ResponseEntity.ok(flight);
     }
+
+    /**
+     * Updates the operational flight status (e.g. SCHEDULED, BOARDING, DELAYED,
+     * DEPARTED, COMPLETED, CANCELLED). Accessible by Airport Operations Staff
+     * (ROLE_STAFF) and Airline Administrators (ROLE_ADMIN).
+     *
+     * @param id flight database ID
+     * @param status target flight status string
+     * @param userRoleHeader role header propagated from gateway
+     * @return 200 OK with updated {@link FlightResponse}
+     */
+    @Operation(
+            summary = "Update flight operational status (Staff & Admin)",
+            description = "Allows airport ground staff and administrators to transition flight states (BOARDING, DELAYED, DEPARTED, COMPLETED)."
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Flight status updated successfully",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = FlightResponse.class))),
+        @ApiResponse(responseCode = "400", description = "Invalid flight status value"),
+        @ApiResponse(responseCode = "403", description = "Forbidden: Insufficient role privileges"),
+        @ApiResponse(responseCode = "404", description = "Flight not found")
+    })
+    @org.springframework.web.bind.annotation.PutMapping("/{id}/status")
+    public ResponseEntity<?> updateFlightStatus(
+            @Parameter(name = "id", description = "Flight database ID", example = "1", required = true)
+            @PathVariable Long id,
+            @Parameter(name = "status", description = "Target operational status", example = "BOARDING", required = true)
+            @RequestParam String status,
+            @Parameter(hidden = true)
+            @org.springframework.web.bind.annotation.RequestHeader(value = "X-User-Role", required = false) String userRoleHeader) {
+
+        if (userRoleHeader != null && !userRoleHeader.isBlank()
+                && !"ROLE_ADMIN".equals(userRoleHeader) && !"ROLE_STAFF".equals(userRoleHeader)) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN)
+                    .body("Access denied: Updating flight operational status requires ROLE_STAFF or ROLE_ADMIN privileges.");
+        }
+
+        com.aerobook.flight.enums.FlightStatus flightStatus;
+        try {
+            flightStatus = com.aerobook.flight.enums.FlightStatus.valueOf(status.toUpperCase().trim());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Invalid flight status: " + status);
+        }
+
+        FlightResponse updated = flightService.updateFlightStatus(id, flightStatus);
+        return ResponseEntity.ok(updated);
+    }
 }

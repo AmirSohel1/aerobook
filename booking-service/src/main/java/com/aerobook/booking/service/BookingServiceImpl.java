@@ -162,6 +162,13 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    public List<BookingResponse> getBookingsByFlightId(Long flightId) {
+        return bookingRepository.findByFlightId(flightId).stream()
+                .map(booking -> convertToResponse(booking, null))
+                .toList();
+    }
+
+    @Override
     public String cancelBooking(Long bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + bookingId));

@@ -3,7 +3,7 @@ package com.aerobook.checkin.controller;
 import com.aerobook.checkin.dto.CheckInRequest;
 import com.aerobook.checkin.dto.ErrorResponse;
 import com.aerobook.checkin.entity.CheckIn;
-import com.aerobook.checkin.repository.CheckInRepository;
+import com.aerobook.checkin.service.CheckInService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -18,21 +18,19 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
 /**
- * REST Controller exposing passenger flight check-in, boarding pass generation,
- * and reservation check-in status lookups.
  * ============================================================================
  * Airport Check-In & Boarding Pass REST Controller
  * ============================================================================
  *
  * REST Controller exposing passenger flight check-in, seat confirmation,
- * boarding pass generation, and administrative check-in auditing.
+ * boarding pass generation, departure gate verifications, and administrative
+ * auditing.
  *
  * <p>
  * Endpoint Directory:
@@ -42,27 +40,29 @@ import java.util.Map;
  * generation</li>
  * <li>{@code GET /booking/{bookingId}} - Check-in lookup by reservation ID</li>
  * <li>{@code GET /{id}} - Check-in lookup by primary record ID</li>
- * <li>{@code GET /} - Master check-in audit directory ({@code ROLE_ADMIN}
- * only)</li>
+ * <li>{@code GET /} - Master check-in audit directory ({@code ROLE_ADMIN} or
+ * {@code ROLE_STAFF})</li>
+ * <li>{@code POST /verify} - Departure gate boarding pass scanner
+ * ({@code ROLE_ADMIN} or {@code ROLE_STAFF})</li>
  * </ul>
  *
  * @author Aerobook Platform Engineering
  * @version 1.0.0
  */
-@Tag(name = "Check-In Operations", description = "Operations for flight passenger check-in and confirmation lookup")
+@Tag(name = "Check-In Operations", description = "Operations for flight passenger check-in, boarding pass verification, and confirmation lookup")
 @RestController
 @RequestMapping("/api/check-ins")
 public class CheckInController {
 
-    private final CheckInRepository checkInRepository;
+    private final CheckInService checkInService;
 
     /**
-     * Constructor injection for database repository.
+     * Constructor injection for check-in business service.
      *
-     * @param checkInRepository check-in data access repository
+     * @param checkInService check-in business service
      */
-    public CheckInController(CheckInRepository checkInRepository) {
-        this.checkInRepository = checkInRepository;
+    public CheckInController(CheckInService checkInService) {
+        this.checkInService = checkInService;
     }
 
     /**
@@ -128,25 +128,7 @@ public class CheckInController {
             )
             @Valid @RequestBody CheckInRequest request) {
 
-        // 1. Check if record already exists for this booking ID (idempotency)
-        CheckIn checkIn = checkInRepository.findByBookingId(request.getBookingId())
-                .orElseGet(CheckIn::new);
-
-        // 2. Normalize requested seat or default to 12A
-        String seat = (request.getSeatNumber() != null && !request.getSeatNumber().isBlank())
-                ? request.getSeatNumber().toUpperCase()
-                : "12A";
-
-        // 3. Assign check-in coordinates and generate unique boarding pass reference
-        checkIn.setBookingId(request.getBookingId());
-        checkIn.setPassengerName(request.getPassengerName());
-        checkIn.setSeatNumber(seat);
-        checkIn.setBoardingPassNumber("BP-" + request.getBookingId() + "-" + seat);
-        checkIn.setStatus("CHECKED_IN");
-        checkIn.setCheckedInAt(LocalDateTime.now());
-
-        // 4. Persist and return confirmed check-in record
-        CheckIn saved = checkInRepository.save(checkIn);
+        CheckIn saved = checkInService.performCheckIn(request);
         return ResponseEntity.ok(saved);
     }
 
@@ -156,8 +138,6 @@ public class CheckInController {
      *
      * @param bookingId unique booking ID
      * @return {@link ResponseEntity} with matched {@link CheckIn} entity
-     * @throws ResponseStatusException if no check-in exists for the given
-     * booking
      */
     @Operation(
             summary = "Get check-in record by booking ID",
@@ -176,10 +156,7 @@ public class CheckInController {
             @Parameter(name = "bookingId", description = "Booking database ID", example = "1")
             @PathVariable Long bookingId) {
 
-        CheckIn checkIn = checkInRepository.findByBookingId(bookingId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Check-in not found for booking ID: " + bookingId));
-
-        return ResponseEntity.ok(checkIn);
+        return ResponseEntity.ok(checkInService.getCheckInByBookingId(bookingId));
     }
 
     /**
@@ -188,7 +165,6 @@ public class CheckInController {
      *
      * @param id unique check-in database ID
      * @return {@link ResponseEntity} with matched {@link CheckIn} entity
-     * @throws ResponseStatusException if no check-in exists with given ID
      */
     @Operation(
             summary = "Get check-in record by ID",
@@ -207,29 +183,27 @@ public class CheckInController {
             @Parameter(name = "id", description = "Check-in database ID", example = "1")
             @PathVariable Long id) {
 
-        CheckIn checkIn = checkInRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Check-in record not found with ID: " + id));
-
-        return ResponseEntity.ok(checkIn);
+        return ResponseEntity.ok(checkInService.getCheckInById(id));
     }
 
     /**
-     * Administrative oversight endpoint returning all passenger check-in
-     * confirmations. Strictly restricted to {@code ROLE_ADMIN} authority.
+     * Administrative and staff oversight endpoint returning all passenger
+     * check-in confirmations. Restricted to {@code ROLE_ADMIN} or
+     * {@code ROLE_STAFF} authority.
      *
      * @param userRole downstream role header forwarded by API Gateway
      * @return list of all {@link CheckIn} entities or HTTP 403 Forbidden
      */
     @Operation(
-            summary = "List all check-ins across airline (ROLE_ADMIN)",
-            description = "Administrative audit endpoint returning all passenger check-in confirmations. Requires ROLE_ADMIN authority.",
+            summary = "List all check-ins across airline (ROLE_ADMIN & ROLE_STAFF)",
+            description = "Administrative audit endpoint returning all passenger check-in confirmations. Requires ROLE_ADMIN or ROLE_STAFF authority.",
             security = @SecurityRequirement(name = "BearerAuth")
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "List of all check-in records",
                 content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CheckIn.class)))),
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
-        @ApiResponse(responseCode = "403", description = "Forbidden: Requires ROLE_ADMIN authority",
+        @ApiResponse(responseCode = "403", description = "Forbidden: Requires ROLE_ADMIN or ROLE_STAFF authority",
                 content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     })
     @GetMapping
@@ -237,17 +211,58 @@ public class CheckInController {
             @Parameter(hidden = true)
             @RequestHeader(value = "X-User-Role", required = false) String userRole) {
 
-        // Validate administrative role before returning full check-in list
-        if (userRole != null && !userRole.isEmpty() && !"ROLE_ADMIN".equals(userRole)) {
+        // Validate administrative or staff role before returning full check-in list
+        if (userRole != null && !userRole.isEmpty() && !"ROLE_ADMIN".equals(userRole) && !"ROLE_STAFF".equals(userRole)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse(
                     LocalDateTime.now(),
                     HttpStatus.FORBIDDEN.value(),
                     "Forbidden",
-                    "Access denied: Listing all passenger check-ins requires ROLE_ADMIN authority."
+                    "Access denied: Listing passenger check-ins requires ROLE_ADMIN or ROLE_STAFF authority."
             ));
         }
 
-        List<CheckIn> checkIns = checkInRepository.findAll();
+        List<CheckIn> checkIns = checkInService.getAllCheckIns();
         return ResponseEntity.ok(checkIns);
+    }
+
+    /**
+     * Verifies a passenger's boarding pass at the departure gate and updates
+     * status to BOARDED. Accessible by Airport Operations Staff (ROLE_STAFF)
+     * and Admins (ROLE_ADMIN).
+     *
+     * @param boardingPassNumber unique boarding pass identifier (e.g. BP-1-12A)
+     * @param userRole role header propagated by API Gateway
+     * @return 200 OK with confirmed and boarded {@link CheckIn} entity
+     */
+    @Operation(
+            summary = "Verify boarding pass and mark as BOARDED (Staff & Admin)",
+            description = "Airport gate verification endpoint. Validates boarding pass reference and marks passenger as BOARDED.",
+            security = @SecurityRequirement(name = "BearerAuth")
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Boarding pass verified and passenger marked as BOARDED",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = CheckIn.class))),
+        @ApiResponse(responseCode = "404", description = "Boarding pass not found",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden: Requires ROLE_STAFF or ROLE_ADMIN")
+    })
+    @PostMapping("/verify")
+    public ResponseEntity<?> verifyBoardingPass(
+            @Parameter(name = "boardingPassNumber", description = "Boarding pass code (e.g. BP-1-12A)", required = true)
+            @RequestParam String boardingPassNumber,
+            @Parameter(hidden = true)
+            @RequestHeader(value = "X-User-Role", required = false) String userRole) {
+
+        if (userRole != null && !userRole.isEmpty() && !"ROLE_ADMIN".equals(userRole) && !"ROLE_STAFF".equals(userRole)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse(
+                    LocalDateTime.now(),
+                    HttpStatus.FORBIDDEN.value(),
+                    "Forbidden",
+                    "Access denied: Verifying boarding passes requires ROLE_STAFF or ROLE_ADMIN privileges."
+            ));
+        }
+
+        CheckIn checkIn = checkInService.verifyBoardingPass(boardingPassNumber);
+        return ResponseEntity.ok(checkIn);
     }
 }

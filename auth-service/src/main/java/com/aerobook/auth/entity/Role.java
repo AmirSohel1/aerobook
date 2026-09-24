@@ -24,6 +24,10 @@ public enum Role {
      */
     ROLE_USER,
     /**
+     * Airport operations and flight crew staff authority.
+     */
+    ROLE_STAFF,
+    /**
      * Administrator security authority with platform-wide write privileges.
      */
     ROLE_ADMIN
