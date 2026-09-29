@@ -4,6 +4,8 @@ import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from './shared/components/navbar/navbar.component';
 import { LoginModalComponent } from './shared/components/login-modal/login-modal.component';
 import { RegisterModalComponent } from './shared/components/register-modal/register-modal.component';
+import { ThemeService } from './core/services/theme.service';
+import { AuthService } from './core/services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -14,21 +16,21 @@ import { RegisterModalComponent } from './shared/components/register-modal/regis
 })
 export class AppComponent {
   title = 'AeroBook';
-  showLoginModal = false;
-  showRegisterModal = false;
+
+  constructor(
+    public themeService: ThemeService,
+    public authService: AuthService
+  ) {}
 
   openLogin(): void {
-    this.showLoginModal = true;
-    this.showRegisterModal = false;
+    this.authService.openLogin();
   }
 
   openRegister(): void {
-    this.showRegisterModal = true;
-    this.showLoginModal = false;
+    this.authService.openRegister();
   }
 
   closeModals(): void {
-    this.showLoginModal = false;
-    this.showRegisterModal = false;
+    this.authService.closeModals();
   }
 }

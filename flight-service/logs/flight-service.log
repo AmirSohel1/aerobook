@@ -1,0 +1,95 @@
+2026-09-29 18:50:31.928 INFO  [kground-preinit] [trace:] o.h.validator.internal.util.Version      : HV000001: Hibernate Validator 8.0.3.Final
+2026-09-29 18:50:32.036 INFO  [           main] [trace:] c.a.flight.FlightServiceApplication      : Starting FlightServiceApplication using Java 20.0.2 with PID 24632 (D:\aerobook\flight-service\target\classes started by hp in D:\aerobook\flight-service)
+2026-09-29 18:50:32.037 DEBUG [           main] [trace:] c.a.flight.FlightServiceApplication      : Running with Spring Boot v3.5.5, Spring v6.2.10
+2026-09-29 18:50:32.039 INFO  [           main] [trace:] c.a.flight.FlightServiceApplication      : No active profile set, falling back to 1 default profile: "default"
+2026-09-29 18:50:34.014 INFO  [           main] [trace:] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-29 18:50:34.378 INFO  [           main] [trace:] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 345 ms. Found 2 JPA repository interfaces.
+2026-09-29 18:50:34.876 INFO  [           main] [trace:] o.s.cloud.context.scope.GenericScope     : BeanFactory id=ba989d5c-108a-3255-b01c-6e33e3c4e579
+2026-09-29 18:50:35.682 INFO  [           main] [trace:] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8087 (http)
+2026-09-29 18:50:35.711 INFO  [           main] [trace:] o.a.coyote.http11.Http11NioProtocol      : Initializing ProtocolHandler ["http-nio-8087"]
+2026-09-29 18:50:35.714 INFO  [           main] [trace:] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-09-29 18:50:35.716 INFO  [           main] [trace:] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.44]
+2026-09-29 18:50:35.938 INFO  [           main] [trace:] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-09-29 18:50:35.938 INFO  [           main] [trace:] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 3815 ms
+2026-09-29 18:50:36.300 INFO  [           main] [trace:] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-09-29 18:50:36.437 INFO  [           main] [trace:] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.26.Final
+2026-09-29 18:50:36.514 INFO  [           main] [trace:] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-09-29 18:50:37.113 INFO  [           main] [trace:] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-09-29 18:50:37.179 INFO  [           main] [trace:] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-09-29 18:50:37.805 INFO  [           main] [trace:] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7b58d678
+2026-09-29 18:50:37.808 INFO  [           main] [trace:] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-09-29 18:50:37.983 INFO  [           main] [trace:] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0.46
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-09-29 18:50:39.869 INFO  [           main] [trace:] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-09-29 18:50:40.015 INFO  [           main] [trace:] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-09-29 18:50:43.160 INFO  [           main] [trace:] DiscoveryClientOptionalArgsConfiguration : Eureka HTTP Client uses RestTemplate.
+2026-09-29 18:50:43.243 WARN  [           main] [trace:] iguration$LoadBalancerCaffeineWarnLogger : Spring Cloud LoadBalancer is currently working with the default cache. While this cache implementation is useful for development and tests, it's recommended to use Caffeine cache in production.You can switch to using Caffeine cache, by adding it and org.springframework.cache.caffeine.CaffeineCacheManager to the classpath.
+2026-09-29 18:50:43.329 INFO  [           main] [trace:] o.s.c.n.eureka.InstanceInfoFactory       : Setting initial instance status as: STARTING
+2026-09-29 18:50:43.376 INFO  [           main] [trace:] com.netflix.discovery.DiscoveryClient    : Initializing Eureka in region us-east-1
+2026-09-29 18:50:43.383 INFO  [           main] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 18:50:43.401 INFO  [           main] [trace:] com.netflix.discovery.DiscoveryClient    : Disable delta property : false
+2026-09-29 18:50:43.401 INFO  [           main] [trace:] com.netflix.discovery.DiscoveryClient    : Single vip registry refresh property : null
+2026-09-29 18:50:43.401 INFO  [           main] [trace:] com.netflix.discovery.DiscoveryClient    : Force full registry fetch : false
+2026-09-29 18:50:43.402 INFO  [           main] [trace:] com.netflix.discovery.DiscoveryClient    : Application is null : false
+2026-09-29 18:50:43.402 INFO  [           main] [trace:] com.netflix.discovery.DiscoveryClient    : Registered Applications size is zero : true
+2026-09-29 18:50:43.402 INFO  [           main] [trace:] com.netflix.discovery.DiscoveryClient    : Application version is -1: true
+2026-09-29 18:50:43.402 INFO  [           main] [trace:] com.netflix.discovery.DiscoveryClient    : Getting all instance registry info from the eureka server
+2026-09-29 18:50:44.254 INFO  [           main] [trace:] com.netflix.discovery.DiscoveryClient    : The response status is 200
+2026-09-29 18:50:44.265 INFO  [           main] [trace:] com.netflix.discovery.DiscoveryClient    : Starting heartbeat executor: renew interval is: 30
+2026-09-29 18:50:44.269 INFO  [           main] [trace:] c.n.discovery.InstanceInfoReplicator     : InstanceInfoReplicator onDemand update allowed rate per min is 4
+2026-09-29 18:50:44.274 INFO  [           main] [trace:] com.netflix.discovery.DiscoveryClient    : Discovery Client initialized at timestamp 1790688044272 with initial instances count: 5
+2026-09-29 18:50:44.284 INFO  [           main] [trace:] o.s.c.n.e.s.EurekaServiceRegistry        : Registering application FLIGHT-SERVICE with eureka with status UP
+2026-09-29 18:50:44.287 INFO  [           main] [trace:] com.netflix.discovery.DiscoveryClient    : Saw local status change event StatusChangeEvent [timestamp=1790688044287, current=UP, previous=STARTING]
+2026-09-29 18:50:44.290 INFO  [           main] [trace:] o.a.coyote.http11.Http11NioProtocol      : Starting ProtocolHandler ["http-nio-8087"]
+2026-09-29 18:50:44.337 INFO  [foReplicator-%d] [trace:] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_FLIGHT-SERVICE/Sir-Amir:flight-service:8087: registering service...
+2026-09-29 18:50:44.363 INFO  [           main] [trace:] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8087 (http) with context path '/'
+2026-09-29 18:50:44.365 INFO  [           main] [trace:] .s.c.n.e.s.EurekaAutoServiceRegistration : Updating port to 8087
+2026-09-29 18:50:44.471 INFO  [foReplicator-%d] [trace:] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_FLIGHT-SERVICE/Sir-Amir:flight-service:8087 - registration status: 204
+2026-09-29 18:50:44.945 INFO  [           main] [trace:] c.a.flight.FlightServiceApplication      : Started FlightServiceApplication in 14.455 seconds (process running for 15.594)
+2026-09-29 18:52:38.230 INFO  [nio-8087-exec-3] [trace:] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-09-29 18:52:38.231 INFO  [nio-8087-exec-3] [trace:] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-09-29 18:52:38.236 INFO  [nio-8087-exec-3] [trace:] o.s.web.servlet.DispatcherServlet        : Completed initialization in 5 ms
+2026-09-29 18:55:43.423 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 19:00:43.434 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 19:05:43.450 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 19:10:43.459 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 19:15:43.466 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 19:20:43.472 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 19:24:14.069 WARN  [nio-8087-exec-2] [trace:] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 1265, SQLState: 01000
+2026-09-29 19:24:14.070 ERROR [nio-8087-exec-2] [trace:] o.h.engine.jdbc.spi.SqlExceptionHelper   : Data truncated for column 'status' at row 1
+2026-09-29 19:24:14.476 WARN  [nio-8087-exec-7] [trace:] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 1265, SQLState: 01000
+2026-09-29 19:24:14.477 ERROR [nio-8087-exec-7] [trace:] o.h.engine.jdbc.spi.SqlExceptionHelper   : Data truncated for column 'status' at row 1
+2026-09-29 19:25:43.473 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 19:30:43.478 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 19:35:43.483 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 19:40:43.488 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 19:45:43.494 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 19:50:43.497 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 19:55:43.499 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 20:00:43.513 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 20:05:43.517 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 20:10:43.530 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 20:24:28.394 WARN  [l-1:housekeeper] [trace:] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=12m49s217ms11µs800ns).
+2026-09-29 20:28:22.124 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 20:33:22.125 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 20:38:22.141 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 20:43:22.154 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 20:48:22.166 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 20:53:22.172 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 20:58:22.177 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 21:03:22.190 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 21:08:22.194 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 21:08:25.848 INFO  [nio-8087-exec-2] [trace:] c.a.f.s.impl.FlightSearchServiceImpl     : Searching flights route: 'Mumbai' -> 'Goa'
+2026-09-29 21:08:26.110 DEBUG [nio-8087-exec-2] [trace:] c.a.f.s.impl.FlightSearchServiceImpl     : Found 0 available flight(s) matching route: 'Mumbai' -> 'Goa'
+2026-09-29 21:08:26.711 INFO  [nio-8087-exec-7] [trace:] c.a.f.s.impl.FlightSearchServiceImpl     : Searching flights route: 'Delhi' -> 'Bengaluru'
+2026-09-29 21:08:26.721 DEBUG [nio-8087-exec-7] [trace:] c.a.f.s.impl.FlightSearchServiceImpl     : Found 0 available flight(s) matching route: 'Delhi' -> 'Bengaluru'
+2026-09-29 21:08:27.478 INFO  [nio-8087-exec-4] [trace:] c.a.f.s.impl.FlightSearchServiceImpl     : Searching flights route: 'Mumbai' -> 'Delhi'
+2026-09-29 21:08:27.489 DEBUG [nio-8087-exec-4] [trace:] c.a.f.s.impl.FlightSearchServiceImpl     : Found 1 available flight(s) matching route: 'Mumbai' -> 'Delhi'
+2026-09-29 21:13:22.210 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 21:18:22.219 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration

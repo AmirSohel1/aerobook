@@ -35,5 +35,10 @@ export class UserService {
       params: { role }
     });
   }
+
+  // Admin: Delete user account
+  deleteUser(userId: number): Observable<string> {
+    return this.http.delete(`${this.gatewayUrl}/api/v1/users/${userId}`, { responseType: 'text' });
+  }
 }
 

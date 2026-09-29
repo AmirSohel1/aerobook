@@ -1,0 +1,116 @@
+2026-09-29 18:51:00.141 INFO  [kground-preinit] [trace:] o.h.validator.internal.util.Version      : HV000001: Hibernate Validator 9.1.3.Final
+2026-09-29 18:51:00.247 INFO  [           main] [trace:] c.a.n.NotificationServiceApplication     : Starting NotificationServiceApplication using Java 20.0.2 with PID 11144 (D:\aerobook\notification-service\target\classes started by hp in D:\aerobook\notification-service)
+2026-09-29 18:51:00.249 DEBUG [           main] [trace:] c.a.n.NotificationServiceApplication     : Running with Spring Boot v4.1.1, Spring v7.0.9
+2026-09-29 18:51:00.250 INFO  [           main] [trace:] c.a.n.NotificationServiceApplication     : No active profile set, falling back to 1 default profile: "default"
+2026-09-29 18:51:00.350 INFO  [           main] [trace:] o.s.c.c.c.ConfigServerConfigDataLoader   : Fetching config from server at : http://localhost:8080
+2026-09-29 18:51:00.351 INFO  [           main] [trace:] o.s.c.c.c.ConfigServerConfigDataLoader   : Located environment: name=notification-service, profiles=[default], label=null, version=null, state=null
+2026-09-29 18:51:02.409 INFO  [           main] [trace:] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-29 18:51:02.962 INFO  [           main] [trace:] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 516 ms. Found 1 JPA repository interface.
+2026-09-29 18:51:03.611 INFO  [           main] [trace:] o.s.cloud.context.scope.GenericScope     : BeanFactory id=b4dd9856-749f-3e40-bb48-c6b5a6b30028
+2026-09-29 18:51:04.808 INFO  [           main] [trace:] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8091 (http)
+2026-09-29 18:51:04.842 INFO  [           main] [trace:] o.a.coyote.http11.Http11NioProtocol      : Initializing ProtocolHandler ["http-nio-8091"]
+2026-09-29 18:51:04.848 INFO  [           main] [trace:] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-09-29 18:51:04.849 INFO  [           main] [trace:] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-09-29 18:51:05.063 INFO  [           main] [trace:] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 4708 ms
+2026-09-29 18:51:05.626 INFO  [           main] [trace:] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-09-29 18:51:05.848 INFO  [           main] [trace:] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.5.Final
+2026-09-29 18:51:07.170 INFO  [           main] [trace:] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-09-29 18:51:07.254 INFO  [           main] [trace:] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-09-29 18:51:08.295 INFO  [           main] [trace:] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@759c53e5
+2026-09-29 18:51:08.300 INFO  [           main] [trace:] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-09-29 18:51:08.529 INFO  [           main] [trace:] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://localhost:3306/aerobook_notification_db?createDatabaseIfNotExist=true&serverTimezone=UTC]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.46
+	Default catalog/schema: aerobook_notification_db/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-09-29 18:51:11.343 INFO  [           main] [trace:] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-09-29 18:51:11.500 INFO  [           main] [trace:] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-09-29 18:51:11.719 INFO  [           main] [trace:] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-09-29 18:51:15.076 INFO  [           main] [trace:] DiscoveryClientOptionalArgsConfiguration : Eureka HTTP Client uses RestClient.
+2026-09-29 18:51:15.183 WARN  [           main] [trace:] iguration$LoadBalancerCaffeineWarnLogger : Spring Cloud LoadBalancer is currently working with the default cache. While this cache implementation is useful for development and tests, it's recommended to use Caffeine cache in production.You can switch to using Caffeine cache, by adding it and org.springframework.cache.caffeine.CaffeineCacheManager to the classpath.
+2026-09-29 18:51:15.265 INFO  [           main] [trace:] o.s.c.n.eureka.InstanceInfoFactory       : Setting initial instance status as: STARTING
+2026-09-29 18:51:15.347 INFO  [           main] [trace:] com.netflix.discovery.DiscoveryClient    : Initializing Eureka in region us-east-1
+2026-09-29 18:51:15.359 INFO  [           main] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 18:51:15.390 INFO  [           main] [trace:] com.netflix.discovery.DiscoveryClient    : Disable delta property : false
+2026-09-29 18:51:15.391 INFO  [           main] [trace:] com.netflix.discovery.DiscoveryClient    : Single vip registry refresh property : null
+2026-09-29 18:51:15.392 INFO  [           main] [trace:] com.netflix.discovery.DiscoveryClient    : Force full registry fetch : false
+2026-09-29 18:51:15.393 INFO  [           main] [trace:] com.netflix.discovery.DiscoveryClient    : Application is null : false
+2026-09-29 18:51:15.394 INFO  [           main] [trace:] com.netflix.discovery.DiscoveryClient    : Registered Applications size is zero : true
+2026-09-29 18:51:15.394 INFO  [           main] [trace:] com.netflix.discovery.DiscoveryClient    : Application version is -1: true
+2026-09-29 18:51:15.394 INFO  [           main] [trace:] com.netflix.discovery.DiscoveryClient    : Getting all instance registry info from the eureka server
+2026-09-29 18:51:16.074 INFO  [           main] [trace:] com.netflix.discovery.DiscoveryClient    : The response status is 200
+2026-09-29 18:51:16.106 INFO  [           main] [trace:] com.netflix.discovery.DiscoveryClient    : Starting heartbeat executor: renew interval is: 30
+2026-09-29 18:51:16.116 INFO  [           main] [trace:] c.n.discovery.InstanceInfoReplicator     : InstanceInfoReplicator onDemand update allowed rate per min is 4
+2026-09-29 18:51:16.123 INFO  [           main] [trace:] com.netflix.discovery.DiscoveryClient    : Discovery Client initialized at timestamp 1790688076122 with initial instances count: 6
+2026-09-29 18:51:16.132 INFO  [           main] [trace:] o.s.c.n.e.s.EurekaServiceRegistry        : Registering application NOTIFICATION-SERVICE with eureka with status UP
+2026-09-29 18:51:16.138 INFO  [           main] [trace:] com.netflix.discovery.DiscoveryClient    : Saw local status change event StatusChangeEvent [timestamp=1790688076138, current=UP, previous=STARTING]
+2026-09-29 18:51:16.144 INFO  [           main] [trace:] o.a.coyote.http11.Http11NioProtocol      : Starting ProtocolHandler ["http-nio-8091"]
+2026-09-29 18:51:16.147 INFO  [foReplicator-%d] [trace:] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_NOTIFICATION-SERVICE/Sir-Amir:notification-service:8091: registering service...
+2026-09-29 18:51:16.245 INFO  [           main] [trace:] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8091 (http) with context path '/'
+2026-09-29 18:51:16.265 INFO  [           main] [trace:] .s.c.n.e.s.EurekaAutoServiceRegistration : Updating port to 8091
+2026-09-29 18:51:16.304 INFO  [foReplicator-%d] [trace:] com.netflix.discovery.DiscoveryClient    : DiscoveryClient_NOTIFICATION-SERVICE/Sir-Amir:notification-service:8091 - registration status: 204
+2026-09-29 18:51:16.765 INFO  [           main] [trace:] c.a.n.NotificationServiceApplication     : Started NotificationServiceApplication in 19.951 seconds (process running for 21.634)
+2026-09-29 18:54:15.943 INFO  [nio-8091-exec-2] [trace:] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-09-29 18:54:15.944 INFO  [nio-8091-exec-2] [trace:] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-09-29 18:54:15.948 INFO  [nio-8091-exec-2] [trace:] o.s.web.servlet.DispatcherServlet        : Completed initialization in 4 ms
+2026-09-29 18:54:16.039 DEBUG [nio-8091-exec-2] [trace:] c.a.n.s.impl.NotificationServiceImpl     : Fetching notifications for User ID: 3
+2026-09-29 18:56:15.413 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 19:01:15.418 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 19:06:15.428 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 19:11:15.431 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 19:16:15.432 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 19:21:15.439 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 19:23:14.160 DEBUG [nio-8091-exec-8] [trace:] c.a.n.s.impl.NotificationServiceImpl     : Fetching notifications for User ID: 3
+2026-09-29 19:26:15.452 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 19:28:15.456 DEBUG [nio-8091-exec-4] [trace:] c.a.n.s.impl.NotificationServiceImpl     : Fetching notifications for User ID: 3
+2026-09-29 19:30:11.843 DEBUG [io-8091-exec-10] [trace:] c.a.n.s.impl.NotificationServiceImpl     : Fetching notifications for User ID: 3
+2026-09-29 19:31:00.396 DEBUG [nio-8091-exec-5] [trace:] c.a.n.s.impl.NotificationServiceImpl     : Fetching notifications for User ID: 3
+2026-09-29 19:31:06.281 DEBUG [nio-8091-exec-6] [trace:] c.a.n.s.impl.NotificationServiceImpl     : Fetching notifications for User ID: 3
+2026-09-29 19:31:15.468 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 19:36:15.481 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 19:36:18.693 DEBUG [nio-8091-exec-2] [trace:] c.a.n.s.impl.NotificationServiceImpl     : Fetching notifications for User ID: 3
+2026-09-29 19:41:15.482 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 19:46:15.485 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 19:51:15.501 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 19:56:15.508 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 19:56:29.895 DEBUG [nio-8091-exec-8] [trace:] c.a.n.s.impl.NotificationServiceImpl     : Fetching notifications for User ID: 3
+2026-09-29 19:56:35.028 DEBUG [nio-8091-exec-9] [trace:] c.a.n.s.impl.NotificationServiceImpl     : Fetching notifications for User ID: 3
+2026-09-29 19:56:39.745 DEBUG [nio-8091-exec-4] [trace:] c.a.n.s.impl.NotificationServiceImpl     : Fetching notifications for User ID: 3
+2026-09-29 20:00:14.498 DEBUG [io-8091-exec-10] [trace:] c.a.n.s.impl.NotificationServiceImpl     : Fetching notifications for User ID: 3
+2026-09-29 20:00:16.896 DEBUG [nio-8091-exec-5] [trace:] c.a.n.s.impl.NotificationServiceImpl     : Fetching notifications for User ID: 3
+2026-09-29 20:00:49.652 DEBUG [nio-8091-exec-6] [trace:] c.a.n.s.impl.NotificationServiceImpl     : Fetching notifications for User ID: 3
+2026-09-29 20:01:15.514 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 20:02:07.666 DEBUG [nio-8091-exec-2] [trace:] c.a.n.s.impl.NotificationServiceImpl     : Fetching notifications for User ID: 3
+2026-09-29 20:04:34.166 DEBUG [nio-8091-exec-8] [trace:] c.a.n.s.impl.NotificationServiceImpl     : Fetching notifications for User ID: 3
+2026-09-29 20:04:43.019 DEBUG [nio-8091-exec-9] [trace:] c.a.n.s.impl.NotificationServiceImpl     : Fetching notifications for User ID: 3
+2026-09-29 20:06:15.521 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 20:07:06.840 DEBUG [nio-8091-exec-1] [trace:] c.a.n.s.impl.NotificationServiceImpl     : Fetching notifications for User ID: 3
+2026-09-29 20:07:33.412 DEBUG [io-8091-exec-10] [trace:] c.a.n.s.impl.NotificationServiceImpl     : Fetching notifications for User ID: 3
+2026-09-29 20:07:50.654 DEBUG [nio-8091-exec-5] [trace:] c.a.n.s.impl.NotificationServiceImpl     : Fetching notifications for User ID: 3
+2026-09-29 20:11:15.523 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 20:24:30.691 WARN  [l-1:housekeeper] [trace:] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=12m50s952ms936µs600ns).
+2026-09-29 20:25:50.211 DEBUG [nio-8091-exec-7] [trace:] c.a.n.s.impl.NotificationServiceImpl     : Fetching notifications for User ID: 3
+2026-09-29 20:27:44.804 DEBUG [nio-8091-exec-3] [trace:] c.a.n.s.impl.NotificationServiceImpl     : Fetching notifications for User ID: 3
+2026-09-29 20:28:54.129 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 20:33:07.140 DEBUG [nio-8091-exec-9] [trace:] c.a.n.s.impl.NotificationServiceImpl     : Fetching notifications for User ID: 3
+2026-09-29 20:33:54.144 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 20:38:54.154 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 20:43:54.166 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 20:48:54.173 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 20:53:54.178 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 20:58:54.187 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 21:02:05.384 DEBUG [nio-8091-exec-1] [trace:] c.a.n.s.impl.NotificationServiceImpl     : Fetching notifications for User ID: 3
+2026-09-29 21:02:48.517 DEBUG [io-8091-exec-10] [trace:] c.a.n.s.impl.NotificationServiceImpl     : Fetching notifications for User ID: 3
+2026-09-29 21:02:49.658 DEBUG [nio-8091-exec-5] [trace:] c.a.n.s.impl.NotificationServiceImpl     : Fetching notifications for User ID: 3
+2026-09-29 21:03:54.190 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 21:08:04.294 DEBUG [nio-8091-exec-7] [trace:] c.a.n.s.impl.NotificationServiceImpl     : Fetching notifications for User ID: 3
+2026-09-29 21:08:54.194 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 21:13:54.209 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration
+2026-09-29 21:18:54.223 INFO  [rap-executor-%d] [trace:] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration

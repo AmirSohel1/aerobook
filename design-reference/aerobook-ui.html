@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AeroBook – Lavender UI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f3f0fd; --blob1:rgba(167,139,250,.55); --blob2:rgba(244,171,255,.40); --blob3:rgba(125,160,255,.32);
+  --surface:rgba(255,255,255,.74); --solid:#ffffff; --text:#1c1a2e; --text-2:#5d5975; --text-3:#7d7997;
+  --line:rgba(107,78,255,.14); --accent:#6b4eff; --accent-2:#a78bfa; --accent-soft:rgba(107,78,255,.11);
+  --grad:linear-gradient(135deg,#7f63ff 0%,#5b3df5 100%); --hero:linear-gradient(140deg,#8b6cff 0%,#6b4eff 45%,#b18cff 100%);
+  --green:#18794e; --green-soft:rgba(24,160,96,.14); --amber:#a15c00; --amber-soft:rgba(255,166,0,.16);
+  --red:#c8203a; --red-soft:rgba(232,52,84,.11); --nav:rgba(255,255,255,.72);
+  --shadow:0 1px 0 rgba(255,255,255,.9) inset,0 10px 40px -12px rgba(88,60,200,.22);
+  --seg:rgba(107,78,255,.09); --seg-on:#ffffff;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0a0912; --blob1:rgba(124,92,255,.38); --blob2:rgba(200,90,255,.20); --blob3:rgba(60,110,255,.20);
+    --surface:rgba(28,25,46,.62); --solid:#161428; --text:#f4f2ff; --text-2:#b3aed0; --text-3:#8e89ad;
+    --line:rgba(190,170,255,.14); --accent:#b39dff; --accent-2:#8b6cff; --accent-soft:rgba(167,139,250,.16);
+    --grad:linear-gradient(135deg,#9377ff 0%,#6b4eff 100%); --hero:linear-gradient(140deg,#5b3df5 0%,#3a2596 55%,#7a4fe0 100%);
+    --green:#4ade80; --green-soft:rgba(74,222,128,.14); --amber:#fbbf24; --amber-soft:rgba(251,191,36,.14);
+    --red:#ff7b8f; --red-soft:rgba(255,90,120,.15); --nav:rgba(20,18,36,.66);
+    --shadow:0 1px 0 rgba(255,255,255,.06) inset,0 14px 50px -16px rgba(0,0,0,.7);
+    --seg:rgba(190,170,255,.10); --seg-on:rgba(167,139,250,.28);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0a0912; --blob1:rgba(124,92,255,.38); --blob2:rgba(200,90,255,.20); --blob3:rgba(60,110,255,.20);
+  --surface:rgba(28,25,46,.62); --solid:#161428; --text:#f4f2ff; --text-2:#b3aed0; --text-3:#8e89ad;
+  --line:rgba(190,170,255,.14); --accent:#b39dff; --accent-2:#8b6cff; --accent-soft:rgba(167,139,250,.16);
+  --grad:linear-gradient(135deg,#9377ff 0%,#6b4eff 100%); --hero:linear-gradient(140deg,#5b3df5 0%,#3a2596 55%,#7a4fe0 100%);
+  --green:#4ade80; --green-soft:rgba(74,222,128,.14); --amber:#fbbf24; --amber-soft:rgba(251,191,36,.14);
+  --red:#ff7b8f; --red-soft:rgba(255,90,120,.15); --nav:rgba(20,18,36,.66);
+  --shadow:0 1px 0 rgba(255,255,255,.06) inset,0 14px 50px -16px rgba(0,0,0,.7);
+  --seg:rgba(190,170,255,.10); --seg-on:rgba(167,139,250,.28);
+}
+*{box-sizing:border-box;margin:0}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+body{min-height:100%;background:var(--bg);color:var(--text);font-family:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:16px;line-height:1.5;letter-spacing:-.011em;-webkit-font-smoothing:antialiased;transition:background .35s,color .35s;position:relative;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(600px 420px at 12% 6%,var(--blob1),transparent 70%),radial-gradient(520px 420px at 92% 18%,var(--blob2),transparent 70%),radial-gradient(640px 480px at 60% 100%,var(--blob3),transparent 70%)}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;letter-spacing:inherit}
+:focus-visible{outline:3px solid var(--accent-2);outline-offset:2px;border-radius:12px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+
+nav{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px);z-index:10;margin:12px auto 0;max-width:1080px;width:calc(100% - 32px)}
+.bar{display:flex;align-items:center;gap:22px;height:58px;padding:0 12px 0 16px;border-radius:999px;background:var(--nav);border:1px solid var(--line);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);box-shadow:var(--shadow);font-size:14px;font-weight:500}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;letter-spacing:-.03em}
+.logo{width:30px;height:30px;border-radius:10px;background:var(--grad);display:grid;place-items:center;box-shadow:0 6px 16px -4px rgba(107,78,255,.6)}
+.logo svg{width:16px;height:16px;fill:#fff}
+.bar a{color:var(--text-2);text-decoration:none;transition:color .2s}.bar a:hover,.bar a.on{color:var(--text)}
+.sp{flex:1}
+.icon-btn{width:38px;height:38px;border-radius:50%;background:var(--seg);display:grid;place-items:center;transition:transform .2s}
+.icon-btn:hover{transform:rotate(18deg)}
+.icon-btn svg{width:18px;height:18px;stroke:var(--text);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.avatar{display:flex;align-items:center;gap:8px;padding:4px 14px 4px 4px;border-radius:999px;background:var(--seg);font-weight:600}
+.avatar i{width:30px;height:30px;border-radius:50%;background:var(--grad);color:#fff;font-style:normal;font-size:12px;display:grid;place-items:center}
+
+.bento{display:grid;grid-template-columns:repeat(12,1fr);gap:16px;margin-top:22px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:28px;padding:26px;box-shadow:var(--shadow);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);transition:transform .3s cubic-bezier(.2,.8,.2,1),border-color .3s}
+.card:hover{border-color:var(--accent-2)}
+.c12{grid-column:span 12}.c8{grid-column:span 8}.c7{grid-column:span 7}.c6{grid-column:span 6}.c5{grid-column:span 5}.c4{grid-column:span 4}.c3{grid-column:span 3}
+
+.hero{position:relative;overflow:hidden;background:var(--hero);border:0;color:#fff;padding:38px;min-height:320px;display:flex;flex-direction:column;justify-content:space-between}
+.hero::after{content:"";position:absolute;right:-90px;top:-90px;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.28),transparent 68%)}
+.hero .tagline{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;padding:6px 14px;border-radius:999px;background:rgba(255,255,255,.18);font-size:13px;font-weight:600;backdrop-filter:blur(8px)}
+.hero .tagline b{width:8px;height:8px;border-radius:50%;background:#7dffb2}
+h1{font-size:clamp(34px,5.4vw,58px);line-height:1.04;letter-spacing:-.045em;font-weight:800;max-width:11em;margin:22px 0 12px;position:relative;z-index:1}
+.hero p{color:rgba(255,255,255,.86);font-size:17px;max-width:30em;position:relative;z-index:1}
+.hero .plane{position:absolute;right:26px;bottom:20px;width:150px;height:150px;fill:rgba(255,255,255,.16);transform:rotate(-24deg)}
+
+.value{display:flex;flex-direction:column;justify-content:space-between}
+.lbl{color:var(--text-2);font-size:14px;font-weight:600}
+.big{font-size:clamp(34px,4.4vw,46px);font-weight:800;letter-spacing:-.045em;line-height:1.1;font-variant-numeric:tabular-nums;margin:8px 0}
+.delta{display:inline-block;font-size:13px;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--green-soft);color:var(--green)}
+.spark{width:100%;height:80px;margin-top:14px}
+.spark path.l{fill:none;stroke:var(--accent-2);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.spark path.a{fill:url(#sg)}
+
+.tabs-card{padding:12px}
+.seg{display:flex;gap:4px;padding:5px;border-radius:20px;background:var(--seg);overflow-x:auto;scrollbar-width:none}
+.seg button{padding:10px 18px;border-radius:15px;font-size:14px;font-weight:600;color:var(--text-2);white-space:nowrap;transition:all .25s}
+.seg button:hover{color:var(--text)}
+.seg button[aria-selected="true"]{background:var(--seg-on);color:var(--text);box-shadow:0 4px 14px -4px rgba(88,60,200,.35)}
+.badge{display:inline-grid;place-items:center;min-width:19px;height:19px;padding:0 5px;margin-left:7px;border-radius:10px;background:#e8345a;color:#fff;font-size:11px;font-weight:700}
+
+.ic{width:46px;height:46px;border-radius:16px;display:grid;place-items:center;background:var(--accent-soft);margin-bottom:18px}
+.ic svg{width:23px;height:23px;stroke:var(--accent);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ic.g{background:var(--green-soft)}.ic.g svg{stroke:var(--green)}
+.ic.a{background:var(--amber-soft)}.ic.a svg{stroke:var(--amber)}
+.ic.p{background:rgba(232,52,84,.12)}.ic.p svg{stroke:var(--red)}
+.num{font-size:38px;font-weight:800;letter-spacing:-.045em;line-height:1.1;font-variant-numeric:tabular-nums}
+.note{color:var(--text-3);font-size:13.5px;margin-top:4px}
+
+h2{font-size:clamp(24px,3vw,30px);font-weight:800;letter-spacing:-.035em;line-height:1.15}
+.head{margin:44px 0 0}.head p{color:var(--text-2);margin-top:6px}
+.action{text-align:left;display:flex;flex-direction:column;width:100%}
+.action:hover{transform:translateY(-4px)}
+.action h3{font-size:18px;font-weight:700;letter-spacing:-.025em}
+.action p{color:var(--text-2);font-size:14.5px;line-height:1.45;margin:6px 0 18px;flex:1}
+.go{display:inline-flex;align-self:flex-start;align-items:center;padding:8px 16px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:14px}
+.action.feat{background:var(--grad);border:0;color:#fff}
+.action.feat p{color:rgba(255,255,255,.86)}.action.feat .go{background:rgba(255,255,255,.22);color:#fff}
+.action.feat .ic{background:rgba(255,255,255,.2)}.action.feat .ic svg{stroke:#fff}
+
+.pass{display:grid;grid-template-columns:1fr 200px;padding:0;overflow:hidden}
+.pass .main{padding:28px}
+.pass .stub{padding:28px 22px;border-left:2px dashed var(--line);display:flex;flex-direction:column;justify-content:space-between;gap:16px;background:var(--accent-soft)}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:14px;color:var(--text-2)}
+.top b{color:var(--text);font-weight:700;letter-spacing:.03em}
+.status{font-weight:700;font-size:13px;padding:5px 13px;border-radius:999px;background:var(--green-soft);color:var(--green)}
+.status.done{background:var(--accent-soft);color:var(--accent)}
+.route{display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center;margin:26px 0}
+.code{font-size:clamp(38px,6vw,58px);font-weight:800;letter-spacing:-.05em;line-height:1}
+.city{color:var(--text-2);font-size:14px;margin-top:6px}.time{font-weight:700;font-size:17px}
+.end{text-align:right}
+.path{text-align:center;color:var(--text-3);font-size:13px;font-weight:500;position:relative}
+.path i{display:block;height:0;border-top:2px dashed var(--accent-2);margin:12px 0;opacity:.7}
+.path svg{position:absolute;left:50%;top:13px;width:26px;height:26px;transform:translateX(-50%) rotate(90deg);fill:var(--accent);background:var(--solid);border-radius:50%;padding:3px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips span{padding:6px 13px;border-radius:999px;background:var(--seg);font-size:13px;font-weight:600;color:var(--text-2)}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.btn{padding:11px 22px;border-radius:999px;font-weight:700;font-size:14.5px;background:var(--seg);transition:transform .2s,filter .2s}
+.btn:hover{transform:translateY(-2px)}
+.btn.p{background:var(--grad);color:#fff;box-shadow:0 10px 22px -8px rgba(107,78,255,.7)}
+.btn.d{background:var(--red-soft);color:var(--red)}
+.stub .k{font-size:13px;color:var(--text-3)}.stub .v{font-size:22px;font-weight:800;letter-spacing:-.03em}
+.bar-code{height:54px;border-radius:6px;background:repeating-linear-gradient(90deg,var(--text) 0 2px,transparent 2px 5px,var(--text) 5px 6px,transparent 6px 10px,var(--text) 10px 13px,transparent 13px 15px);opacity:.8}
+
+.mesh{display:flex;flex-direction:column;gap:14px}
+.mesh .row{display:flex;justify-content:space-between;align-items:center}
+.mesh strong{font-weight:700}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 0 5px var(--green-soft)}
+.meter{height:6px;border-radius:6px;background:var(--seg);overflow:hidden}.meter i{display:block;height:100%;width:99.98%;background:linear-gradient(90deg,var(--accent-2),var(--green))}
+.mesh small{color:var(--text-3);font-size:13px;display:flex;justify-content:space-between}
+footer{padding:44px 0 64px;text-align:center;color:var(--text-3);font-size:13px}
+
+@media (max-width:900px){.c8,.c7,.c6,.c5,.c4,.c3{grid-column:span 12}.c3.k,.c4.h{grid-column:span 6}.pass{grid-template-columns:1fr}.pass .stub{border-left:0;border-top:2px dashed var(--line);flex-direction:row;align-items:center;flex-wrap:wrap}.bar-code{flex:1;min-width:120px}.links{display:none!important}}
+@media (max-width:560px){.c3.k,.c4.h{grid-column:span 12}.route{grid-template-columns:1fr}.end{text-align:left}.path{padding:14px 0}.hero{padding:26px}.hero .plane{width:100px;height:100px}.avatar span{display:none}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs><symbol id="plane" viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></symbol></defs></svg>
+
+<nav><div class="bar">
+  <div class="brand"><span class="logo"><svg><use href="#plane"/></svg></span>AeroBook</div>
+  <div class="links" style="display:flex;gap:22px"><a href="#" class="on">Admin</a><a href="#">Passengers</a><a href="#">Staff</a><a href="#">Search flights</a></div>
+  <span class="sp"></span>
+  <button class="icon-btn" id="theme" aria-label="Toggle light and dark theme"><svg id="ico" viewBox="0 0 24 24"></svg></button>
+  <div class="avatar"><i>SA</i><span>System admin</span></div>
+</div></nav>
+
+<main class="wrap">
+  <div class="bento">
+    <div class="card hero c8">
+      <span class="tagline"><b></b>Admin mode is on</span>
+      <div><h1>Your whole airline, in one calm view.</h1><p>Schedules, fleet, pricing, people and incidents, kept clear and up to date.</p></div>
+      <svg class="plane"><use href="#plane"/></svg>
+    </div>
+    <div class="card value c4">
+      <div><div class="lbl">Booking value</div><div class="big">₹9,086</div><span class="delta">2 confirmed</span></div>
+      <svg class="spark" viewBox="0 0 200 80" preserveAspectRatio="none"><defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--accent-2)" stop-opacity=".4"/><stop offset="1" stop-color="var(--accent-2)" stop-opacity="0"/></linearGradient></defs><path class="a" d="M0 66 C25 60 35 40 60 44 S100 62 125 34 S170 14 200 10 V80 H0Z"/><path class="l" d="M0 66 C25 60 35 40 60 44 S100 62 125 34 S170 14 200 10"/></svg>
+    </div>
+
+    <div class="card tabs-card c12"><div class="seg" role="tablist" aria-label="Admin sections">
+      <button role="tab" aria-selected="true">Overview</button><button role="tab" aria-selected="false">Flights</button><button role="tab" aria-selected="false">Fleet</button><button role="tab" aria-selected="false">Pricing</button><button role="tab" aria-selected="false">Users</button><button role="tab" aria-selected="false">Incidents<span class="badge">1</span></button><button role="tab" aria-selected="false">Bookings</button>
+    </div></div>
+
+    <div class="card c3 k"><div class="ic"><svg viewBox="0 0 24 24"><path d="M3 18h18M5 14l3-9 4 9 4-9 3 9"/></svg></div><div class="lbl">Scheduled flights</div><div class="num">1</div><div class="note">1 active route</div></div>
+    <div class="card c3 k"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3v18M4 12h16M8 6l4-3 4 3"/></svg></div><div class="lbl">Fleet aircraft</div><div class="num">4</div><div class="note">3 flying, 1 in maintenance</div></div>
+    <div class="card c3 k"><div class="ic g"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.500 20c.6-3.600 3-5.500 6.500-5.500s5.900 1.900 6.500 5.500M17 5a3.500 3.500 0 0 1 0 6"/></svg></div><div class="lbl">Accounts</div><div class="num">3</div><div class="note">2 passengers, 0 staff</div></div>
+    <div class="card c3 k"><div class="ic p"><svg viewBox="0 0 24 24"><path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17v.1"/></svg></div><div class="lbl">Open incidents</div><div class="num">1</div><div class="note">Needs review</div></div>
+  </div>
+
+  <div class="head"><h2>Quick actions</h2><p>The jobs you do most, ready when you are.</p></div>
+  <div class="bento" style="margin-top:20px">
+    <button class="card action feat c4 h"><div class="ic"><svg viewBox="0 0 24 24"><path d="M3 18h18M5 14l3-9 4 9 4-9 3 9"/></svg></div><h3>Schedule a flight</h3><p>Choose a route and aircraft, then set slots and base fares.</p><span class="go">Start</span></button>
+    <button class="card action c4 h"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3v18M4 12h16M8 6l4-3 4 3"/></svg></div><h3>Add an aircraft</h3><p>Register an airframe, set its cabin layout and service dates.</p><span class="go">Add</span></button>
+    <button class="card action c4 h"><div class="ic a"><svg viewBox="0 0 24 24"><path d="M3 12l9-9h8v8l-9 9z"/><circle cx="16" cy="8" r="1.200"/></svg></div><h3>Manage pricing</h3><p>Adjust fares, GST slabs and seasonal promo codes.</p><span class="go">Open</span></button>
+  </div>
+
+  <div class="head"><h2>Your trips</h2><p>2 bookings</p></div>
+  <div class="bento" style="margin-top:20px">
+    <article class="card pass c12">
+      <div class="main">
+        <div class="top"><span>Booking <b>PNR-AB9421</b></span><span class="status">Confirmed</span></div>
+        <div class="route">
+          <div><div class="code">BOM</div><div class="city">Mumbai</div><div class="time">4:00 PM</div></div>
+          <div class="path">Non-stop · 2h 10m<i></i><svg><use href="#plane"/></svg><span style="color:var(--green)">On time</span></div>
+          <div class="end"><div class="code">DEL</div><div class="city">New Delhi</div><div class="time">6:15 PM</div></div>
+        </div>
+        <div class="chips"><span>AB-101</span><span>Terminal 2, Gate B04</span><span>Seat 12A</span><span>7 kg cabin</span><span>15 kg check-in</span><span>Meal selected</span></div>
+        <div class="btns"><button class="btn p">Web check-in</button><button class="btn">E-ticket</button><button class="btn">In-flight services</button><button class="btn d">Cancel flight</button></div>
+      </div>
+      <div class="stub"><div><div class="k">Passenger</div><div class="v">Priya Sharma</div></div><div><div class="k">Total paid</div><div class="v">₹5,450</div></div><div class="bar-code" aria-hidden="true"></div></div>
+    </article>
+    <article class="card pass c12">
+      <div class="main">
+        <div class="top"><span>Booking <b>PNR-AB8812</b></span><span class="status done">Completed</span></div>
+        <div class="route">
+          <div><div class="code">DEL</div><div class="city">New Delhi</div><div class="time">7:45 PM</div></div>
+          <div class="path">Non-stop · 2h 10m<i></i><svg><use href="#plane"/></svg><span style="color:var(--green)">On time</span></div>
+          <div class="end"><div class="code">BLR</div><div class="city">Bengaluru</div><div class="time">10:25 PM</div></div>
+        </div>
+        <div class="chips"><span>AB-204</span><span>Seat 14B</span><span>7 kg cabin</span><span>15 kg check-in</span></div>
+        <div class="btns"><button class="btn">E-ticket</button><button class="btn">Receipt</button></div>
+      </div>
+      <div class="stub"><div><div class="k">Passenger</div><div class="v">Priya Sharma</div></div><div><div class="k">Total paid</div><div class="v">₹8,900</div></div><div class="bar-code" aria-hidden="true"></div></div>
+    </article>
+  </div>
+
+  <div class="head"><h2>System health</h2><p>All services are running normally.</p></div>
+  <div class="bento" style="margin-top:20px">
+    <div class="card mesh c3 k"><div class="row"><strong>API gateway</strong><span class="dot"></span></div><div class="meter"><i></i></div><small><span>99.98% uptime</span><span>12 ms</span></small></div>
+    <div class="card mesh c3 k"><div class="row"><strong>Authentication</strong><span class="dot"></span></div><div class="meter"><i></i></div><small><span>99.98% uptime</span><span>18 ms</span></small></div>
+    <div class="card mesh c3 k"><div class="row"><strong>Users</strong><span class="dot"></span></div><div class="meter"><i></i></div><small><span>99.98% uptime</span><span>15 ms</span></small></div>
+    <div class="card mesh c3 k"><div class="row"><strong>Flights</strong><span class="dot"></span></div><div class="meter"><i></i></div><small><span>99.98% uptime</span><span>22 ms</span></small></div>
+  </div>
+</main>
+<footer>AeroBook sample design. Use the toggle in the top bar to compare light and dark.</footer>
+
+<script>
+(function(){
+  var root=document.documentElement, ico=document.getElementById('ico');
+  var sun='<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.900 4.900l1.400 1.400M17.700 17.700l1.400 1.400M2 12h2M20 12h2M4.900 19.100l1.400-1.400M17.700 6.300l1.400-1.400"/>';
+  var moon='<path d="M20 14.500A8 8 0 0 1 9.500 4 8 8 0 1 0 20 14.500z"/>';
+  function isDark(){var t=root.getAttribute('data-theme');return t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches}
+  function paint(){ico.innerHTML=isDark()?sun:moon}
+  try{var s=localStorage.getItem('ab-theme');if(s)root.setAttribute('data-theme',s)}catch(e){}
+  paint();
+  document.getElementById('theme').onclick=function(){var n=isDark()?'light':'dark';root.setAttribute('data-theme',n);paint();try{localStorage.setItem('ab-theme',n)}catch(e){}};
+  document.querySelectorAll('.seg').forEach(function(g){g.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;g.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-selected',x===b)})})});
+})();
+</script>
+</body>
+</html>

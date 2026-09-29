@@ -55,5 +55,9 @@ export class FlightService {
   createAircraft(aircraft: Partial<Aircraft>): Observable<Aircraft> {
     return this.http.post<Aircraft>(`${this.gatewayUrl}/api/admin/aircrafts`, aircraft);
   }
+
+  deleteAircraft(id: number): Observable<string> {
+    return this.http.delete(`${this.gatewayUrl}/api/admin/aircrafts/${id}`, { responseType: 'text' });
+  }
 }
 
