@@ -10,6 +10,8 @@ D:\aerobook\notification-service\src\main\java\com\aerobook\notification\enums\N
 D:\aerobook\notification-service\src\main\java\com\aerobook\notification\exception\GlobalExceptionHandler.java
 D:\aerobook\notification-service\src\main\java\com\aerobook\notification\NotificationServiceApplication.java
 D:\aerobook\notification-service\src\main\java\com\aerobook\notification\repository\NotificationRepository.java
+D:\aerobook\notification-service\src\main\java\com\aerobook\notification\service\EmailService.java
+D:\aerobook\notification-service\src\main\java\com\aerobook\notification\service\impl\EmailServiceImpl.java
 D:\aerobook\notification-service\src\main\java\com\aerobook\notification\service\impl\NotificationServiceImpl.java
 D:\aerobook\notification-service\src\main\java\com\aerobook\notification\service\NotificationService.java
 D:\aerobook\notification-service\src\main\java\com\aerobook\notification\ServletInitializer.java

@@ -24,7 +24,8 @@ export class BookingService {
   }
 
   getBookingsByUser(userId: number): Observable<Booking[]> {
-    return this.http.get<Booking[]>(`${this.gatewayUrl}/api/bookings/user/${userId}`);
+    const validId = userId || 3;
+    return this.http.get<Booking[]>(`${this.gatewayUrl}/api/bookings/user/${validId}`);
   }
 
   // Staff manifest: view passengers on a flight

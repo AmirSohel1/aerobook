@@ -182,8 +182,13 @@ public class AuthenticationFilter
                 boolean isUserAdminOnly = isUserList || isUserCreate || isUserDelete;
 
                 // Rule 3: Fare Service write operations (configure/update/delete fare) require ROLE_ADMIN
+                boolean isCouponValidate = path.equals("/api/fares/coupons/validate");
                 boolean isFareWrite = path.startsWith("/api/fares")
+                        && !isCouponValidate
                         && (method != null && !HttpMethod.GET.equals(method));
+
+                // Rule 3b: Payment Service admin list requires ROLE_ADMIN
+                boolean isPaymentAdminList = path.equals("/api/payments") && HttpMethod.GET.equals(method);
 
                 // Rule 4: Booking Service: GET /api/bookings (list all bookings across airline) accessible by ROLE_ADMIN and ROLE_STAFF
                 boolean isBookingListAll = path.equals("/api/bookings") && HttpMethod.GET.equals(method);
@@ -195,7 +200,7 @@ public class AuthenticationFilter
                 boolean isAuthAdmin = path.startsWith("/api/auth/credentials");
 
                 // Check Admin-only operations
-                if ((isAdminPath || isUserAdminOnly || isFareWrite || isAuthAdmin) && !isAdmin) {
+                if ((isAdminPath || isUserAdminOnly || isFareWrite || isPaymentAdminList || isAuthAdmin) && !isAdmin) {
                     log.warn("Forbidden access attempt to '{}' [{}] by user '{}' (Role: '{}')", path, method, userEmail, userRole);
                     exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
                     return exchange.getResponse().setComplete();

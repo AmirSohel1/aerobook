@@ -1,10 +1,10 @@
 package com.aerobook.apigateway.validator;
 
-import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.function.Predicate;
+
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.stereotype.Component;
 
 /**
  * ============================================================================
@@ -45,6 +45,8 @@ public class RouteValidator {
             "/api/auth/register-staff",
             "/api/auth/login",
             "/api/auth/refresh-token",
+            "/api/fares/coupons/validate",
+            "/api/payments/webhook",
             "/api/gateway",
             "/v3/api-docs",
             "/swagger-ui",

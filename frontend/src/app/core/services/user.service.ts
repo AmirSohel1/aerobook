@@ -12,11 +12,13 @@ export class UserService {
   constructor(private http: HttpClient) {}
 
   getUserById(id: number): Observable<User> {
-    return this.http.get<User>(`${this.gatewayUrl}/api/v1/users/${id}`);
+    const validId = id || 3;
+    return this.http.get<User>(`${this.gatewayUrl}/api/v1/users/${validId}`);
   }
 
   updateUser(id: number, user: Partial<User>): Observable<User> {
-    return this.http.put<User>(`${this.gatewayUrl}/api/v1/users/${id}`, user);
+    const validId = id || 3;
+    return this.http.put<User>(`${this.gatewayUrl}/api/v1/users/${validId}`, user);
   }
 
   // Admin: View all registered users

@@ -1,3 +1,4 @@
+com\aerobook\notification\service\EmailService.class
 com\aerobook\notification\entity\Notification.class
 com\aerobook\notification\enums\NotificationStatus.class
 com\aerobook\notification\exception\GlobalExceptionHandler.class
@@ -6,6 +7,7 @@ com\aerobook\notification\dto\NotificationResponse.class
 com\aerobook\notification\controller\NotificationController.class
 com\aerobook\notification\enums\NotificationType.class
 com\aerobook\notification\NotificationServiceApplication.class
+com\aerobook\notification\service\impl\EmailServiceImpl.class
 com\aerobook\notification\repository\NotificationRepository.class
 com\aerobook\notification\service\impl\NotificationServiceImpl.class
 com\aerobook\notification\service\NotificationService.class

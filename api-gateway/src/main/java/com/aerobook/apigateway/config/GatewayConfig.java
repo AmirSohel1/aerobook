@@ -130,6 +130,16 @@ public class GatewayConfig {
                                 new AuthenticationFilter.Config())))
                                 .uri("lb://NOTIFICATION-SERVICE"))
                 // ------------------------------------------------------------
+                // 8. Payment Service Route (Port 8092)
+                // ------------------------------------------------------------
+                // Handles Razorpay order creation, cryptographic HMAC-SHA256 signature
+                // verification, payment refunds, and webhook processing.
+                .route("payment-service",
+                        r -> r.path("/api/payments", "/api/payments/**")
+                                .filters(f -> f.filter(filter.apply(
+                                new AuthenticationFilter.Config())))
+                                .uri("lb://PAYMENT-SERVICE"))
+                // ------------------------------------------------------------
                 // Downstream Swagger / OpenAPI Documentation Proxy Routes
                 // ------------------------------------------------------------
                 // Allows direct retrieval of downstream microservice OpenAPI specs
@@ -162,6 +172,10 @@ public class GatewayConfig {
                         r -> r.path("/v3/api-docs/notification-service", "/v3/api-docs/notification-service/**")
                                 .filters(f -> f.rewritePath("/v3/api-docs/notification-service(?<segment>.*)", "/v3/api-docs${segment}"))
                                 .uri("lb://NOTIFICATION-SERVICE"))
+                .route("payment-service-docs",
+                        r -> r.path("/v3/api-docs/payment-service", "/v3/api-docs/payment-service/**")
+                                .filters(f -> f.rewritePath("/v3/api-docs/payment-service(?<segment>.*)", "/v3/api-docs${segment}"))
+                                .uri("lb://PAYMENT-SERVICE"))
                 .build();
     }
 }

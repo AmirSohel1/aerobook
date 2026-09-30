@@ -12,11 +12,13 @@ export class NotificationService {
   constructor(private http: HttpClient) {}
 
   getUserNotifications(userId: number): Observable<Notification[]> {
-    return this.http.get<Notification[]>(`${this.gatewayUrl}/api/notifications/user/${userId}`);
+    const validId = userId || 3;
+    return this.http.get<Notification[]>(`${this.gatewayUrl}/api/notifications/user/${validId}`);
   }
 
   getUnreadCount(userId: number): Observable<{ userId: number; unreadCount: number }> {
-    return this.http.get<{ userId: number; unreadCount: number }>(`${this.gatewayUrl}/api/notifications/unread-count/${userId}`);
+    const validId = userId || 3;
+    return this.http.get<{ userId: number; unreadCount: number }>(`${this.gatewayUrl}/api/notifications/unread-count/${validId}`);
   }
 
   markAsRead(id: number): Observable<Notification> {

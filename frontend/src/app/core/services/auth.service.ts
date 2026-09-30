@@ -1,6 +1,6 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, throwError } from 'rxjs';
 import { AuthResponse, LoginRequest, RegisterRequest, RoleType, User } from '../models/aerobook.models';
 
 @Injectable({
@@ -142,6 +142,19 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.gatewayUrl}/api/auth/register-admin`, admin, { headers }).pipe(
       tap(res => {
         this.setSession(res, admin.email);
+      })
+    );
+  }
+
+  refreshToken(): Observable<AuthResponse> {
+    const refreshToken = localStorage.getItem('ab_refresh_token');
+    if (!refreshToken) {
+      return throwError(() => new Error('No refresh token available'));
+    }
+    return this.http.post<AuthResponse>(`${this.gatewayUrl}/api/auth/refresh-token`, { refreshToken }).pipe(
+      tap(res => {
+        const currentEmail = this.userEmailSignal() || 'user@aerobook.com';
+        this.setSession(res, currentEmail);
       })
     );
   }

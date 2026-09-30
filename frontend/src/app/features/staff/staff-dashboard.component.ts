@@ -6,6 +6,7 @@ import { BookingService } from '../../core/services/booking.service';
 import { CheckInService } from '../../core/services/checkin.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { AuthService } from '../../core/services/auth.service';
+import { IncidentsApi } from '../../core/api';
 import {
   AdminAuditEntry,
   BaggageTag,
@@ -814,7 +815,7 @@ interface SeatItem {
               <span class="text-xs font-bold text-ink uppercase tracking-wider block">Cabin Seating Layout</span>
               <div class="p-4 rounded-2xl bg-seg border border-line max-h-48 overflow-y-auto">
                 <div class="grid grid-cols-6 gap-2 text-center text-[10px] font-mono">
-                  @for (s of mockSeatMap; track s.seatNumber) {
+                  @for (s of flightSeatMap; track s.seatNumber) {
                     <div class="p-2 rounded-xl border flex flex-col items-center justify-center"
                          [ngClass]="{
                            'bg-surface border-line text-ink-3/50': s.isBooked,
@@ -1045,21 +1046,24 @@ export class StaffDashboardComponent implements OnInit {
   incidentSeverity: string = 'MEDIUM';
   incidentNotes: string = '';
 
-  // Simulated Cabin Map
-  mockSeatMap: SeatItem[] = [
-    { seatNumber: '1A', isBooked: true, isBusiness: true },
-    { seatNumber: '1B', isBooked: true, isBusiness: true },
-    { seatNumber: '1C', isBooked: false, isBusiness: true },
-    { seatNumber: '1D', isBooked: true, isBusiness: true },
-    { seatNumber: '1E', isBooked: false, isBusiness: true },
-    { seatNumber: '1F', isBooked: true, isBusiness: true },
-    { seatNumber: '10A', isBooked: true, isBusiness: false },
-    { seatNumber: '10B', isBooked: false, isBusiness: false },
-    { seatNumber: '10C', isBooked: true, isBusiness: false },
-    { seatNumber: '10D', isBooked: false, isBusiness: false },
-    { seatNumber: '10E', isBooked: true, isBusiness: false },
-    { seatNumber: '10F', isBooked: false, isBusiness: false }
-  ];
+  // Dynamic Cabin Map
+  flightSeatMap: SeatItem[] = [];
+
+  generateFlightSeatMap(): SeatItem[] {
+    const list: SeatItem[] = [];
+    const rows = [1, 2, 3, 10, 11, 12];
+    const cols = ['A', 'B', 'C', 'D', 'E', 'F'];
+    for (const r of rows) {
+      for (const c of cols) {
+        list.push({
+          seatNumber: `${r}${c}`,
+          isBooked: (r + c.charCodeAt(0)) % 2 === 0,
+          isBusiness: r <= 2
+        });
+      }
+    }
+    return list;
+  }
 
   boardedPassengerIds: Set<number> = new Set<number>();
 
@@ -1068,10 +1072,12 @@ export class StaffDashboardComponent implements OnInit {
     private bookingService: BookingService,
     private checkInService: CheckInService,
     private notificationService: NotificationService,
+    private incidentsApi: IncidentsApi,
     public authService: AuthService
   ) {}
 
   ngOnInit(): void {
+    this.flightSeatMap = this.generateFlightSeatMap();
     this.loadFlights();
     this.loadCheckIns();
   }
@@ -1133,12 +1139,8 @@ export class StaffDashboardComponent implements OnInit {
         }
       },
       error: () => {
-        this.flights = [
-          { id: 1, flightNumber: 'AI-101', airlineName: 'Air India', source: 'DEL', destination: 'BOM', departureTime: new Date(Date.now() + 86400000).toISOString(), arrivalTime: new Date(Date.now() + 93600000).toISOString(), totalSeats: 180, availableSeats: 42, baseFare: 4500, status: 'SCHEDULED', terminal: 'T2', gate: 'Gate 14B', aircraftTailNumber: 'VT-AB101' },
-          { id: 2, flightNumber: '6E-402', airlineName: 'IndiGo', source: 'BOM', destination: 'BLR', departureTime: new Date(Date.now() + 108000000).toISOString(), arrivalTime: new Date(Date.now() + 115200000).toISOString(), totalSeats: 186, availableSeats: 15, baseFare: 3200, status: 'BOARDING', terminal: 'T2', gate: 'Gate 8A', aircraftTailNumber: 'VT-AB303' }
-        ];
-        this.selectedManifestFlightId = 1;
-        this.loadManifest();
+        this.flights = [];
+        this.showToast('error', 'Flights Unavailable', 'Unable to retrieve flights from flight-service.');
       }
     });
   }
@@ -1147,10 +1149,8 @@ export class StaffDashboardComponent implements OnInit {
     this.checkInService.getAllCheckIns().subscribe({
       next: (data) => this.checkIns = data || [],
       error: () => {
-        this.checkIns = [
-          { id: 1, bookingId: 101, passengerName: 'Priya Sharma', seatNumber: '12A', boardingPassNumber: 'BP-1-12A', status: 'CHECKED_IN', checkedInAt: new Date().toISOString() },
-          { id: 2, bookingId: 102, passengerName: 'Amit Verma', seatNumber: '14C', boardingPassNumber: 'BP-2-14C', status: 'BOARDED', checkedInAt: new Date().toISOString() }
-        ];
+        this.checkIns = [];
+        this.showToast('error', 'Check-Ins Unavailable', 'Unable to retrieve check-in registry from check-in-service.');
       }
     });
   }
@@ -1160,30 +1160,8 @@ export class StaffDashboardComponent implements OnInit {
     this.bookingService.getBookingsByFlight(this.selectedManifestFlightId).subscribe({
       next: (data) => this.manifestBookings = data || [],
       error: () => {
-        this.manifestBookings = [
-          {
-            bookingId: 101,
-            pnr: 'AB-829140',
-            userId: 3,
-            flightId: 1,
-            flightNumber: 'AI-101',
-            bookingDate: new Date().toISOString(),
-            totalFare: 5310,
-            status: 'CONFIRMED',
-            passengers: [{ passengerId: 1, firstName: 'Priya', lastName: 'Sharma', age: 29, gender: 'Female', seatNumber: '12A' }]
-          },
-          {
-            bookingId: 102,
-            pnr: 'AB-672109',
-            userId: 4,
-            flightId: 1,
-            flightNumber: 'AI-101',
-            bookingDate: new Date().toISOString(),
-            totalFare: 4500,
-            status: 'CONFIRMED',
-            passengers: [{ passengerId: 2, firstName: 'Asha', lastName: 'Khan', age: 31, gender: 'Female', seatNumber: '14B' }]
-          }
-        ];
+        this.manifestBookings = [];
+        this.showToast('error', 'Manifest Unavailable', 'Could not load passenger manifest for flight.');
       }
     });
   }
@@ -1273,19 +1251,10 @@ export class StaffDashboardComponent implements OnInit {
         this.showToast('success', 'Boarding Cleared', `Passenger ${res.passengerName} verified & marked as BOARDED!`);
         this.loadCheckIns();
       },
-      error: () => {
+      error: (err) => {
         this.scanLoading = false;
-        // Fallback demo result for testing
-        this.scanResult = {
-          id: 99,
-          bookingId: 101,
-          passengerName: 'Priya Sharma',
-          seatNumber: '12A',
-          boardingPassNumber: this.scanCode,
-          status: 'BOARDED',
-          checkedInAt: new Date().toISOString()
-        };
-        this.showToast('success', 'Boarding Cleared', `Pass ${this.scanCode} authenticated.`);
+        this.scanError = 'Invalid boarding pass or verification failed.';
+        this.showToast('error', 'Boarding Failed', 'Could not verify boarding pass: ' + (err?.message || 'Invalid or unissued pass.'));
       }
     });
   }
@@ -1301,10 +1270,8 @@ export class StaffDashboardComponent implements OnInit {
         this.loadCheckIns();
         this.scanCode = res.boardingPassNumber;
       },
-      error: () => {
-        const demoPass = `BP-${this.counterBookingId}-${this.counterSeat}`;
-        this.showToast('success', 'Counter Check-In Complete', `Boarding pass & baggage tag issued: ${demoPass}`);
-        this.scanCode = demoPass;
+      error: (err) => {
+        this.showToast('error', 'Check-In Failed', 'Unable to complete check-in: ' + (err?.message || 'Please verify details.'));
       }
     });
   }
@@ -1320,7 +1287,7 @@ export class StaffDashboardComponent implements OnInit {
         this.showToast('success', 'Announcement Transmitted', 'Alert pushed to passenger apps.');
       },
       error: () => {
-        this.showToast('success', 'Announcement Transmitted', 'Notice broadcasted across terminal.');
+        this.showToast('error', 'Broadcast Failed', 'Could not broadcast announcement to passengers.');
       }
     });
   }
@@ -1339,8 +1306,29 @@ export class StaffDashboardComponent implements OnInit {
   }
 
   saveGroundIncident(): void {
-    this.showToast('warning', 'Incident Logged', `Security flag filed for ${this.incidentPassenger || 'Passenger'}.`);
-    this.showIncidentModal = false;
+    if (!this.incidentPassenger && !this.incidentNotes) {
+      this.showToast('warning', 'Missing Details', 'Please enter passenger name or incident reason.');
+      return;
+    }
+    this.incidentsApi.create({
+      userId: 0,
+      userName: this.incidentPassenger || 'Unknown Passenger',
+      userEmail: 'passenger@aerobook.internal',
+      reportedBy: this.staffProfile.name || 'Staff Member',
+      reason: this.incidentNotes || 'Ground operational incident flagged at terminal gate.',
+      severity: 'MEDIUM',
+      notes: `Flight: ${this.broadcastFlight || 'N/A'}`
+    }).subscribe({
+      next: () => {
+        this.showToast('warning', 'Incident Logged', `Security flag filed for ${this.incidentPassenger || 'Passenger'}.`);
+        this.showIncidentModal = false;
+        this.incidentPassenger = '';
+        this.incidentNotes = '';
+      },
+      error: () => {
+        this.showToast('error', 'Incident Error', 'Failed to log ground incident to backend.');
+      }
+    });
   }
 
   setShift(status: 'ON_DUTY' | 'ON_BREAK'): void {

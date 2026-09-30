@@ -7,6 +7,7 @@ import { UserService } from '../../core/services/user.service';
 import { FareService } from '../../core/services/fare.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { AuthService } from '../../core/services/auth.service';
+import { ReportsApi, CouponsApi, IncidentsApi, PaymentsApi } from '../../core/api';
 import {
   AdminAuditEntry,
   AdminProfile,
@@ -1488,7 +1489,7 @@ interface SeatItem {
               <!-- Seat Grid Visualizer -->
               <div class="p-4 rounded-2xl bg-seg border border-line max-h-48 overflow-y-auto">
                 <div class="grid grid-cols-6 gap-2 text-center text-[10px] font-mono">
-                  @for (s of mockSeatMap; track s.seatNumber) {
+                  @for (s of flightSeatMap; track s.seatNumber) {
                     <div class="p-2 rounded-xl border flex flex-col items-center justify-center transition-all"
                          [ngClass]="{
                            'bg-surface border-line text-ink-3 opacity-60': s.isBooked,
@@ -2244,33 +2245,27 @@ export class AdminDashboardComponent implements OnInit {
   simulatorOccupancy: number = 75;
   simulatorBaseFare: number = 4500;
 
-  // Simulated Cabin Map
-  mockSeatMap: SeatItem[] = [
-    { seatNumber: '1A', isBooked: true, isBusiness: true },
-    { seatNumber: '1B', isBooked: false, isBusiness: true },
-    { seatNumber: '1C', isBooked: true, isBusiness: true },
-    { seatNumber: '1D', isBooked: false, isBusiness: true },
-    { seatNumber: '1E', isBooked: false, isBusiness: true },
-    { seatNumber: '1F', isBooked: true, isBusiness: true },
-    { seatNumber: '2A', isBooked: false, isBusiness: true },
-    { seatNumber: '2B', isBooked: true, isBusiness: true },
-    { seatNumber: '2C', isBooked: false, isBusiness: true },
-    { seatNumber: '2D', isBooked: false, isBusiness: true },
-    { seatNumber: '2E', isBooked: true, isBusiness: true },
-    { seatNumber: '2F', isBooked: false, isBusiness: true },
-    { seatNumber: '10A', isBooked: true, isBusiness: false },
-    { seatNumber: '10B', isBooked: true, isBusiness: false },
-    { seatNumber: '10C', isBooked: false, isBusiness: false },
-    { seatNumber: '10D', isBooked: false, isBusiness: false },
-    { seatNumber: '10E', isBooked: true, isBusiness: false },
-    { seatNumber: '10F', isBooked: false, isBusiness: false },
-    { seatNumber: '11A', isBooked: false, isBusiness: false },
-    { seatNumber: '11B', isBooked: false, isBusiness: false },
-    { seatNumber: '11C', isBooked: true, isBusiness: false },
-    { seatNumber: '11D', isBooked: true, isBusiness: false },
-    { seatNumber: '11E', isBooked: false, isBusiness: false },
-    { seatNumber: '11F', isBooked: false, isBusiness: false }
-  ];
+  // Dynamic Cabin Map
+  flightSeatMap: SeatItem[] = [];
+
+  generateFlightSeatMap(flight?: Flight | null): SeatItem[] {
+    const list: SeatItem[] = [];
+    const rows = [1, 2, 3, 10, 11, 12];
+    const cols = ['A', 'B', 'C', 'D', 'E', 'F'];
+    const total = flight?.totalSeats || 180;
+    const avail = flight?.availableSeats ?? 42;
+    const bookedTarget = Math.max(0, total - avail);
+    let count = 0;
+    for (const r of rows) {
+      for (const c of cols) {
+        const isBiz = r <= 2;
+        const isBooked = count < bookedTarget && (count % 3 === 0);
+        if (isBooked) count++;
+        list.push({ seatNumber: `${r}${c}`, isBooked, isBusiness: isBiz });
+      }
+    }
+    return list;
+  }
 
   // Microservices Grid
   microservices = [
@@ -2290,6 +2285,10 @@ export class AdminDashboardComponent implements OnInit {
     private userService: UserService,
     private fareService: FareService,
     private notificationService: NotificationService,
+    private reportsApi: ReportsApi,
+    private couponsApi: CouponsApi,
+    private incidentsApi: IncidentsApi,
+    private paymentsApi: PaymentsApi,
     public authService: AuthService
   ) {}
 
@@ -2405,8 +2404,8 @@ export class AdminDashboardComponent implements OnInit {
     }
   }
 
-  // Loaders
   loadAllData(): void {
+    this.loadDashboardSummary();
     this.loadFlights();
     this.loadFleet();
     this.loadUsers();
@@ -2416,60 +2415,27 @@ export class AdminDashboardComponent implements OnInit {
     this.loadIncidentReports();
   }
 
+  loadDashboardSummary(): void {
+    this.reportsApi.getDashboardSummary().subscribe({
+      next: (summary) => {
+        if (summary.services && summary.services.length > 0) {
+          this.microservices = summary.services.map(s => ({
+            name: s.service,
+            port: s.port,
+            latency: s.latencyMs || 15
+          }));
+        }
+      },
+      error: () => {}
+    });
+  }
+
   loadFlights(): void {
     this.flightService.getAllFlights().subscribe({
       next: (data) => (this.flights = data || []),
       error: () => {
-        this.flights = [
-          {
-            id: 1,
-            flightNumber: 'AI-101',
-            airlineName: 'Air India',
-            source: 'DEL',
-            destination: 'BOM',
-            departureTime: new Date(Date.now() + 86400000).toISOString(),
-            arrivalTime: new Date(Date.now() + 93600000).toISOString(),
-            totalSeats: 180,
-            availableSeats: 42,
-            baseFare: 4500,
-            status: 'SCHEDULED',
-            terminal: 'T3',
-            gate: 'Gate 14B',
-            aircraftTailNumber: 'VT-AB101 (Boeing 787-9)'
-          },
-          {
-            id: 2,
-            flightNumber: '6E-402',
-            airlineName: 'IndiGo',
-            source: 'BOM',
-            destination: 'BLR',
-            departureTime: new Date(Date.now() + 108000000).toISOString(),
-            arrivalTime: new Date(Date.now() + 115200000).toISOString(),
-            totalSeats: 186,
-            availableSeats: 15,
-            baseFare: 3200,
-            status: 'BOARDING',
-            terminal: 'T1',
-            gate: 'Gate 8A',
-            aircraftTailNumber: 'VT-AB303 (Airbus A321neo)'
-          },
-          {
-            id: 3,
-            flightNumber: 'UK-815',
-            airlineName: 'Vistara',
-            source: 'DEL',
-            destination: 'DXB',
-            departureTime: new Date(Date.now() + 130000000).toISOString(),
-            arrivalTime: new Date(Date.now() + 144000000).toISOString(),
-            totalSeats: 296,
-            availableSeats: 88,
-            baseFare: 14200,
-            status: 'SCHEDULED',
-            terminal: 'T3',
-            gate: 'Gate 22',
-            aircraftTailNumber: 'VT-AB202 (Airbus A350)'
-          }
-        ];
+        this.flights = [];
+        this.showToast('error', 'Flights Unavailable', 'Could not load commercial flight schedules from flight-service.');
       }
     });
   }
@@ -2478,12 +2444,8 @@ export class AdminDashboardComponent implements OnInit {
     this.flightService.getAllAircraft().subscribe({
       next: (data) => (this.fleet = data || []),
       error: () => {
-        this.fleet = [
-          { id: 1, model: 'Boeing 787-9 Dreamliner', aircraftNumber: 'VT-AB101', capacity: 296, status: 'ACTIVE', manufacturer: 'Boeing Commercial Airplanes', flightHours: 1840 },
-          { id: 2, model: 'Airbus A350-900', aircraftNumber: 'VT-AB202', capacity: 315, status: 'ACTIVE', manufacturer: 'Airbus Commercial Aviation', flightHours: 1200 },
-          { id: 3, model: 'Airbus A321neo', aircraftNumber: 'VT-AB303', capacity: 222, status: 'ACTIVE', manufacturer: 'Airbus Commercial Aviation', flightHours: 2450 },
-          { id: 4, model: 'Boeing 737 MAX 8', aircraftNumber: 'VT-AB404', capacity: 189, status: 'MAINTENANCE', manufacturer: 'Boeing Commercial Airplanes', flightHours: 3100 }
-        ];
+        this.fleet = [];
+        this.showToast('error', 'Fleet Unavailable', 'Could not load aircraft airframes from flight-service.');
       }
     });
   }
@@ -2492,13 +2454,8 @@ export class AdminDashboardComponent implements OnInit {
     this.userService.getAllUsers().subscribe({
       next: (data) => (this.users = data || []),
       error: () => {
-        this.users = [
-          { userId: 1, firstName: 'Amir', lastName: 'Sohel', email: 'admin@aerobook.com', phoneNumber: '+91 98765 43210', role: 'ROLE_ADMIN', status: 'ACTIVE', reportsCount: 0, level: 5, tier: 'DIAMOND', xp: 62500, badgesCount: 8 },
-          { userId: 2, firstName: 'Rajesh', lastName: 'Kumar', email: 'rajesh.staff@aerobook.com', phoneNumber: '+91 98111 22334', role: 'ROLE_STAFF', status: 'ACTIVE', reportsCount: 0, level: 4, tier: 'PLATINUM', xp: 38200, badgesCount: 7 },
-          { userId: 3, firstName: 'Priya', lastName: 'Sharma', email: 'priya@gmail.com', phoneNumber: '+91 99222 33445', role: 'ROLE_USER', status: 'ACTIVE', reportsCount: 0, level: 3, tier: 'GOLD', xp: 24850, badgesCount: 6 },
-          { userId: 4, firstName: 'Amit', lastName: 'Verma', email: 'amit.verma@yahoo.com', phoneNumber: '+91 97333 44556', role: 'ROLE_USER', status: 'ACTIVE', reportsCount: 1, level: 2, tier: 'SILVER', xp: 8400, badgesCount: 4 },
-          { userId: 5, firstName: 'Karan', lastName: 'Malhotra', email: 'karan.m@gmail.com', phoneNumber: '+91 96444 55667', role: 'ROLE_USER', status: 'BLOCKED', reportsCount: 2, level: 1, tier: 'BRONZE', xp: 2100, badgesCount: 2 }
-        ];
+        this.users = [];
+        this.showToast('error', 'User Directory Unavailable', 'Could not fetch user directory from user-service.');
       }
     });
   }
@@ -2507,30 +2464,8 @@ export class AdminDashboardComponent implements OnInit {
     this.bookingService.getAllBookings().subscribe({
       next: (data) => (this.bookings = data || []),
       error: () => {
-        this.bookings = [
-          {
-            bookingId: 101,
-            pnr: 'AB-829140',
-            userId: 3,
-            flightId: 1,
-            flightNumber: 'AI-101',
-            bookingDate: new Date().toISOString(),
-            totalFare: 5310,
-            status: 'CONFIRMED',
-            passengers: [{ firstName: 'Priya', lastName: 'Sharma', age: 29, gender: 'Female', seatNumber: '12A' }]
-          },
-          {
-            bookingId: 102,
-            pnr: 'AB-672109',
-            userId: 4,
-            flightId: 2,
-            flightNumber: '6E-402',
-            bookingDate: new Date().toISOString(),
-            totalFare: 3776,
-            status: 'CONFIRMED',
-            passengers: [{ firstName: 'Amit', lastName: 'Verma', age: 34, gender: 'Male', seatNumber: '14C' }]
-          }
-        ];
+        this.bookings = [];
+        this.showToast('error', 'Bookings Unavailable', 'Could not fetch platform bookings from booking-service.');
       }
     });
   }
@@ -2539,28 +2474,54 @@ export class AdminDashboardComponent implements OnInit {
     this.fareService.getAllFares().subscribe({
       next: (data) => (this.fares = data || []),
       error: () => {
-        this.fares = [
-          { id: 1, flightId: 1, economyFare: 4500, businessFare: 8500, firstClassFare: 14000, taxRate: 18, discountPercentage: 5 },
-          { id: 2, flightId: 2, economyFare: 3200, businessFare: 6800, firstClassFare: 11000, taxRate: 18, discountPercentage: 10 },
-          { id: 3, flightId: 3, economyFare: 14200, businessFare: 28500, firstClassFare: 52000, taxRate: 12, discountPercentage: 8 }
-        ];
+        this.fares = [];
+        this.showToast('error', 'Fares Unavailable', 'Could not load pricing tiers from fare-service.');
       }
     });
   }
 
   loadPromos(): void {
-    this.promos = [
-      { id: 1, code: 'AERO2026', description: 'New Year Early Bird Special', discountPercentage: 15, maxDiscount: 2500, validFrom: '2026-01-01', validUntil: '2026-12-31', usageLimit: 1000, usageCount: 240, status: 'ACTIVE' },
-      { id: 2, code: 'FLYHIGH20', description: 'Business & First Class Upgrade Offer', discountPercentage: 20, maxDiscount: 5000, validFrom: '2026-02-01', validUntil: '2026-08-31', usageLimit: 500, usageCount: 88, status: 'ACTIVE' },
-      { id: 3, code: 'STAFF10', description: 'Airline Crew & Family Rebate', discountPercentage: 25, maxDiscount: 3500, validFrom: '2026-01-01', validUntil: '2026-12-31', usageLimit: 200, usageCount: 45, status: 'ACTIVE' }
-    ];
+    this.couponsApi.getAll().subscribe({
+      next: (coupons) => {
+        this.promos = (coupons || []).map(c => ({
+          id: c.id || 1,
+          code: c.code,
+          description: c.description,
+          discountPercentage: c.discountPercentage,
+          maxDiscount: c.maxDiscount,
+          validFrom: c.validFrom || '2026-01-01',
+          validUntil: c.validUntil || '2026-12-31',
+          usageLimit: c.usageLimit || 1000,
+          usageCount: c.usageCount || 0,
+          status: c.status
+        }));
+      },
+      error: () => {
+        this.promos = [];
+      }
+    });
   }
 
   loadIncidentReports(): void {
-    this.incidentReports = [
-      { id: 201, userId: 5, userName: 'Karan Malhotra', userEmail: 'karan.m@gmail.com', reportedBy: 'Chief Purser (Flight 6E-402)', reason: 'Disruptive Passenger Behavior', severity: 'HIGH', status: 'OPEN', createdAt: new Date(Date.now() - 36000000).toISOString(), notes: 'Repeated non-compliance with cabin crew safety instructions during descent.' },
-      { id: 202, userId: 4, userName: 'Amit Verma', userEmail: 'amit.verma@yahoo.com', reportedBy: 'Payment Gateway Sentinel', reason: 'Payment Dispute / Fraudulent Chargeback', severity: 'MEDIUM', status: 'RESOLVED', createdAt: new Date(Date.now() - 86400000).toISOString(), notes: 'Duplicate card charge claimed. Reconciled and validated via bank settlement.' }
-    ];
+    this.incidentsApi.getAll().subscribe({
+      next: (reports) => {
+        this.incidentReports = (reports || []).map(r => ({
+          id: r.id,
+          userId: r.userId,
+          userName: r.userName,
+          userEmail: r.userEmail,
+          reportedBy: r.reportedBy,
+          reason: r.reason,
+          severity: r.severity,
+          status: r.status,
+          createdAt: r.createdAt,
+          notes: r.notes || ''
+        }));
+      },
+      error: () => {
+        this.incidentReports = [];
+      }
+    });
   }
 
   // ==========================================
@@ -2568,6 +2529,7 @@ export class AdminDashboardComponent implements OnInit {
   // ==========================================
   openViewFlightModal(flight: Flight): void {
     this.selectedFlight = flight;
+    this.flightSeatMap = this.generateFlightSeatMap(flight);
     this.showViewFlightModal = true;
   }
 
@@ -2879,27 +2841,36 @@ export class AdminDashboardComponent implements OnInit {
       return;
     }
 
-    const newPromo: PromoCode = {
-      id: Date.now(),
+    this.couponsApi.create({
       code: this.promoForm.code.toUpperCase(),
       description: this.promoForm.description || 'Promotional Discount Voucher',
       discountPercentage: this.promoForm.discountPercentage,
       maxDiscount: this.promoForm.maxDiscount || 2000,
-      validFrom: new Date().toISOString(),
-      validUntil: new Date(Date.now() + 86400000 * 90).toISOString(),
       usageLimit: this.promoForm.usageLimit || 500,
-      usageCount: 0,
       status: 'ACTIVE'
-    };
-
-    this.promos.unshift(newPromo);
-    this.showToast('success', 'Coupon Created', `Promo code ${newPromo.code} published.`);
-    this.showPromoModal = false;
+    }).subscribe({
+      next: (created) => {
+        this.showToast('success', 'Coupon Created', `Promo code ${created.code} published to fare-service.`);
+        this.showPromoModal = false;
+        this.loadPromos();
+      },
+      error: () => {
+        this.showToast('error', 'Coupon Creation Error', 'Could not register coupon code in backend database.');
+      }
+    });
   }
 
   togglePromoStatus(promo: PromoCode): void {
-    promo.status = promo.status === 'ACTIVE' ? 'PAUSED' : 'ACTIVE';
-    this.showToast('info', 'Coupon Status', `Promo ${promo.code} is now ${promo.status}.`);
+    const nextStatus = promo.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
+    this.couponsApi.toggleStatus(promo.id, nextStatus as any).subscribe({
+      next: (updated: any) => {
+        promo.status = updated.status;
+        this.showToast('info', 'Coupon Status', `Promo ${promo.code} is now ${updated.status}.`);
+      },
+      error: () => {
+        this.showToast('error', 'Status Update Failed', `Could not update promo ${promo.code}.`);
+      }
+    });
   }
 
   // ==========================================
@@ -3026,43 +2997,48 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   saveIncidentReport(): void {
-    const newReport: UserIncidentReport = {
-      id: Date.now(),
-      userId: this.reportForm.userId || 0,
+    this.incidentsApi.create({
+      userId: this.reportForm.userId || 1,
       userName: this.reportForm.userName || 'Passenger',
-      userEmail: this.reportForm.userEmail || '',
+      userEmail: this.reportForm.userEmail || 'passenger@aerobook.com',
       reportedBy: 'Executive Operations Control',
       reason: this.reportForm.reason || 'General Misconduct',
-      severity: this.reportForm.severity || 'MEDIUM',
-      status: 'OPEN',
-      createdAt: new Date().toISOString(),
+      severity: (this.reportForm.severity as any) || 'MEDIUM',
       notes: this.reportForm.notes || ''
-    };
-
-    this.incidentReports.unshift(newReport);
-    const targetUser = this.users.find(u => u.userId === newReport.userId);
-    if (targetUser) {
-      targetUser.reportsCount = (targetUser.reportsCount || 0) + 1;
-      if (newReport.severity === 'CRITICAL') {
-        targetUser.status = 'BLOCKED';
+    }).subscribe({
+      next: (saved) => {
+        this.loadIncidentReports();
+        this.showToast('warning', 'Incident Logged', `Report #${saved.id} logged against ${saved.userName}.`);
+        this.showReportModal = false;
+      },
+      error: () => {
+        this.showToast('error', 'Incident Failed', 'Could not record incident report in user-service.');
       }
-    }
-
-    this.showToast('warning', 'Incident Logged', `Report #INC-${newReport.id} logged against ${newReport.userName}.`);
-    this.showReportModal = false;
+    });
   }
 
   resolveReport(id: number): void {
-    const rep = this.incidentReports.find(r => r.id === id);
-    if (rep) {
-      rep.status = 'RESOLVED';
-      this.showToast('success', 'Incident Resolved', `Report #INC-${id} marked resolved.`);
-    }
+    this.incidentsApi.updateStatus(id, 'RESOLVED').subscribe({
+      next: () => {
+        this.loadIncidentReports();
+        this.showToast('success', 'Incident Resolved', `Report #${id} marked resolved in backend.`);
+      },
+      error: () => {
+        this.showToast('error', 'Action Failed', 'Could not update incident status.');
+      }
+    });
   }
 
   dismissReport(id: number): void {
-    this.incidentReports = this.incidentReports.filter(r => r.id !== id);
-    this.showToast('info', 'Report Dismissed', `Report #INC-${id} has been dismissed.`);
+    this.incidentsApi.dismiss(id).subscribe({
+      next: () => {
+        this.loadIncidentReports();
+        this.showToast('info', 'Report Dismissed', `Report #${id} has been dismissed.`);
+      },
+      error: () => {
+        this.showToast('error', 'Action Failed', 'Could not dismiss report.');
+      }
+    });
   }
 
   // ==========================================
